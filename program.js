@@ -5,7 +5,7 @@ AFRAME.registerComponent("build", {
         testBox.setAttribute("position", "-1 0.5 -3");
         testBox.setAttribute("rotation", "0 45 0");
         testBox.setAttribute("color", "#4CC3D9");
-        testBox.setAttribute("material", "src: url(Lava.jpg); repeat: 60 80");
+        testBox.setAttribute("material", "src: #lava");
         s.appendChild(testBox);
     }
   });
