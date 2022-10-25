@@ -1,3 +1,11 @@
+$(document).keydown(function (){
+    if (event.which == 81){
+        $("#camera").attr("position", `${$("#camera").attr("position").x} ${parseFloat($("#camera").attr("position").y) + 0.5} ${$("#camera").attr("position").z}`);
+    }
+    if (event.which == 69){
+        $("#camera").attr("position", `${$("#camera").attr("position").x} ${parseFloat($("#camera").attr("position").y) - 0.5} ${$("#camera").attr("position").z}`);
+    }
+});
 $.get('height25.csv',{},function(content){
     let lines=content.split(',');
 
