@@ -5,6 +5,10 @@ $(document).keydown(function (){
     if (event.which == 69){
         $("#camera").attr("position", `${$("#camera").attr("position").x} ${parseFloat($("#camera").attr("position").y) - 0.5} ${$("#camera").attr("position").z}`);
     }
+    if (event.which == 80){
+        let npo = prompt("Go to position? (x, y, z space-separated)");
+        $("#camera").attr("position", npo);
+    }
 });
 $.get('height25.csv',{},function(content){
     let lines=content.split(',');
