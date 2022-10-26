@@ -1,6 +1,7 @@
+var height, lat, long, slope;
 $(document).keydown(function (){
     if (event.which == 81){
-        $("#camera").attr("position", `${$("#camera").attr("position").x} ${parseFloat($("#camera").attr("position").y) + 0.5} ${$("#camera").attr("position").z}`);
+        $("#camera").attr("position",`${$("#camera").attr("position").x} ${parseFloat($("#camera").attr("position").y) + 0.5} ${$("#camera").attr("position").z}`);
     }
     if (event.which == 69){
         $("#camera").attr("position", `${$("#camera").attr("position").x} ${parseFloat($("#camera").attr("position").y) - 0.5} ${$("#camera").attr("position").z}`);
@@ -11,11 +12,32 @@ $(document).keydown(function (){
     }
 });
 $.get('height25.csv',{},function(content){
-    let lines=content.split(',');
-
-    console.log(`File contains ${lines.length} lines`);
-    console.log(`First line : ${lines[0]}`);
-
+    height=content.split('/\r?\n/');
+    for (var i = 0; i < height.length; i++){    
+        height[i] = height[i].split(",");
+    }
+    console.log(height);
+});
+$.get('slope25.csv',{},function(content){
+    slope=content.split('/\r?\n/');
+    for (var i = 0; i < slope.length; i++){    
+        slope[i] = slope[i].split(",");
+    }
+    console.log(slope);
+});
+$.get('lat25.csv',{},function(content){
+    lat=content.split('/\r?\n/');
+    for (var i = 0; i < lat.length; i++){    
+        lat[i] = lat[i].split(",");
+    }
+    console.log(lat);
+});
+$.get('long25.csv',{},function(content){
+    long=content.split('/\r?\n/');
+    for (var i = 0; i < long.length; i++){    
+        long[i] = long[i].split(",");
+    }
+    console.log(long);
 });
 AFRAME.registerComponent("build", {
     init: function () {
