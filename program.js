@@ -1,48 +1,3 @@
-$(document).ready(function(){
-var height, lat, long, slope;
-var centerLong = -85.3272304;
-var centerLong = 27.2947935;
-var startHeight = 5537;
-var r = 1737400;
-AFRAME.registerComponent("build", {
-    init: function () {
-        $.get('height25.csv',{},function(content){
-            height=content.split('\r\n');
-            for (var i = 0; i < height.length; i++){
-                height[i] = height[i].split(",");
-            }
-            height.pop();
-        });
-        $.get('slope25.csv',{},function(content){
-            slope=content.split('\r\n');
-            for (var i = 0; i < slope.length; i++){    
-                slope[i] = slope[i].split(",");
-                
-            }
-            slope.pop();
-        });
-        $.get('lat25.csv',{},function(content){
-            lat=content.split('\r\n');
-            for (var i = 0; i < lat.length; i++){    
-                lat[i] = lat[i].split(",");
-            }
-            lat.pop();
-        });
-        $.get('long25.csv',{},function(content){
-            long=content.split('\r\n');
-            for (var i = 0; i < long.length; i++){    
-                long[i] = long[i].split(",");
-            }
-            long.pop();
-        });
-        for(var i=0;i<4;i++){
-            for(var j=0;j<4;j++){
-                tri(j+1, i);
-            }
-        }
-    }
-  });});
-
 function toRad(x){
     return x*Math.PI/180;
 }
@@ -94,3 +49,46 @@ $(document).keydown(function (){
         $("#camera").attr("position", npo);
     }
 });
+AFRAME.registerComponent("build", {
+    init: function () {
+        var height, lat, long, slope;
+        var centerLong = -85.3272304;
+        var centerLong = 27.2947935;
+        var startHeight = 5537;
+        var r = 1737400;
+        $.get('height25.csv',{},function(content){
+            height=content.split('\r\n');
+            for (var i = 0; i < height.length; i++){
+                height[i] = height[i].split(",");
+            }
+            height.pop();
+        });
+        $.get('slope25.csv',{},function(content){
+            slope=content.split('\r\n');
+            for (var i = 0; i < slope.length; i++){    
+                slope[i] = slope[i].split(",");
+                
+            }
+            slope.pop();
+        });
+        $.get('lat25.csv',{},function(content){
+            lat=content.split('\r\n');
+            for (var i = 0; i < lat.length; i++){    
+                lat[i] = lat[i].split(",");
+            }
+            lat.pop();
+        });
+        $.get('long25.csv',{},function(content){
+            long=content.split('\r\n');
+            for (var i = 0; i < long.length; i++){    
+                long[i] = long[i].split(",");
+            }
+            long.pop();
+        });
+        for(var i=0;i<4;i++){
+            for(var j=0;j<4;j++){
+                tri(j+1, i);
+            }
+        }
+    }
+  });
