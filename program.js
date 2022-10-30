@@ -1,4 +1,4 @@
-var height, lat, long, slope, ud;
+var height, lat, long, slope;
 const centerLat = -85.3272304;
 const centerLong = 27.2947935;
 const startHeight = 5537;
@@ -35,18 +35,12 @@ function coord(la,lo,he){
     return `${x.toFixed(3)} ${y.toFixed(3)} ${z.toFixed(3)}`;
 }
 function tri(subList, index){
-    if ((subList + index)%2 == 0){
-        if (index%2==1){
-            ud = -1;
-        }else{
-            ud = 1;
-        }
-        let a = coord(parseFloat(lat[subList][index]), parseFloat(long[subList][index]), parseFloat(height[subList][index]));
-        let b = coord(parseFloat(lat[subList][index+ud]), parseFloat(long[subList][index+ud]), parseFloat(height[subList][index+ud]));
-        let c = coord(parseFloat(lat[subList+ud][index]), parseFloat(long[subList+ud][index]), parseFloat(height[subList+ud][index]));
-        let t = `<a-triangle id="${subList} ${index}" vertex-a="${a}" vertex-b="${b}"  vertex-c="${c}" src="#nasa"></a-triangle>`;
-        $("#scene").append(t);
-        }
+    let a = coord(parseFloat(lat[subList][index]), parseFloat(long[subList][index]), parseFloat(height[subList][index]));
+    let c = coord(parseFloat(lat[subList-1][index]), parseFloat(long[subList-1][index]), parseFloat(height[subList-1][index]));
+    let b = coord(parseFloat(lat[subList-1][index+1]), parseFloat(long[subList-1][index+1]), parseFloat(height[subList-1][index+1]));
+    let d = coord(parseFloat(lat[subList][index+1]), parseFloat(long[subList][index+1]), parseFloat(height[subList][index+1]));
+    $("#scene").append(`<a-triangle id="${subList} ${index} top" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" src="#nasa">
+    </a-triangle><a-triangle id="${subList} ${index} bot" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" src="#nasa"></a-triangle>`);
 }
 $(document).keydown(function (){
     if (event.which == 81){
@@ -91,13 +85,10 @@ $.get('long25.csv',{},function(content){
 });
 AFRAME.registerComponent("build", {
     init: function () {
-        tri(0,0);
-        tri(1,1);
-        tri(2,2);
-        tri(3,3);
-        tri(0,2);
-        tri(1,3);
-        tri(2,0);
-        tri(3,1);
+        for(var i=0;i<4;i++){
+            for(var j=0;j<4;j++){
+                tri(j+1, i);
+            }
+        }
     }
   });
