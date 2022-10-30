@@ -46,11 +46,12 @@ AFRAME.registerComponent("build", {
             }
             long.pop();
         });
-        for(var i=0;i<4;i++){
-            for(var j=0;j<4;j++){
-                tri(j+1, i);
+        setTimeout(function (){
+            for(var i=0;i<4;i++){
+                for(var j=0;j<4;j++){
+                    tri(j+1, i);
             }
-        }
+        }}, 1000);
     }
   });
 function toRad(x){
