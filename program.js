@@ -1,3 +1,8 @@
+var height, lat, long, slope;
+const centerLat = -85.3272304;
+const centerLong = 27.2947935;
+const startHeight = 5537;
+const r = 1737400;
 $(document).keydown(function (){
     if (event.which == 81){
         $("#camera").attr("position",`${$("#camera").attr("position").x} ${parseFloat($("#camera").attr("position").y) + 0.5} ${$("#camera").attr("position").z}`);
@@ -12,11 +17,6 @@ $(document).keydown(function (){
 });
 AFRAME.registerComponent("build", {
     init: function () {
-        var height, lat, long, slope;
-        var centerLong = -85.3272304;
-        var centerLong = 27.2947935;
-        var startHeight = 5537;
-        var r = 1737400;
         $.get('height25.csv',{},function(content){
             height=content.split('\r\n');
             for (var i = 0; i < height.length; i++){
