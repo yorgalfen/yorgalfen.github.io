@@ -39,8 +39,8 @@ function tri(subList, index){
     let c = coord(parseFloat(lat[subList-1][index]), parseFloat(long[subList-1][index]), parseFloat(height[subList-1][index]));
     let b = coord(parseFloat(lat[subList-1][index+1]), parseFloat(long[subList-1][index+1]), parseFloat(height[subList-1][index+1]));
     let d = coord(parseFloat(lat[subList][index+1]), parseFloat(long[subList][index+1]), parseFloat(height[subList][index+1]));
-    $("#scene").append(`<a-triangle id="${subList} ${index} top" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" src="#nasa">
-    </a-triangle><a-triangle id="${subList} ${index} bot" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" src="#nasa"></a-triangle>`);
+    $("#scene").append(`<a-triangle id="${subList} ${index} top" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" src="#nasa" material="side: double">
+    </a-triangle><a-triangle id="${subList} ${index} bot" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" src="#nasa" material="side: double"></a-triangle>`);
 }
 $(document).keydown(function (){
     if (event.which == 81){
