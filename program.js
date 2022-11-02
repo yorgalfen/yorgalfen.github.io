@@ -1,4 +1,4 @@
-var height, lat, long, slope;
+var height, lat, long, slope, currentPoints;
 const centerLat = -85.3272304;
 const centerLong = 27.2947935;
 const startHeight = 5537;
@@ -17,7 +17,7 @@ $(document).keydown(function (){
 });
 AFRAME.registerComponent("build", {
     init: function () {
-        $.get('height25.csv',{},function(content){
+        $.get('heightmil.csv',{},function(content){
             height=content.split('\r\n');
             for (var i = 0; i < height.length; i++){
                 height[i] = height[i].split(",");
@@ -32,14 +32,14 @@ AFRAME.registerComponent("build", {
             }
             slope.pop();
         });
-        $.get('lat25.csv',{},function(content){
+        $.get('latmil.csv',{},function(content){
             lat=content.split('\r\n');
             for (var i = 0; i < lat.length; i++){    
                 lat[i] = lat[i].split(",");
             }
             lat.pop();
         });
-        $.get('long25.csv',{},function(content){
+        $.get('longmil.csv',{},function(content){
             long=content.split('\r\n');
             for (var i = 0; i < long.length; i++){    
                 long[i] = long[i].split(",");
@@ -47,8 +47,8 @@ AFRAME.registerComponent("build", {
             long.pop();
         });
         setTimeout(function (){
-            for(var i=0;i<4;i++){
-                for(var j=0;j<4;j++){
+            for(var i=0;i<50;i++){
+                for(var j=0;j<50;j++){
                     tri(j+1, i);
             }
         }}, 1000);
