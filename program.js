@@ -47,8 +47,8 @@ AFRAME.registerComponent("build", {
             long.pop();
         });
         setTimeout(function (){
-            for(var i=0;i<50;i++){
-                for(var j=0;j<50;j++){
+            for(var i=0;i<60;i++){
+                for(var j=0;j<60;j++){
                     tri(j+1, i);
             }
         }}, 1000);
