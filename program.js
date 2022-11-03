@@ -17,41 +17,7 @@ $(document).keydown(function (){
 });
 AFRAME.registerComponent("build", {
     init: function () {
-        $.get('heightmil.csv',{},function(content){
-            height=content.split('\r\n');
-            for (var i = 0; i < height.length; i++){
-                height[i] = height[i].split(",");
-            }
-            height.pop();
-        });
-        $.get('slope25.csv',{},function(content){
-            slope=content.split('\r\n');
-            for (var i = 0; i < slope.length; i++){    
-                slope[i] = slope[i].split(",");
-                
-            }
-            slope.pop();
-        });
-        $.get('latmil.csv',{},function(content){
-            lat=content.split('\r\n');
-            for (var i = 0; i < lat.length; i++){    
-                lat[i] = lat[i].split(",");
-            }
-            lat.pop();
-        });
-        $.get('longmil.csv',{},function(content){
-            long=content.split('\r\n');
-            for (var i = 0; i < long.length; i++){    
-                long[i] = long[i].split(",");
-            }
-            long.pop();
-        });
-        setTimeout(function (){
-            for(var i=0;i<60;i++){
-                for(var j=0;j<60;j++){
-                    tri(j+1, i);
-            }
-        }}, 1000);
+        start();
     }
   });
 function toRad(x){
@@ -92,4 +58,50 @@ function tri(subList, index){
     let d = coord(parseFloat(lat[subList][index+1]), parseFloat(long[subList][index+1]), parseFloat(height[subList][index+1]));
     $("#scene").append(`<a-triangle id="${subList} ${index} top" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" src="#nasa" material="side: double">
     </a-triangle><a-triangle id="${subList} ${index} bot" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" src="#nasa" material="side: double"></a-triangle>`);
+}
+async function start(){
+    let hepro = new Promise(function(resolve, reject){
+        $.get('heightmil.csv',{},function(content){
+            height=content.split('\r\n');
+            for (var i = 0; i < height.length; i++){
+                height[i] = height[i].split(",");
+            }
+            height.pop();
+            resolve(true);
+        });});
+    let slopro = new Promise(function(resolve, reject){
+        $.get('slope25.csv',{},function(content){
+            slope=content.split('\r\n');
+            for (var i = 0; i < slope.length; i++){    
+                slope[i] = slope[i].split(",");
+            }
+            slope.pop();
+            resolve(true);
+        });});
+    let lapro = new Promise(function(resolve, reject){
+        $.get('latmil.csv',{},function(content){
+            lat=content.split('\r\n');
+            for (var i = 0; i < lat.length; i++){    
+                lat[i] = lat[i].split(",");
+            }
+            lat.pop();
+            resolve(true);
+        });});
+    let lopro = new Promise(function(resolve, reject){
+        $.get('longmil.csv',{},function(content){
+            long=content.split('\r\n');
+            for (var i = 0; i < long.length; i++){    
+                long[i] = long[i].split(",");
+            }
+            long.pop();
+            resolve(true);
+        });});
+    await hepro;
+    await slopro;
+    await lapro;
+    await lopro;
+    for(var i=0;i<60;i++){
+        for(var j=0;j<60;j++){
+            tri(j+1, i);
+    }}
 }
