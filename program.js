@@ -107,10 +107,10 @@ async function start(){
         let sx = Math.round(500-parseFloat($("#camera").attr("position").x)/5);
         n++;
         for(var z = ss - siz/2; z <= ss + siz/2; z++){
-            for(var x = sx - siz/2; x <= sx + siz/2; x++){
-                if($(`#${ss} ${sx} top`).length){
-                    $(`#${ss} ${sx} top`).attr("class", n);
-                    $(`#${ss} ${sx} bot`).attr("class", n);
+            for(var x = sx - siz/2; x <= ss + siz/2; x++){
+                if($(`#${z} ${x} top`).length){
+                    $(`#${z} ${x} top`).attr("class", n);
+                    $(`#${z} ${x} bot`).attr("class", n);
                 }else{
                     tri(z, x);
                 }
