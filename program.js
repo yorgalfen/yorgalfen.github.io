@@ -106,8 +106,8 @@ async function start(){
         let ss = Math.round(500+parseFloat($("#camera").attr("position").z)/5);
         let sx = Math.round(500+parseFloat($("#camera").attr("position").x)/5);
         n++;
-        for(var z = ss - siz/2; z < ss + siz/2; z++){
-            for(var x = sx - siz/2; x < ss + siz/2; x++){
+        for(var z = ss - siz/2; z <= ss + siz/2; z++){
+            for(var x = sx - siz/2; x <= ss + siz/2; x++){
                 if($(`#${ss} ${sx} top`).length){
                     $(`#${ss} ${sx} top`).attr("class", n);
                 }else{
