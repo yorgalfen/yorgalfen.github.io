@@ -110,6 +110,7 @@ async function start(){
             for(var x = sx - siz/2; x <= ss + siz/2; x++){
                 if($(`#${ss} ${sx} top`).length){
                     $(`#${ss} ${sx} top`).attr("class", n);
+                    $(`#${ss} ${sx} bot`).attr("class", n);
                 }else{
                     tri(z, x);
                 }
