@@ -1,7 +1,7 @@
 var height, lat, long, slope;
 var n = 0;
-const centerLat = -85.3272304;
-const centerLong = 27.2947935;
+const centerLat = -85.3611726;
+const centerLong = 28.6605755;
 const startHeight = 5537;
 const r = 1737400;
 var siz = 64;
