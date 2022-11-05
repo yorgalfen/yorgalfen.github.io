@@ -102,7 +102,7 @@ async function start(){
     await slopro;
     await lapro;
     await lopro;
-    setInterval(function(){
+    interv = setInterval(function(){
         let ss = Math.round(500+parseFloat($("#camera").attr("position").z)/5);
         let sx = Math.round(500+parseFloat($("#camera").attr("position").x)/5);
         n++;
@@ -116,5 +116,5 @@ async function start(){
             }
         }
         $(`.${n-1}`).remove();
-    }, 5000);
+    }, 20000);
 }
