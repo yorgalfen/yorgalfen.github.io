@@ -1,8 +1,10 @@
-var height, lat, long, slope, currentPoints;
+var height, lat, long, slope;
+var n = 0;
 const centerLat = -85.3272304;
 const centerLong = 27.2947935;
 const startHeight = 5537;
 const r = 1737400;
+var siz = 64;
 $(document).keydown(function (){
     if (event.which == 81){
         $("#camera").attr("position",`${$("#camera").attr("position").x} ${parseFloat($("#camera").attr("position").y) + 0.5} ${$("#camera").attr("position").z}`);
@@ -56,8 +58,8 @@ function tri(subList, index){
     let c = coord(parseFloat(lat[subList-1][index]), parseFloat(long[subList-1][index]), parseFloat(height[subList-1][index]));
     let b = coord(parseFloat(lat[subList-1][index+1]), parseFloat(long[subList-1][index+1]), parseFloat(height[subList-1][index+1]));
     let d = coord(parseFloat(lat[subList][index+1]), parseFloat(long[subList][index+1]), parseFloat(height[subList][index+1]));
-    $("#scene").append(`<a-triangle id="${subList} ${index} top" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" color="#8a8a8a" material="side: double">
-    </a-triangle><a-triangle id="${subList} ${index} bot" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" color="#8a8a8a" material="side: double"></a-triangle>`);
+    $("#scene").append(`<a-triangle id="${subList} ${index} top" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" color="#8a8a8a" material="side: double">
+    </a-triangle><a-triangle id="${subList} ${index} bot" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" color="#8a8a8a" material="side: double"></a-triangle>`);
 }
 async function start(){
     let hepro = new Promise(function(resolve, reject){
@@ -100,8 +102,19 @@ async function start(){
     await slopro;
     await lapro;
     await lopro;
-    for(var i=0;i<60;i++){
-        for(var j=0;j<60;j++){
-            tri(j+1, i);
-    }}
+    setInterval(function(){
+        let ss = Math.round(500+parseFloat($("#camera").attr("position").z)/5);
+        let sx = Math.round(500+parseFloat($("#camera").attr("position").x)/5);
+        n++;
+        for(var z = ss - siz/2; z < ss + siz/2; z++){
+            for(var x = sx - siz/2; x < ss + siz/2; x++){
+                if($(`#${ss} ${sx} top`).length){
+                    $(`#${ss} ${sx} top`).attr("class", n);
+                }else{
+                    tri(ss, sx);
+                }
+            }
+        }
+        $(`.${n-1}`).remove();
+    }, 5000);
 }
