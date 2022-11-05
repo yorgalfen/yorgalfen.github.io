@@ -111,7 +111,7 @@ async function start(){
                 if($(`#${ss} ${sx} top`).length){
                     $(`#${ss} ${sx} top`).attr("class", n);
                 }else{
-                    tri(ss, sx);
+                    tri(z, x);
                 }
             }
         }
