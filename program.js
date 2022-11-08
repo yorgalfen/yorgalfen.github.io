@@ -1,4 +1,6 @@
 var height, lat, long, slope;
+var sub = 0;
+var ind = 0;
 var n = 0;
 const centerLat = -85.3611726;
 const centerLong = 28.6605755;
@@ -61,6 +63,51 @@ function tri(subList, index){
     $("#scene").append(`<a-triangle id="${subList}-${index}-top" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" color="#8a8a8a" material="side: double">
     </a-triangle><a-triangle id="${subList}-${index}-bot" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" color="#8a8a8a" material="side: double"></a-triangle>`);
 }
+function indexes(camx, camz){
+    if ($("a-triangle[id~=top]").length){
+        $("a-triangle[id~=top]").each(function(){
+            sub = parseInt($(this).attr('id').slice(0,$(this).attr('id').indexOf("-")));
+            ind = parseInt($(this).attr('id').slice(0,$(this).attr('id').lastIndexOf("-")));
+            let a = $(this).attr("vertex-a").split(" ");
+            let b = $(this).attr("vertex-b").split(" ");
+            let c = $(this).attr("vertex-c").split(" ");
+            if (parseFloat(a[2])<parseFloat(b[2])&&parseFloat(a[2])<parseFloat(c[2])){
+                var minz = parseFloat(a[2]);
+            }else if (parseFloat(b[2])<parseFloat(a[2])&&parseFloat(b[2])<parseFloat(c[2])){
+                var minz = parseFloat(b[2]);
+            }else{
+                var minz = parseFloat(c[2]);
+            }
+            if (parseFloat(a[0])<parseFloat(b[0])&&parseFloat(a[0])<parseFloat(c[0])){
+                var minx = parseFloat(a[0]);
+            }else if (parseFloat(b[0])<parseFloat(a[0])&&parseFloat(b[0])<parseFloat(c[0])){
+                var minx = parseFloat(b[0]);
+            }else{
+                var minx = parseFloat(c[0]);
+            }
+            if (parseFloat(a[2])>parseFloat(b[2])&&parseFloat(a[2])>parseFloat(c[2])){
+                var maxz = parseFloat(a[2]);
+            }else if (parseFloat(b[2])>parseFloat(a[2])&&parseFloat(b[2])>parseFloat(c[2])){
+                var maxz = parseFloat(b[2]);
+            }else{
+                var maxz = parseFloat(c[2]);
+            }
+            if (parseFloat(a[0])>parseFloat(b[0])&&parseFloat(a[0])>parseFloat(c[0])){
+                var maxx = parseFloat(a[0]);
+            }else if (parseFloat(b[0])>parseFloat(a[0])&&parseFloat(b[0])>parseFloat(c[0])){
+                var maxx = parseFloat(b[0]);
+            }else{
+                var maxx = parseFloat(c[0]);
+            }
+            if ((camx>minx&&camx<maxx)&&(camz>minz&&camz<maxz)){
+                return false;
+            }
+        });
+    }else{
+        sub = 500;
+        ind = 500;
+    }
+}
 async function start(){
     let hepro = new Promise(function(resolve, reject){
         $.get('heightmil.csv',{},function(content){
@@ -103,11 +150,10 @@ async function start(){
     await lapro;
     await lopro;
     interv = setInterval(function(){
-        let ss = Math.round(500-parseFloat($("#camera").attr("position").z)/5);
-        let sx = Math.round(500-parseFloat($("#camera").attr("position").x)/5);
+        indexes($("#camera").attr("position").x, $("#camera").attr("position").z);
         n++;
-        for(var z = ss - siz/2; z <= ss + siz/2; z++){
-            for(var x = sx - siz/2; x <= ss + siz/2; x++){
+        for(var z = sub - siz/2; z < sub + siz/2; z++){
+            for(var x = ind - siz/2; x <= ind + siz/2; x++){
                 if($(`#${z}-${x}-top`).length){
                     $(`#${z}-${x}-top`).attr("class", n);
                     $(`#${z}-${x}-bot`).attr("class", n);
