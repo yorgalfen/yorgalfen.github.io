@@ -66,38 +66,48 @@ function tri(subList, index){
 function indexes(camx, camz){
     if ($("a-triangle[id~=top]").length){
         $("a-triangle[id~=top]").each(function(){
-            sub = parseInt($(this).attr('id').slice(0,$(this).attr('id').indexOf("-")));
-            ind = parseInt($(this).attr('id').slice(0,$(this).attr('id').lastIndexOf("-")));
+            id = $(this).attr('id');
+            sub = parseInt(id.slice(0,id.indexOf("-")));
+            ind = parseInt(id.slice(id.indexOf("-")+1,id.lastIndexOf("-")));
             let a = $(this).attr("vertex-a").split(" ");
             let b = $(this).attr("vertex-b").split(" ");
             let c = $(this).attr("vertex-c").split(" ");
-            if (parseFloat(a[2])<parseFloat(b[2])&&parseFloat(a[2])<parseFloat(c[2])){
+            let d = $(`#${sub}-${ind}-bot`).attr("vertex-c").split(" ");
+            if ((parseFloat(a[2])<parseFloat(b[2])&&parseFloat(a[2])<parseFloat(c[2]))&&parseFloat(a[2])<parseFloat(d[2])){
                 var minz = parseFloat(a[2]);
-            }else if (parseFloat(b[2])<parseFloat(a[2])&&parseFloat(b[2])<parseFloat(c[2])){
+            }else if ((parseFloat(b[2])<parseFloat(a[2])&&parseFloat(b[2])<parseFloat(c[2]))&&parseFloat(b[2])<parseFloat(d[2])){
                 var minz = parseFloat(b[2]);
-            }else{
+            }else if ((parseFloat(c[2])<parseFloat(a[2])&&parseFloat(c[2])<parseFloat(b[2]))&&parseFloat(c[2])<parseFloat(d[2])){
                 var minz = parseFloat(c[2]);
+            }else{
+                var minz = parseFloat(d[2]);
             }
-            if (parseFloat(a[0])<parseFloat(b[0])&&parseFloat(a[0])<parseFloat(c[0])){
+            if ((parseFloat(a[0])<parseFloat(b[0])&&parseFloat(a[0])<parseFloat(c[0]))&&parseFloat(a[0])<parseFloat(d[0])){
                 var minx = parseFloat(a[0]);
-            }else if (parseFloat(b[0])<parseFloat(a[0])&&parseFloat(b[0])<parseFloat(c[0])){
+            }else if ((parseFloat(b[0])<parseFloat(a[0])&&parseFloat(b[0])<parseFloat(c[0]))&&parseFloat(b[0])<parseFloat(d[0])){
                 var minx = parseFloat(b[0]);
-            }else{
+            }else if ((parseFloat(c[0])<parseFloat(a[0])&&parseFloat(c[0])<parseFloat(b[0]))&&parseFloat(c[0])<parseFloat(d[0])){
                 var minx = parseFloat(c[0]);
+            }else{
+                var minx = parseFloat(d[0]);
             }
-            if (parseFloat(a[2])>parseFloat(b[2])&&parseFloat(a[2])>parseFloat(c[2])){
+            if ((parseFloat(a[2])>parseFloat(b[2])&&parseFloat(a[2])>parseFloat(c[2]))&&parseFloat(a[2])>parseFloat(d[2])){
                 var maxz = parseFloat(a[2]);
-            }else if (parseFloat(b[2])>parseFloat(a[2])&&parseFloat(b[2])>parseFloat(c[2])){
+            }else if ((parseFloat(b[2])>parseFloat(a[2])&&parseFloat(b[2])>parseFloat(c[2]))&&parseFloat(b[2])>parseFloat(d[2])){
                 var maxz = parseFloat(b[2]);
-            }else{
+            }else if ((parseFloat(c[2])>parseFloat(a[2])&&parseFloat(c[2])>parseFloat(b[2]))&&parseFloat(c[2])>parseFloat(d[2])){
                 var maxz = parseFloat(c[2]);
-            }
-            if (parseFloat(a[0])>parseFloat(b[0])&&parseFloat(a[0])>parseFloat(c[0])){
-                var maxx = parseFloat(a[0]);
-            }else if (parseFloat(b[0])>parseFloat(a[0])&&parseFloat(b[0])>parseFloat(c[0])){
-                var maxx = parseFloat(b[0]);
             }else{
+                var maxz = parseFloat(d[2]);
+            }
+            if ((parseFloat(a[0])>parseFloat(b[0])&&parseFloat(a[0])>parseFloat(c[0]))&&parseFloat(a[0])>parseFloat(d[0])){
+                var maxx = parseFloat(a[0]);
+            }else if ((parseFloat(b[0])>parseFloat(a[0])&&parseFloat(b[0])>parseFloat(c[0]))&&parseFloat(b[0])>parseFloat(d[0])){
+                var maxx = parseFloat(b[0]);
+            }else if ((parseFloat(c[0])>parseFloat(a[0])&&parseFloat(c[0])>parseFloat(b[0]))&&parseFloat(c[0])>parseFloat(d[0])){
                 var maxx = parseFloat(c[0]);
+            }else{
+                var maxx = parseFloat(d[0]);
             }
             if ((camx>minx&&camx<maxx)&&(camz>minz&&camz<maxz)){
                 return false;
