@@ -114,8 +114,7 @@ function indexes(camx, camz){
         });
         return [sub, ind];
     }else{
-        sub = 500;
-        ind = 500;
+        return [500, 500];
     }
 }
 async function start(){
