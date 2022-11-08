@@ -63,10 +63,11 @@ function tri(subList, index){
 }
 function indexes(camx, camz){
     if ($("a-triangle[id*=top]").length){
+        let sub, ind;
         $("a-triangle[id*=top]").each(function(){
             id = $(this).attr('id');
-            let sub = parseInt(id.slice(0,id.indexOf("-")));
-            let ind = parseInt(id.slice(id.indexOf("-")+1,id.lastIndexOf("-")));
+            sub = parseInt(id.slice(0,id.indexOf("-")));
+            ind = parseInt(id.slice(id.indexOf("-")+1,id.lastIndexOf("-")));
             let a = $(this).attr("vertex-a").split(" ");
             let b = $(this).attr("vertex-b").split(" ");
             let c = $(this).attr("vertex-c").split(" ");
@@ -111,6 +112,7 @@ function indexes(camx, camz){
                 return false;
             }
         });
+        return [sub, ind];
     }else{
         sub = 500;
         ind = 500;
@@ -160,10 +162,10 @@ async function start(){
     interv = setInterval(function(){
         let ex = $("#camera").attr("position").x;
         let ez = $("#camera").attr("position").z;
-        indexes(ex, ez);
+        let f = indexes(ex, ez);
         n++;
-        for(var z = sub - siz/2; z < sub + siz/2; z++){
-            for(var x = ind - siz/2; x <= ind + siz/2; x++){
+        for(var z = f[0] - siz/2; z < f[0] + siz/2; z++){
+            for(var x = f[1] - siz/2; x <= f[1] + siz/2; x++){
                 if($(`#${z}-${x}-top`).length){
                     $(`#${z}-${x}-top`).attr("class", n);
                     $(`#${z}-${x}-bot`).attr("class", n);
