@@ -175,5 +175,5 @@ async function start(){
             }
         }
         $(`.${n-1}`).remove();
-    }, 20000);
+    }, 10000);
 }
