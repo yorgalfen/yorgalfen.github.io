@@ -1,6 +1,4 @@
 var height, lat, long, slope;
-var sub = 0;
-var ind = 0;
 var n = 0;
 const centerLat = -85.3611726;
 const centerLong = 28.6605755;
@@ -64,11 +62,11 @@ function tri(subList, index){
     </a-triangle><a-triangle id="${subList}-${index}-bot" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" color="#8a8a8a" material="side: double"></a-triangle>`);
 }
 function indexes(camx, camz){
-    if ($("a-triangle[id~=top]").length){
-        $("a-triangle[id~=top]").each(function(){
+    if ($("a-triangle[id*=top]").length){
+        $("a-triangle[id*=top]").each(function(){
             id = $(this).attr('id');
-            sub = parseInt(id.slice(0,id.indexOf("-")));
-            ind = parseInt(id.slice(id.indexOf("-")+1,id.lastIndexOf("-")));
+            let sub = parseInt(id.slice(0,id.indexOf("-")));
+            let ind = parseInt(id.slice(id.indexOf("-")+1,id.lastIndexOf("-")));
             let a = $(this).attr("vertex-a").split(" ");
             let b = $(this).attr("vertex-b").split(" ");
             let c = $(this).attr("vertex-c").split(" ");
@@ -160,7 +158,9 @@ async function start(){
     await lapro;
     await lopro;
     interv = setInterval(function(){
-        indexes($("#camera").attr("position").x, $("#camera").attr("position").z);
+        let ex = $("#camera").attr("position").x;
+        let ez = $("#camera").attr("position").z;
+        indexes(ex, ez);
         n++;
         for(var z = sub - siz/2; z < sub + siz/2; z++){
             for(var x = ind - siz/2; x <= ind + siz/2; x++){
