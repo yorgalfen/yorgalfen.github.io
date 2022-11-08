@@ -58,8 +58,8 @@ function tri(subList, index){
     let c = coord(parseFloat(lat[subList-1][index]), parseFloat(long[subList-1][index]), parseFloat(height[subList-1][index]));
     let b = coord(parseFloat(lat[subList-1][index+1]), parseFloat(long[subList-1][index+1]), parseFloat(height[subList-1][index+1]));
     let d = coord(parseFloat(lat[subList][index+1]), parseFloat(long[subList][index+1]), parseFloat(height[subList][index+1]));
-    $("#scene").append(`<a-triangle id="${subList} ${index} top" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" color="#8a8a8a" material="side: double">
-    </a-triangle><a-triangle id="${subList} ${index} bot" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" color="#8a8a8a" material="side: double"></a-triangle>`);
+    $("#scene").append(`<a-triangle id="${subList}-${index}-top" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" color="#8a8a8a" material="side: double">
+    </a-triangle><a-triangle id="${subList}-${index}-bot" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" color="#8a8a8a" material="side: double"></a-triangle>`);
 }
 async function start(){
     let hepro = new Promise(function(resolve, reject){
@@ -108,9 +108,9 @@ async function start(){
         n++;
         for(var z = ss - siz/2; z <= ss + siz/2; z++){
             for(var x = sx - siz/2; x <= ss + siz/2; x++){
-                if($(`#${z} ${x} top`).length){
-                    $(`#${z} ${x} top`).attr("class", n);
-                    $(`#${z} ${x} bot`).attr("class", n);
+                if($(`#${z}-${x}-top`).length){
+                    $(`#${z}-${x}-top`).attr("class", n);
+                    $(`#${z}-${x}-bot`).attr("class", n);
                 }else{
                     tri(z, x);
                 }
