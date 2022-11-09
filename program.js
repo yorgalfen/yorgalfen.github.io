@@ -16,6 +16,10 @@ $(document).keydown(function (){
         let npo = prompt("Go to position? (x, y, z space-separated)");
         $("#camera").attr("position", npo);
     }
+    if (event.which == 67){
+        let c = indexes($("#camera").attr("position").x, $("#camera").attr("position").z);
+        alert(`Your position is approximately ${lat[c[0]][c[1]]}, ${long[c[0]][c[1]]}.\nYour elevation is approximately ${height[c[0]][c[1]]}.`);
+    }
 });
 AFRAME.registerComponent("build", {
     init: function () {
