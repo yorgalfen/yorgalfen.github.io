@@ -20,6 +20,9 @@ $(document).keydown(function (){
         let c = indexes($("#camera").attr("position").x, $("#camera").attr("position").z);
         alert(`Your position is approximately ${lat[c[0]][c[1]]}, ${long[c[0]][c[1]]}.\nYour elevation is approximately ${height[c[0]][c[1]]}.\nYour data position is row ${c[0]}, column ${c[1]}.`);
     }
+    if (event.which == 88){
+        siz = parseInt(prompt("Input a new rendering size. Must be a whole number, divisible by 2."));
+    }
 });
 AFRAME.registerComponent("build", {
     init: function () {
