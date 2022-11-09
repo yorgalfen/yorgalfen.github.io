@@ -18,7 +18,7 @@ $(document).keydown(function (){
     }
     if (event.which == 67){
         let c = indexes($("#camera").attr("position").x, $("#camera").attr("position").z);
-        alert(`Your position is approximately ${lat[c[0]][c[1]]}, ${long[c[0]][c[1]]}.\nYour elevation is approximately ${height[c[0]][c[1]]}.`);
+        alert(`Your position is approximately ${lat[c[0]][c[1]]}, ${long[c[0]][c[1]]}.\nYour elevation is approximately ${height[c[0]][c[1]]}.\nYour data position is row ${c[0]}, column ${c[1]}.`);
     }
 });
 AFRAME.registerComponent("build", {
