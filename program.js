@@ -46,7 +46,7 @@ $(document).keydown(function (){
                     }
                 }
                 $(`.${n-1}`).remove();
-            }, 10000);
+            }, 10000); 
         }
     }
     if (event.which == 67){ // C
@@ -54,7 +54,10 @@ $(document).keydown(function (){
         alert(`Your position is approximately ${lat[c[0]][c[1]]}, ${long[c[0]][c[1]]}.\nYour elevation is approximately ${height[c[0]][c[1]]}.\nYour data position is row ${c[0]}, column ${c[1]}.`);
     }
     if (event.which == 88){ // X
-        siz = parseInt(prompt("Input a new rendering size. Must be a whole number, divisible by 2."));
+        let ne = prompt("Input a new rendering size. Must be a whole number, divisible by 2.");
+        if (ne){
+            siz = parseInt(ne);
+        }
     }
 });
 AFRAME.registerComponent("build", {
