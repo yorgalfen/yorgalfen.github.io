@@ -30,6 +30,23 @@ $(document).keydown(function (){
             }
             $(`.${n-1}`).remove();
             $("#camera").attr("position", coord(parseFloat(lat[parseInt(f[0])][parseInt(f[1])]), parseFloat(long[parseInt(f[0])][parseInt(f[1])]), parseFloat(height[parseInt(f[0])][parseInt(f[1])])));
+            interv = setInterval(function(){
+                let ex = $("#camera").attr("position").x;
+                let ez = $("#camera").attr("position").z;
+                let f = indexes(ex, ez);
+                n++;
+                for(var z = f[0] - siz/2; z < f[0] + siz/2; z++){
+                    for(var x = f[1] - siz/2; x <= f[1] + siz/2; x++){
+                        if($(`#${z}-${x}-top`).length){
+                            $(`#${z}-${x}-top`).attr("class", n);
+                            $(`#${z}-${x}-bot`).attr("class", n);
+                        }else{
+                            tri(z, x);
+                        }
+                    }
+                }
+                $(`.${n-1}`).remove();
+            }, 10000);
         }
     }
     if (event.which == 67){ // C
