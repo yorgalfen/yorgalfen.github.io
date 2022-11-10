@@ -29,7 +29,7 @@ $(document).keydown(function (){
                 }
             }
             $(`.${n-1}`).remove();
-            $("#camera").attr("position", coord(parseFloat(lat[parseInt(f[0])][parseInt(f[1])]), parseFloat(long[parseInt(f[0])][parseInt(f[1])]), parseFloat(height[parseInt(f[0])][parseInt(f[1])])));
+            $("#camera").attr("position", coord(parseFloat(lat[parseInt(f[0])][parseInt(f[1])]), parseFloat(long[parseInt(f[0])][parseInt(f[1])]), parseFloat(height[parseInt(f[0])][parseInt(f[1])])+1.6));
             interv = setInterval(function(){
                 let ex = $("#camera").attr("position").x;
                 let ez = $("#camera").attr("position").z;
