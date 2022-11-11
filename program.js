@@ -1,4 +1,4 @@
-var height, lat, long, slope;
+var height, latl, latr, longl, longr, slope;
 var n = 0;
 const centerLat = -85.3611726;
 const centerLong = 28.6605755;
@@ -29,7 +29,7 @@ $(document).keydown(function (){
                 }
             }
             $(`.${n-1}`).remove();
-            $("#camera").attr("position", coord(parseFloat(lat[parseInt(f[0])][parseInt(f[1])]), parseFloat(long[parseInt(f[0])][parseInt(f[1])]), parseFloat(height[parseInt(f[0])][parseInt(f[1])])+1.6));
+            $("#camera").attr("position", coord(parseFloat(lat(parseInt(f[0]),parseInt(f[1]))), parseFloat(long(parseInt(f[0]),parseInt(f[1]))), parseFloat(height[parseInt(f[0])][parseInt(f[1])])+1.6));
             interv = setInterval(function(){
                 let ex = $("#camera").attr("position").x;
                 let ez = $("#camera").attr("position").z;
@@ -68,6 +68,20 @@ AFRAME.registerComponent("build", {
 function toRad(x){
     return x*Math.PI/180;
 }
+function lat(su, ind){
+    if (ind >= 1600){
+        return latr[su][ind-1600];
+    }else{
+        return latl[su][ind];
+    }
+}
+function long(su, ind){
+    if (ind >= 1600){
+        return longr[su][ind-1600];
+    }else{
+        return longl[su][ind];
+    }
+}
 function gcdis(la1, lo1, la2, lo2){
     let dlat = toRad((la2-la1));
     let dlon = toRad((lo2-lo1));
@@ -97,10 +111,10 @@ function coord(la,lo,he){
     return `${x.toFixed(3)} ${y.toFixed(3)} ${z.toFixed(3)}`;
 }
 function tri(subList, index){
-    let a = coord(parseFloat(lat[subList][index]), parseFloat(long[subList][index]), parseFloat(height[subList][index]));
-    let c = coord(parseFloat(lat[subList-1][index]), parseFloat(long[subList-1][index]), parseFloat(height[subList-1][index]));
-    let b = coord(parseFloat(lat[subList-1][index+1]), parseFloat(long[subList-1][index+1]), parseFloat(height[subList-1][index+1]));
-    let d = coord(parseFloat(lat[subList][index+1]), parseFloat(long[subList][index+1]), parseFloat(height[subList][index+1]));
+    let a = coord(parseFloat(lat(subList,index)), parseFloat(long(subList,index)), parseFloat(height[subList][index]));
+    let c = coord(parseFloat(lat(subList-1,index)), parseFloat(long(subList-1,index)), parseFloat(height[subList-1][index]));
+    let b = coord(parseFloat(lat(subList-1,index+1)), parseFloat(long(subList-1,index+1)), parseFloat(height[subList-1][index+1]));
+    let d = coord(parseFloat(lat(subList,index+1)), parseFloat(long(subList,index+1)), parseFloat(height[subList][index+1]));
     $("#scene").append(`<a-triangle id="${subList}-${index}-top" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" src="#reddit" material="side: double">
     </a-triangle><a-triangle id="${subList}-${index}-bot" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" src="#reddit" material="side: double"></a-triangle>`);
 }
@@ -162,7 +176,7 @@ function indexes(camx, camz){
 }
 async function start(){
     let hepro = new Promise(function(resolve, reject){
-        $.get('heightmil.csv',{},function(content){
+        $.get('height.csv',{},function(content){
             height=content.split('\r\n');
             for (var i = 0; i < height.length; i++){
                 height[i] = height[i].split(",");
@@ -179,28 +193,39 @@ async function start(){
             slope.pop();
             resolve(true);
         });});
-    let lapro = new Promise(function(resolve, reject){
-        $.get('latmil.csv',{},function(content){
-            lat=content.split('\r\n');
-            for (var i = 0; i < lat.length; i++){    
-                lat[i] = lat[i].split(",");
+    let lapro1 = new Promise(function(resolve, reject){
+        $.get('latleft.csv',{},function(content){
+            latl=content.split('\r\n');
+            for (var i = 0; i < latl.length; i++){    
+                latl[i] = latl[i].split(",");
             }
-            lat.pop();
+            latl.pop();
             resolve(true);
         });});
-    let lopro = new Promise(function(resolve, reject){
-        $.get('longmil.csv',{},function(content){
-            long=content.split('\r\n');
-            for (var i = 0; i < long.length; i++){    
-                long[i] = long[i].split(",");
+    let lapro2 = new Promise(function(resolve, reject){
+        $.get('latright.csv',{},function(content){
+        latr=content.split('\r\n');
+        for (var i = 0; i < latr.length; i++){    
+            latr[i] = latr[i].split(",");
+        }
+            latr.pop();
+            resolve(true);
+        });});
+    let lopro1 = new Promise(function(resolve, reject){
+        $.get('longleft.csv',{},function(content){
+            longl=content.split('\r\n');
+            for (var i = 0; i < longl.length; i++){    
+                longl[i] = longl[i].split(",");
             }
-            long.pop();
+            longl.pop();
             resolve(true);
         });});
     await hepro;
     await slopro;
-    await lapro;
-    await lopro;
+    await lapro1;
+    await lapro2;
+    await lopro1;
+    await lopro2;
     interv = setInterval(function(){
         let ex = $("#camera").attr("position").x;
         let ez = $("#camera").attr("position").z;
