@@ -220,6 +220,15 @@ async function start(){
             longl.pop();
             resolve(true);
         });});
+    let lopro2 = new Promise(function(resolve, reject){
+        $.get('longright.csv',{},function(content){
+            longr=content.split('\r\n');
+            for (var i = 0; i < longr.length; i++){    
+                longr[i] = longr[i].split(",");
+            }
+            longr.pop();
+            resolve(true);
+        });});
     await hepro;
     await slopro;
     await lapro1;
