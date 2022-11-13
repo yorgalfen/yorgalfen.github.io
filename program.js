@@ -177,7 +177,7 @@ function indexes(camx, camz){
 async function start(){
     let hepro = new Promise(function(resolve, reject){
         $.get('height.csv',{},function(content){
-            height=content.split('\r\n');
+            height=content.split('\n');
             for (var i = 0; i < height.length; i++){
                 height[i] = height[i].split(",");
             }
@@ -185,7 +185,7 @@ async function start(){
         });});
     let slopro = new Promise(function(resolve, reject){
         $.get('slope25.csv',{},function(content){
-            slope=content.split('\r\n');
+            slope=content.split('\n');
             for (var i = 0; i < slope.length; i++){    
                 slope[i] = slope[i].split(",");
             }
@@ -194,7 +194,7 @@ async function start(){
         });});
     let lapro1 = new Promise(function(resolve, reject){
         $.get('latleft.csv',{},function(content){
-            latl=content.split('\r\n');
+            latl=content.split('\n');
             for (var i = 0; i < latl.length; i++){    
                 latl[i] = latl[i].split(",");
             }
@@ -202,7 +202,7 @@ async function start(){
         });});
     let lapro2 = new Promise(function(resolve, reject){
         $.get('latright.csv',{},function(content){
-        latr=content.split('\r\n');
+        latr=content.split('\n');
         for (var i = 0; i < latr.length; i++){    
             latr[i] = latr[i].split(",");
         }
@@ -210,7 +210,7 @@ async function start(){
         });});
     let lopro1 = new Promise(function(resolve, reject){
         $.get('longleft.csv',{},function(content){
-            longl=content.split('\r\n');
+            longl=content.split('\n');
             for (var i = 0; i < longl.length; i++){    
                 longl[i] = longl[i].split(",");
             }
@@ -218,7 +218,7 @@ async function start(){
         });});
     let lopro2 = new Promise(function(resolve, reject){
         $.get('longright.csv',{},function(content){
-            longr=content.split('\r\n');
+            longr=content.split('\n');
             for (var i = 0; i < longr.length; i++){    
                 longr[i] = longr[i].split(",");
             }
