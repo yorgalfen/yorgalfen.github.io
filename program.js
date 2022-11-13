@@ -181,7 +181,6 @@ async function start(){
             for (var i = 0; i < height.length; i++){
                 height[i] = height[i].split(",");
             }
-            height.pop();
             resolve(true);
         });});
     let slopro = new Promise(function(resolve, reject){
@@ -199,7 +198,6 @@ async function start(){
             for (var i = 0; i < latl.length; i++){    
                 latl[i] = latl[i].split(",");
             }
-            latl.pop();
             resolve(true);
         });});
     let lapro2 = new Promise(function(resolve, reject){
@@ -208,7 +206,6 @@ async function start(){
         for (var i = 0; i < latr.length; i++){    
             latr[i] = latr[i].split(",");
         }
-            latr.pop();
             resolve(true);
         });});
     let lopro1 = new Promise(function(resolve, reject){
@@ -217,7 +214,6 @@ async function start(){
             for (var i = 0; i < longl.length; i++){    
                 longl[i] = longl[i].split(",");
             }
-            longl.pop();
             resolve(true);
         });});
     let lopro2 = new Promise(function(resolve, reject){
@@ -226,7 +222,6 @@ async function start(){
             for (var i = 0; i < longr.length; i++){    
                 longr[i] = longr[i].split(",");
             }
-            longr.pop();
             resolve(true);
         });});
     await hepro;
