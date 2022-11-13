@@ -183,15 +183,6 @@ async function start(){
             }
             resolve(true);
         });});
-    let slopro = new Promise(function(resolve, reject){
-        $.get('slope25.csv',{},function(content){
-            slope=content.split('\n');
-            for (var i = 0; i < slope.length; i++){    
-                slope[i] = slope[i].split(",");
-            }
-            slope.pop();
-            resolve(true);
-        });});
     let lapro1 = new Promise(function(resolve, reject){
         $.get('latleft.csv',{},function(content){
             latl=content.split('\n');
@@ -225,7 +216,6 @@ async function start(){
             resolve(true);
         });});
     await hepro;
-    await slopro;
     await lapro1;
     await lapro2;
     await lopro1;
