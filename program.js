@@ -1,4 +1,5 @@
 var height, latl, latr, longl, longr, slope;
+var ah = false; 
 var n = 0;
 const centerLat = -85.3611726;
 const centerLong = 28.6605755;
@@ -6,37 +7,26 @@ const startHeight = 5537;
 const r = 1737400;
 var siz = 64;
 $(document).keydown(function (){
-    if (event.which == 81){ // Q
-        $("#camera").attr("position",`${$("#camera").attr("position").x} ${parseFloat($("#camera").attr("position").y) + 0.5} ${$("#camera").attr("position").z}`);
-    }
-    if (event.which == 69){ // E
-        $("#camera").attr("position", `${$("#camera").attr("position").x} ${parseFloat($("#camera").attr("position").y) - 0.5} ${$("#camera").attr("position").z}`);
-    }
-    if (event.which == 80){ // P
-        let npo = prompt("Go to position? (row, column starting at 0, space-separated)");
-        if (npo){
-            clearInterval(interv);
-            let f = npo.split(" ");
-            n++;
-            for(var z = parseInt(f[0]) - siz/2; z < parseInt(f[0]) + siz/2; z++){
-                for(var x = parseInt(f[1]) - siz/2; x <= parseInt(f[1]) + siz/2; x++){
-                    if($(`#${z}-${x}-top`).length){
-                        $(`#${z}-${x}-top`).attr("class", n);
-                        $(`#${z}-${x}-bot`).attr("class", n);
-                    }else{
-                        tri(z, x);
-                    }
-                }
+    switch(event.which){ 
+        case 81: // Q
+            if (!ah){
+                $("#camera").attr("position",`${$("#camera").attr("position").x} ${parseFloat($("#camera").attr("position").y) + 0.5} ${$("#camera").attr("position").z}`);
             }
-            $(`.${n-1}`).remove();
-            $("#camera").attr("position", coord(parseFloat(lat(parseInt(f[0]),parseInt(f[1]))), parseFloat(long(parseInt(f[0]),parseInt(f[1]))), parseFloat(height[parseInt(f[0])][parseInt(f[1])])+1.6));
-            interv = setInterval(function(){
-                let ex = $("#camera").attr("position").x;
-                let ez = $("#camera").attr("position").z;
-                let f = indexes(ex, ez);
+            break;
+        case 69: // E
+            if (!ah){
+                $("#camera").attr("position",`${$("#camera").attr("position").x} ${parseFloat($("#camera").attr("position").y) - 0.5} ${$("#camera").attr("position").z}`);
+            }
+            break;
+        case 80: // P
+            let npo = prompt("Go to position? (row, column starting at 0, space-separated)");
+            if (npo){
+                ah = false;
+                clearinterval(interv);
+                let f = npo.split(" ");
                 n++;
-                for(var z = f[0] - siz/2; z < f[0] + siz/2; z++){
-                    for(var x = f[1] - siz/2; x <= f[1] + siz/2; x++){
+                for(var z = parseInt(f[0]) - siz/2; z < parseInt(f[0]) + siz/2; z++){
+                    for(var x = parseInt(f[1]) - siz/2; x <= parseInt(f[1]) + siz/2; x++){
                         if($(`#${z}-${x}-top`).length){
                             $(`#${z}-${x}-top`).attr("class", n);
                             $(`#${z}-${x}-bot`).attr("class", n);
@@ -46,20 +36,43 @@ $(document).keydown(function (){
                     }
                 }
                 $(`.${n-1}`).remove();
-            }, 10000); 
-        }
-    }
-    if (event.which == 67){ // C
-        let c = indexes($("#camera").attr("position").x, $("#camera").attr("position").z);
-        alert(`Your position is approximately ${lat(c[0],c[1])}, ${long(c[0],c[1])}.\nYour elevation is approximately ${height[c[0]][c[1]]}.\nYour data position is row ${c[0]}, column ${c[1]}.`);
-    }
-    if (event.which == 88){ // X
-        let ne = prompt("Input a new rendering size. Must be a whole number, divisible by 2.");
-        if (ne){
-            siz = parseInt(ne);
-        }
-    }
-});
+                $("#camera").attr("position", coord(parseFloat(lat(parseInt(f[0]),parseInt(f[1]))), parseFloat(long(parseInt(f[0]),parseInt(f[1]))), parseFloat(height[parseInt(f[0])][parseInt(f[1])])+1.6));
+                interv = setinterval(function(){
+                    let ex = $("#camera").attr("position").x;
+                    let ez = $("#camera").attr("position").z;
+                    let f = indexes(ex, ez);
+                    n++;
+                    for(var z = f[0] - siz/2; z < f[0] + siz/2; z++){
+                        for(var x = f[1] - siz/2; x <= f[1] + siz/2; x++){
+                            if($(`#${z}-${x}-top`).length){
+                                $(`#${z}-${x}-top`).attr("class", n);
+                                $(`#${z}-${x}-bot`).attr("class", n);
+                            }else{
+                                tri(z, x);
+                            }
+                        }
+                    }
+                    $(`.${n-1}`).remove();
+                }, 10000); 
+            }
+            break;
+        case 67: // C
+            let c = indexes($("#camera").attr("position").x, $("#camera").attr("position").z);
+            alert(`Your position is approximately ${lat(c[0],c[1])}, ${long(c[0],c[1])}.\nYour elevation is approximately ${height[c[0]][c[1]]}.\nYour data position is row ${c[0]}, column ${c[1]}.`);
+            break;
+        case 88: // X
+            let ne = prompt("Input a new rendering size. Must be a whole number, divisible by 2.");
+            if (ne){
+                siz = parseInt(ne);
+            }
+            break;
+        case 87: // W
+            break;
+            if(ah){
+                let d = indexes($("#camera").attr("position").x, $("#camera").attr("position").z);
+                $("#camera")
+            }
+}});
 AFRAME.registerComponent("build", {
     init: function () {
         start();
@@ -220,7 +233,7 @@ async function start(){
     await lapro2;
     await lopro1;
     await lopro2;
-    interv = setInterval(function(){
+    interv = setinterval(function(){
         let ex = $("#camera").attr("position").x;
         let ez = $("#camera").attr("position").z;
         let f = indexes(ex, ez);
@@ -237,4 +250,5 @@ async function start(){
         }
         $(`.${n-1}`).remove();
     }, 10000);
+
 }
