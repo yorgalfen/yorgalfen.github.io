@@ -10,12 +10,12 @@ $(document).keydown(function (){
     switch(event.which){ 
         case 81: // Q
             if (!ah){
-                $("#camera").attr("position",`${$("#camera").attr("position").x} ${parseFloat($("#camera").attr("position").y) + 0.5} ${$("#camera").attr("position").z}`);
+                document.querySelector("#camera").object3D.position.y+=0.5;
             }
             break;
         case 69: // E
             if (!ah){
-                $("#camera").attr("position",`${$("#camera").attr("position").x} ${parseFloat($("#camera").attr("position").y) - 0.5} ${$("#camera").attr("position").z}`);
+                document.querySelector("#camera").object3D.position.y-=0.5;
             }
             break;
         case 80: // P
@@ -38,8 +38,8 @@ $(document).keydown(function (){
                 $(`.${n-1}`).remove();
                 $("#camera").attr("position", coord(parseFloat(lat(parseInt(f[0]),parseInt(f[1]))), parseFloat(long(parseInt(f[0]),parseInt(f[1]))), parseFloat(height[parseInt(f[0])][parseInt(f[1])])+1.6));
                 interv = setInterval(function(){
-                    let ex = $("#camera").attr("position").x;
-                    let ez = $("#camera").attr("position").z;
+                    let ex = document.querySelector('#camera').object3D.position.x;
+                    let ez = document.querySelector('#camera').object3D.position.z;
                     let f = indexes(ex, ez);
                     n++;
                     for(var z = f[0] - siz/2; z < f[0] + siz/2; z++){
@@ -57,7 +57,7 @@ $(document).keydown(function (){
             }
             break;
         case 67: // C
-            let c = indexes($("#camera").attr("position").x, $("#camera").attr("position").z);
+            let c = indexes(document.querySelector('#camera').object3D.position.x, document.querySelector('#camera').object3D.position.z);
             alert(`Your position is approximately ${lat(c[0],c[1])}, ${long(c[0],c[1])}.\nYour elevation is approximately ${height[c[0]][c[1]]}.\nYour data position is row ${c[0]}, column ${c[1]}.`);
             break;
         case 88: // X
@@ -66,12 +66,20 @@ $(document).keydown(function (){
                 siz = parseInt(ne);
             }
             break;
-        case 87: // W
-            break;
-            if(ah){
-                let d = indexes($("#camera").attr("position").x, $("#camera").attr("position").z);
-                $("#camera")
+        case 76: // L
+            ah = !ah;
+            if (ah){
+                alert("Automatic height adjustment set to ON.");
+            }else{
+                alert("Automatic height adjustment set to OFF.");
             }
+            break;
+        default: // W, A, S, D
+            if(((event.which==65||event.which==87)||(event.which==83||event.which==68))&&ah){
+                let d = indexes(document.querySelector('#camera').object3D.position.x, document.querySelector('#camera').object3D.position.z);
+                document.querySelector('#camera').object3D.position.y = parseFloat($(`#${d[0]}-${d[1]}-bot`).attr("vertex-c").split(" ")[1])+1.6;
+            }
+            break;
 }});
 AFRAME.registerComponent("build", {
     init: function () {
@@ -234,8 +242,8 @@ async function start(){
     await lopro1;
     await lopro2;
     interv = setInterval(function(){
-        let ex = $("#camera").attr("position").x;
-        let ez = $("#camera").attr("position").z;
+        let ex = document.querySelector('#camera').object3D.position.x;
+        let ez = document.querySelector('#camera').object3D.position.z;
         let f = indexes(ex, ez);
         n++;
         for(var z = f[0] - siz/2; z < f[0] + siz/2; z++){
