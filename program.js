@@ -22,7 +22,7 @@ $(document).keydown(function (){
             let npo = prompt("Go to position? (row, column starting at 0, space-separated)");
             if (npo){
                 ah = false;
-                clearinterval(interv);
+                clearInterval(interv);
                 let f = npo.split(" ");
                 n++;
                 for(var z = parseInt(f[0]) - siz/2; z < parseInt(f[0]) + siz/2; z++){
@@ -37,7 +37,7 @@ $(document).keydown(function (){
                 }
                 $(`.${n-1}`).remove();
                 $("#camera").attr("position", coord(parseFloat(lat(parseInt(f[0]),parseInt(f[1]))), parseFloat(long(parseInt(f[0]),parseInt(f[1]))), parseFloat(height[parseInt(f[0])][parseInt(f[1])])+1.6));
-                interv = setinterval(function(){
+                interv = setInterval(function(){
                     let ex = $("#camera").attr("position").x;
                     let ez = $("#camera").attr("position").z;
                     let f = indexes(ex, ez);
@@ -233,7 +233,7 @@ async function start(){
     await lapro2;
     await lopro1;
     await lopro2;
-    interv = setinterval(function(){
+    interv = setInterval(function(){
         let ex = $("#camera").attr("position").x;
         let ez = $("#camera").attr("position").z;
         let f = indexes(ex, ez);
