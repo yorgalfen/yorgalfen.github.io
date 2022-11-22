@@ -1,9 +1,8 @@
 var height, latl, latr, longl, longr, slope;
 var ah = false; 
 var n = 0;
-const centerLat = -85.3611726;
-const centerLong = 28.6605755;
-const startHeight = 5537;
+const centerLat = -85.3974303;
+const centerLong = 30.5974913;
 const r = 1737400;
 var siz = 64;
 $(document).keydown(function (){
@@ -189,13 +188,13 @@ function indexes(camx, camz){
             }else{
                 var maxx = parseFloat(d[0]);
             }
-            if ((camx>minx&&camx<maxx)&&(camz>minz&&camz<maxz)){
+            if ((camx>=minx&&camx<=maxx)&&(camz>=minz&&camz<=maxz)){
                 return false;
             }
         });
         return [sub, ind];
     }else{
-        return [500, 500];
+        return [1160, 1215];
     }
 }
 async function start(){
