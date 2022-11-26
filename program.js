@@ -1,4 +1,4 @@
-var height, latl, latr, longl, longr, slope, route;
+var height, latl, latr, longl, longr, slope, route, comms;
 var ah = false; 
 var n = 0;
 const centerLat = -85.3974303;
@@ -140,7 +140,11 @@ function tri(subList, index){
     let b = coord(parseFloat(lat(subList-1,index+1)), parseFloat(long(subList-1,index+1)), parseFloat(height[subList-1][index+1]));
     let d = coord(parseFloat(lat(subList,index+1)), parseFloat(long(subList,index+1)), parseFloat(height[subList][index+1]));
     if(route.includes(`${subList}-${index}`)){
-        col = "color: #ffff00";
+        if(comms.includes(`${subList}-${index}`)){
+            col = "color: #0000ff"
+        }else{
+            col = "color: #ffff00";
+        }
     }else{
         col = "src: #home-big";
     }
@@ -249,12 +253,18 @@ async function start(){
             route=content.split(",");
             resolve(true);
         });});
+    let compro = new Promise(function(resolve, reject){
+        $.get('comms.csv',{},function(content){
+            comms=content.split(",");
+            resolve(true);
+        });});
     await hepro;
     await lapro1;
     await lapro2;
     await lopro1;
     await lopro2;
     await ropro;
+    await compro;
     interv = setInterval(function(){
         let ex = document.querySelector('#camera').object3D.position.x;
         let ez = document.querySelector('#camera').object3D.position.z;
