@@ -74,7 +74,7 @@ $(document).keydown(function (){
             }
             break;
         case 72: // H
-            alert(`Controls:\nWASD to move\nL to toggle automatic height adjustment\nC for position information\nX to input a new rendering size\nP to go to a position\nQ to go up\nE to go down\n(Q and E only work if automatic height adjustment is disabled)\nClick and drag to look around.`);
+            window.open('help.html', '_blank');
             break;
         default: // W, A, S, D
             if(((event.which==65||event.which==87)||(event.which==83||event.which==68))&&ah){
