@@ -3,6 +3,7 @@ var ah = false;
 var n = 0;
 const centerLat = -85.3974303;
 const centerLong = 30.5974913;
+const earthLat = -6.6518153;
 const r = 1737400;
 var siz = 64;
 $(document).keydown(function (){
@@ -57,7 +58,10 @@ $(document).keydown(function (){
             break;
         case 67: // C
             let c = indexes(document.querySelector('#camera').object3D.position.x, document.querySelector('#camera').object3D.position.z);
-            alert(`Your position is approximately ${lat(c[0],c[1])}, ${long(c[0],c[1])}.\nYour elevation is approximately ${height[c[0]][c[1]]}.\nYour data position is row ${c[0]}, column ${c[1]}.`);
+            let la = lat(c[0],c[1]);
+            let lo = long(c[0],c[1]);
+            let az = bearing(la, lo, earthLat, 0)*180/Math.PI;
+            alert(`Your position is approximately ${lat(c[0],c[1])}, ${long(c[0],c[1])}.\nYour elevation is approximately ${height[c[0]][c[1]]}.\nYour azimuth to Earth is ${az}°.\nYour data position is row ${c[0]}, column ${c[1]}.`);
             break;
         case 88: // X
             let ne = prompt("Input a new rendering size. Must be a whole number, divisible by 2.");
