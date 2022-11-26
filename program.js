@@ -4,6 +4,11 @@ var n = 0;
 const centerLat = -85.3974303;
 const centerLong = 30.5974913;
 const earthLat = -6.6518153;
+const earthCart = {
+    x: 361000000,
+    y: 0,
+    z: -42100000
+};
 const r = 1737400;
 var siz = 64;
 $(document).keydown(function (){
@@ -58,10 +63,16 @@ $(document).keydown(function (){
             break;
         case 67: // C
             let c = indexes(document.querySelector('#camera').object3D.position.x, document.querySelector('#camera').object3D.position.z);
-            let la = lat(c[0],c[1]);
-            let lo = long(c[0],c[1]);
-            let az = bearing(la, lo, earthLat, 0)*180/Math.PI;
-            alert(`Your position is approximately ${lat(c[0],c[1])}, ${long(c[0],c[1])}.\nYour elevation is approximately ${height[c[0]][c[1]]}.\nYour azimuth to Earth is ${az}°.\nYour data position is row ${c[0]}, column ${c[1]}.`);
+            let la = toRad(lat(c[0],c[1]));
+            let lo = toRad(long(c[0],c[1]));
+            let ra = height[c[0]][c[1]]+r
+            let az = bearing(lat(c[0],c[1]), long(c[0],c[1]), earthLat, 0)*180/Math.PI;
+            let pc = spheToCart(la,lo,ra);
+            let dpos = {x: earthCart.x - pc.x, y: earthCart.y - pc.y, z: earthCart.z - pc.z};
+            let rn = Math.sqrt(dpos.x*dpos.x + dpos.y*dpos.y + dpos.z*dpos.z);
+            let rz = dpos.x*Math.cos(la)*cos(lo)+dpos.y*Math.cos(la)*Math.sin(lo)+dpos.z*sin(la);
+            let ele = Math.asin(rz/rn)*180/Math.PI;
+            alert(`Your position is approximately ${lat(c[0],c[1])}, ${long(c[0],c[1])}.\nYour height is approximately ${height[c[0]][c[1]]}.\nYour azimuth to Earth is ${az}°.\nYour elevation angle to Earth is ${ele}.\nYour data position is row ${c[0]}, column ${c[1]}.`);
             break;
         case 88: // X
             let ne = prompt("Input a new rendering size. Must be a whole number, divisible by 2.");
@@ -127,6 +138,9 @@ function bearing(startLat, startLng, destLat, destLng){
           Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
     let brng = Math.atan2(y, x);
     return brng;
+}
+function spheToCart(la,lo,ra){
+    return {x:ra*Math.cos(la)*Math.cos(lo), y:ra*Math.cos(la)*Math.sin(lo), z:ra*Math.sin(la)};
 }
 function coord(la,lo,he){
     let b = bearing(centerLat, centerLong, la, lo);
