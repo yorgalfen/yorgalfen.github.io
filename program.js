@@ -1,4 +1,4 @@
-var height, latl, latr, longl, longr, slope;
+var height, latl, latr, longl, longr, slope, route;
 var ah = false; 
 var n = 0;
 const centerLat = -85.3974303;
@@ -134,12 +134,18 @@ function coord(la,lo,he){
     return `${x.toFixed(3)} ${y.toFixed(3)} ${z.toFixed(3)}`;
 }
 function tri(subList, index){
+    let col;
     let a = coord(parseFloat(lat(subList,index)), parseFloat(long(subList,index)), parseFloat(height[subList][index]));
     let c = coord(parseFloat(lat(subList-1,index)), parseFloat(long(subList-1,index)), parseFloat(height[subList-1][index]));
     let b = coord(parseFloat(lat(subList-1,index+1)), parseFloat(long(subList-1,index+1)), parseFloat(height[subList-1][index+1]));
     let d = coord(parseFloat(lat(subList,index+1)), parseFloat(long(subList,index+1)), parseFloat(height[subList][index+1]));
-    $("#scene").append(`<a-triangle id="${subList}-${index}-top" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" src="#home-big" material="side: double; roughness: 1">
-    </a-triangle><a-triangle id="${subList}-${index}-bot" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" src="#home-big" material="side: double; roughness: 1"></a-triangle>`);
+    if(route.includes(`${subList}-${index}`)){
+        col = "color: #ffff00";
+    }else{
+        col = "src: #home-big";
+    }
+    $("#scene").append(`<a-triangle id="${subList}-${index}-top" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" material="side: double; roughness: 1; ${col}">
+    </a-triangle><a-triangle id="${subList}-${index}-bot" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" material="side: double; roughness: 1; ${col}"></a-triangle>`);
 }
 function indexes(camx, camz){
     if ($("a-triangle[id*=top]").length){
@@ -238,11 +244,17 @@ async function start(){
             }
             resolve(true);
         });});
+    let ropro = new Promise(function(resolve, reject){
+        $.get('routen.csv',{},function(content){
+            route=content.split(",");
+            resolve(true);
+        });});
     await hepro;
     await lapro1;
     await lapro2;
     await lopro1;
     await lopro2;
+    await ropro;
     interv = setInterval(function(){
         let ex = document.querySelector('#camera').object3D.position.x;
         let ez = document.querySelector('#camera').object3D.position.z;
