@@ -72,7 +72,7 @@ $(document).keydown(function (){
             let rn = Math.sqrt(dpos.x*dpos.x + dpos.y*dpos.y + dpos.z*dpos.z);
             let rz = dpos.x*Math.cos(la)*Math.cos(lo)+dpos.y*Math.cos(la)*Math.sin(lo)+dpos.z*Math.sin(la);
             let ele = Math.asin(rz/rn)*180/Math.PI;
-            alert(`Your position is approximately ${lat(c[0],c[1])}, ${long(c[0],c[1])}.\nYour height is approximately ${height[c[0]][c[1]]}.\nYour azimuth to Earth is ${az}°.\nYour elevation angle to Earth is ${ele}.\nYour data position is row ${c[0]}, column ${c[1]}.`);
+            alert(`Your position is approximately ${lat(c[0],c[1])}, ${long(c[0],c[1])}.\nYour height is approximately ${height[c[0]][c[1]]}.\nYour azimuth to Earth is ${az.toFixed(2)}°.\nYour elevation angle to Earth is ${ele.toFixed(2)}°.\nYour data position is row ${c[0]}, column ${c[1]}.`);
             break;
         case 88: // X
             let ne = prompt("Input a new rendering size. Must be a whole number, divisible by 2.");
