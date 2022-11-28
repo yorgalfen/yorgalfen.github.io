@@ -1,0 +1,9 @@
+body{font-family: Helvetica, sans-serif; padding-left: 0.5%;}
+table, td, tr {border: 1px solid}
+p{width: 80%;}
+td.letter {
+    width: 10%;
+}
+td.exp {
+    width: 90%;
+}

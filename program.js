@@ -1,42 +1,37 @@
-var height, latl, latr, longl, longr, slope;
+var height, latl, latr, longl, longr, slope, route, comms;
+var ah = false; 
 var n = 0;
-const centerLat = -85.3611726;
-const centerLong = 28.6605755;
-const startHeight = 5537;
+const centerLat = -85.3974303;
+const centerLong = 30.5974913;
+const earthLat = -6.6518153;
+const earthCart = {
+    x: 361000000,
+    y: 0,
+    z: -42100000
+};
 const r = 1737400;
 var siz = 64;
 $(document).keydown(function (){
-    if (event.which == 81){ // Q
-        $("#camera").attr("position",`${$("#camera").attr("position").x} ${parseFloat($("#camera").attr("position").y) + 0.5} ${$("#camera").attr("position").z}`);
-    }
-    if (event.which == 69){ // E
-        $("#camera").attr("position", `${$("#camera").attr("position").x} ${parseFloat($("#camera").attr("position").y) - 0.5} ${$("#camera").attr("position").z}`);
-    }
-    if (event.which == 80){ // P
-        let npo = prompt("Go to position? (row, column starting at 0, space-separated)");
-        if (npo){
-            clearInterval(interv);
-            let f = npo.split(" ");
-            n++;
-            for(var z = parseInt(f[0]) - siz/2; z < parseInt(f[0]) + siz/2; z++){
-                for(var x = parseInt(f[1]) - siz/2; x <= parseInt(f[1]) + siz/2; x++){
-                    if($(`#${z}-${x}-top`).length){
-                        $(`#${z}-${x}-top`).attr("class", n);
-                        $(`#${z}-${x}-bot`).attr("class", n);
-                    }else{
-                        tri(z, x);
-                    }
-                }
+    switch(event.which){ 
+        case 81: // Q
+            if (!ah){
+                document.querySelector("#camera").object3D.position.y+=0.5;
             }
-            $(`.${n-1}`).remove();
-            $("#camera").attr("position", coord(parseFloat(lat(parseInt(f[0]),parseInt(f[1]))), parseFloat(long(parseInt(f[0]),parseInt(f[1]))), parseFloat(height[parseInt(f[0])][parseInt(f[1])])+1.6));
-            interv = setInterval(function(){
-                let ex = $("#camera").attr("position").x;
-                let ez = $("#camera").attr("position").z;
-                let f = indexes(ex, ez);
+            break;
+        case 69: // E
+            if (!ah){
+                document.querySelector("#camera").object3D.position.y-=0.5;
+            }
+            break;  
+        case 80: // P
+            let npo = prompt("Go to position? (row, column starting at 0, space-separated)");
+            if (npo){
+                ah = false;
+                clearInterval(interv);
+                let f = npo.split(" ");
                 n++;
-                for(var z = f[0] - siz/2; z < f[0] + siz/2; z++){
-                    for(var x = f[1] - siz/2; x <= f[1] + siz/2; x++){
+                for(var z = parseInt(f[0]) - siz/2; z < parseInt(f[0]) + siz/2; z++){
+                    for(var x = parseInt(f[1]) - siz/2; x <= parseInt(f[1]) + siz/2; x++){
                         if($(`#${z}-${x}-top`).length){
                             $(`#${z}-${x}-top`).attr("class", n);
                             $(`#${z}-${x}-bot`).attr("class", n);
@@ -46,20 +41,63 @@ $(document).keydown(function (){
                     }
                 }
                 $(`.${n-1}`).remove();
-            }, 10000); 
-        }
-    }
-    if (event.which == 67){ // C
-        let c = indexes($("#camera").attr("position").x, $("#camera").attr("position").z);
-        alert(`Your position is approximately ${lat[c[0]][c[1]]}, ${long[c[0]][c[1]]}.\nYour elevation is approximately ${height[c[0]][c[1]]}.\nYour data position is row ${c[0]}, column ${c[1]}.`);
-    }
-    if (event.which == 88){ // X
-        let ne = prompt("Input a new rendering size. Must be a whole number, divisible by 2.");
-        if (ne){
-            siz = parseInt(ne);
-        }
-    }
-});
+                $("#camera").attr("position", coord(parseFloat(lat(parseInt(f[0]),parseInt(f[1]))), parseFloat(long(parseInt(f[0]),parseInt(f[1]))), parseFloat(height[parseInt(f[0])][parseInt(f[1])])+1.6));
+                interv = setInterval(function(){
+                    let ex = document.querySelector('#camera').object3D.position.x;
+                    let ez = document.querySelector('#camera').object3D.position.z;
+                    let f = indexes(ex, ez);
+                    n++;
+                    for(var z = f[0] - siz/2; z < f[0] + siz/2; z++){
+                        for(var x = f[1] - siz/2; x <= f[1] + siz/2; x++){
+                            if($(`#${z}-${x}-top`).length){
+                                $(`#${z}-${x}-top`).attr("class", n);
+                                $(`#${z}-${x}-bot`).attr("class", n);
+                            }else{
+                                tri(z, x);
+                            }
+                        }
+                    }
+                    $(`.${n-1}`).remove();
+                }, 10000); 
+            }
+            break;
+        case 67: // C
+            let c = indexes(document.querySelector('#camera').object3D.position.x, document.querySelector('#camera').object3D.position.z);
+            let la = toRad(lat(c[0],c[1]));
+            let lo = toRad(long(c[0],c[1]));
+            let ra = height[c[0]][c[1]]+r
+            let az = bearing(lat(c[0],c[1]), long(c[0],c[1]), earthLat, 0)*180/Math.PI;
+            let pc = spheToCart(la,lo,ra);
+            let dpos = {x: earthCart.x - pc.x, y: earthCart.y - pc.y, z: earthCart.z - pc.z};
+            let rn = Math.sqrt(dpos.x*dpos.x + dpos.y*dpos.y + dpos.z*dpos.z);
+            let rz = dpos.x*Math.cos(la)*Math.cos(lo)+dpos.y*Math.cos(la)*Math.sin(lo)+dpos.z*Math.sin(la);
+            let ele = Math.asin(rz/rn)*180/Math.PI;
+            alert(`Your position is approximately ${lat(c[0],c[1])}, ${long(c[0],c[1])}.\nYour height is approximately ${height[c[0]][c[1]]}.\nYour azimuth to Earth is ${az.toFixed(2)}°.\nYour elevation angle to Earth is ${ele.toFixed(2)}°.\nYour data position is row ${c[0]}, column ${c[1]}.`);
+            break;
+        case 88: // X
+            let ne = prompt("Input a new rendering size. Must be a whole number, divisible by 2.");
+            if (ne){
+                siz = parseInt(ne);
+            }
+            break;
+        case 76: // L
+            ah = !ah;
+            if (ah){
+                alert("Automatic height adjustment set to ON.");
+            }else{
+                alert("Automatic height adjustment set to OFF.");
+            }
+            break;
+        case 72: // H
+            window.open('help.html', '_blank');
+            break;
+        default: // W, A, S, D
+            if(((event.which==65||event.which==87)||(event.which==83||event.which==68))&&ah){
+                let d = indexes(document.querySelector('#camera').object3D.position.x, document.querySelector('#camera').object3D.position.z);
+                document.querySelector('#camera').object3D.position.y = parseFloat($(`#${d[0]}-${d[1]}-bot`).attr("vertex-c").split(" ")[1])+1.6;
+            }
+            break;
+}});
 AFRAME.registerComponent("build", {
     init: function () {
         start();
@@ -101,6 +139,9 @@ function bearing(startLat, startLng, destLat, destLng){
     let brng = Math.atan2(y, x);
     return brng;
 }
+function spheToCart(la,lo,ra){
+    return {x:ra*Math.cos(la)*Math.cos(lo), y:ra*Math.cos(la)*Math.sin(lo), z:ra*Math.sin(la)};
+}
 function coord(la,lo,he){
     let b = bearing(centerLat, centerLong, la, lo);
     let g = gcdis(centerLat, centerLong, la, lo);
@@ -111,12 +152,22 @@ function coord(la,lo,he){
     return `${x.toFixed(3)} ${y.toFixed(3)} ${z.toFixed(3)}`;
 }
 function tri(subList, index){
+    let col;
     let a = coord(parseFloat(lat(subList,index)), parseFloat(long(subList,index)), parseFloat(height[subList][index]));
     let c = coord(parseFloat(lat(subList-1,index)), parseFloat(long(subList-1,index)), parseFloat(height[subList-1][index]));
     let b = coord(parseFloat(lat(subList-1,index+1)), parseFloat(long(subList-1,index+1)), parseFloat(height[subList-1][index+1]));
     let d = coord(parseFloat(lat(subList,index+1)), parseFloat(long(subList,index+1)), parseFloat(height[subList][index+1]));
-    $("#scene").append(`<a-triangle id="${subList}-${index}-top" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" src="#reddit" material="side: double">
-    </a-triangle><a-triangle id="${subList}-${index}-bot" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" src="#reddit" material="side: double"></a-triangle>`);
+    if(route.includes(`${subList}-${index}`)){
+        if(comms.includes(`${subList}-${index}`)){
+            col = "color: #0000ff"
+        }else{
+            col = "color: #ffff00";
+        }
+    }else{
+        col = "src: #home-big";
+    }
+    $("#scene").append(`<a-triangle id="${subList}-${index}-top" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" material="side: double; roughness: 1; ${col}">
+    </a-triangle><a-triangle id="${subList}-${index}-bot" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" material="side: double; roughness: 1; ${col}"></a-triangle>`);
 }
 function indexes(camx, camz){
     if ($("a-triangle[id*=top]").length){
@@ -165,79 +216,76 @@ function indexes(camx, camz){
             }else{
                 var maxx = parseFloat(d[0]);
             }
-            if ((camx>minx&&camx<maxx)&&(camz>minz&&camz<maxz)){
+            if ((camx>=minx&&camx<=maxx)&&(camz>=minz&&camz<=maxz)){
                 return false;
             }
         });
         return [sub, ind];
     }else{
-        return [500, 500];
+        return [1160, 1215];
     }
 }
 async function start(){
     let hepro = new Promise(function(resolve, reject){
         $.get('height.csv',{},function(content){
-            height=content.split('\r\n');
+            height=content.split('\n');
             for (var i = 0; i < height.length; i++){
                 height[i] = height[i].split(",");
             }
-            height.pop();
-            resolve(true);
-        });});
-    let slopro = new Promise(function(resolve, reject){
-        $.get('slope25.csv',{},function(content){
-            slope=content.split('\r\n');
-            for (var i = 0; i < slope.length; i++){    
-                slope[i] = slope[i].split(",");
-            }
-            slope.pop();
             resolve(true);
         });});
     let lapro1 = new Promise(function(resolve, reject){
         $.get('latleft.csv',{},function(content){
-            latl=content.split('\r\n');
+            latl=content.split('\n');
             for (var i = 0; i < latl.length; i++){    
                 latl[i] = latl[i].split(",");
             }
-            latl.pop();
             resolve(true);
         });});
     let lapro2 = new Promise(function(resolve, reject){
         $.get('latright.csv',{},function(content){
-        latr=content.split('\r\n');
+        latr=content.split('\n');
         for (var i = 0; i < latr.length; i++){    
             latr[i] = latr[i].split(",");
         }
-            latr.pop();
             resolve(true);
         });});
     let lopro1 = new Promise(function(resolve, reject){
         $.get('longleft.csv',{},function(content){
-            longl=content.split('\r\n');
+            longl=content.split('\n');
             for (var i = 0; i < longl.length; i++){    
                 longl[i] = longl[i].split(",");
             }
-            longl.pop();
             resolve(true);
         });});
     let lopro2 = new Promise(function(resolve, reject){
         $.get('longright.csv',{},function(content){
-            longr=content.split('\r\n');
+            longr=content.split('\n');
             for (var i = 0; i < longr.length; i++){    
                 longr[i] = longr[i].split(",");
             }
-            longr.pop();
+            resolve(true);
+        });});
+    let ropro = new Promise(function(resolve, reject){
+        $.get('routen.csv',{},function(content){
+            route=content.split(",");
+            resolve(true);
+        });});
+    let compro = new Promise(function(resolve, reject){
+        $.get('comms.csv',{},function(content){
+            comms=content.split(",");
             resolve(true);
         });});
     await hepro;
-    await slopro;
     await lapro1;
     await lapro2;
     await lopro1;
     await lopro2;
+    await ropro;
+    await compro;
     interv = setInterval(function(){
-        let ex = $("#camera").attr("position").x;
-        let ez = $("#camera").attr("position").z;
+        let ex = document.querySelector('#camera').object3D.position.x;
+        let ez = document.querySelector('#camera').object3D.position.z;
         let f = indexes(ex, ez);
         n++;
         for(var z = f[0] - siz/2; z < f[0] + siz/2; z++){
@@ -252,4 +300,5 @@ async function start(){
         }
         $(`.${n-1}`).remove();
     }, 10000);
+
 }
