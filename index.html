@@ -11,6 +11,10 @@
 			<a-assets>
 				<img id="home-small" src="home-small.png">
 				<img id="home-big" src="home-big.png">
+				<img id="home-red" src="home-red.png">
+				<img id="home-green" src="home-green.png">
+				<img id="home-yellow" src="home-yellow.png">
+				<img id="home-blue" src="home-blue.png">
 				<img id="earth" src="earth.png">
 				<img id="sky" src="sky.jpg">
 			</a-assets>
@@ -18,7 +22,7 @@
 			<a-entity id="sol" geometry="primitive: sphere; radius: 1661293" position="-156602199 28649988 321082091" material="color: white; shader: flat" light="type: point; intensity: 1; distance: 0"></a-entity>
 			<a-sphere id="terra" position="-183750345 65161417 306355624" material="src: #earth; shader: flat" radius="6378100"></a-sphere>
 			<a-entity camera="far: 1000000000" wasd-controls look-controls position="0 6154.2 0" id="camera">
-				<a-entity position="0 0 1" id="flashlight" light="type: spot; angle: 55; intensity: 0.8; distance: 60; penumbra: 0.35; target: #camera"></a-entity>
+				<a-entity position="0 0 1" id="flashlight" light="type: spot; angle: 55; intensity: 0.8; distance: 60; penumbra: 0.35; target: #camera;"></a-entity>
 			</a-entity>
         </a-scene>
 	</body>
