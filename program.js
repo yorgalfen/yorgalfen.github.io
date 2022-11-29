@@ -157,14 +157,18 @@ function tri(subList, index){
     let c = coord(parseFloat(lat(subList-1,index)), parseFloat(long(subList-1,index)), parseFloat(height[subList-1][index]));
     let b = coord(parseFloat(lat(subList-1,index+1)), parseFloat(long(subList-1,index+1)), parseFloat(height[subList-1][index+1]));
     let d = coord(parseFloat(lat(subList,index+1)), parseFloat(long(subList,index+1)), parseFloat(height[subList][index+1]));
-    if(route.includes(`${subList}-${index}`)){
-        if(comms.includes(`${subList}-${index}`)){
-            col = "color: #0000ff"
-        }else{
-            col = "color: #ffff00";
-        }
+    if(parseFloat(slope[subList][index])>=15){
+        col = "color: #ff0000"
     }else{
-        col = "src: #home-big";
+        if(route.includes(`${subList}-${index}`)){
+            if(comms.includes(`${subList}-${index}`)){
+                col = "color: #0000ff"
+            }else{
+                col = "color: #ffff00";
+            }
+        }else{
+            col = "src: #home-big";
+        }
     }
     $("#scene").append(`<a-triangle id="${subList}-${index}-top" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" material="side: double; roughness: 1; ${col}">
     </a-triangle><a-triangle id="${subList}-${index}-bot" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" material="side: double; roughness: 1; ${col}"></a-triangle>`);
@@ -276,6 +280,14 @@ async function start(){
             comms=content.split(",");
             resolve(true);
         });});
+    let slopro = new Promise(function(resolve, reject){
+        $.get('slope.csv',{},function(content){
+            slope=content.split('\n');
+            for (var i = 0; i < slope.length; i++){    
+                slope[i] = slope[i].split(",");
+            }
+            resolve(true);
+        });});
     await hepro;
     await lapro1;
     await lapro2;
@@ -283,6 +295,7 @@ async function start(){
     await lopro2;
     await ropro;
     await compro;
+    await slopro;
     interv = setInterval(function(){
         let ex = document.querySelector('#camera').object3D.position.x;
         let ez = document.querySelector('#camera').object3D.position.z;
