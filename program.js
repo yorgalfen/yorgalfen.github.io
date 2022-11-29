@@ -1,6 +1,8 @@
 var height, latl, latr, longl, longr, slope, route, comms;
 var ah = false; 
 var n = 0;
+var los = 5;
+var hes = 15;
 const centerLat = -85.3974303;
 const centerLong = 30.5974913;
 const earthLat = -6.6518153;
@@ -91,6 +93,18 @@ $(document).keydown(function (){
         case 72: // H
             window.open('help.html', '_blank');
             break;
+        case 77: // M
+            let me = prompt("Input a new slope above which squares will be marked in red.");
+            if (me){
+                hes = parseFloat(me);
+            }
+            break;
+        case 78: // N
+            let mv = prompt("Input a new slope below which squares will be marked in green.");
+            if (mv){
+                los = parseFloat(mv);
+            }
+            break;
         default: // W, A, S, D
             if(((event.which==65||event.which==87)||(event.which==83||event.which==68))&&ah){
                 let d = indexes(document.querySelector('#camera').object3D.position.x, document.querySelector('#camera').object3D.position.z);
@@ -157,21 +171,23 @@ function tri(subList, index){
     let c = coord(parseFloat(lat(subList-1,index)), parseFloat(long(subList-1,index)), parseFloat(height[subList-1][index]));
     let b = coord(parseFloat(lat(subList-1,index+1)), parseFloat(long(subList-1,index+1)), parseFloat(height[subList-1][index+1]));
     let d = coord(parseFloat(lat(subList,index+1)), parseFloat(long(subList,index+1)), parseFloat(height[subList][index+1]));
-    if(parseFloat(slope[subList][index])>=15){
-        col = "color: #ff0000"
+    if(parseFloat(slope[subList][index])>=hes){
+        col = "red"
     }else{
         if(route.includes(`${subList}-${index}`)){
             if(comms.includes(`${subList}-${index}`)){
-                col = "color: #0000ff"
+                col = "blue"
             }else{
-                col = "color: #ffff00";
+                col = "yellow";
             }
+        }else if(parseFloat(slope[subList][index])<=los){
+            col = "green";
         }else{
-            col = "src: #home-big";
+            col = "big";
         }
     }
-    $("#scene").append(`<a-triangle id="${subList}-${index}-top" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" material="side: double; roughness: 1; ${col}">
-    </a-triangle><a-triangle id="${subList}-${index}-bot" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" material="side: double; roughness: 1; ${col}"></a-triangle>`);
+    $("#scene").append(`<a-triangle id="${subList}-${index}-top" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" material="side: double; roughness: 1; src: #home-${col}">
+    </a-triangle><a-triangle id="${subList}-${index}-bot" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" material="side: double; roughness: 1; src: #home-${col}"></a-triangle>`);
 }
 function indexes(camx, camz){
     if ($("a-triangle[id*=top]").length){
