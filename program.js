@@ -3,6 +3,7 @@ var ah = false;
 var n = 0;
 var los = 5;
 var hes = 15;
+var siz = 64;
 const centerLat = -85.3974303;
 const centerLong = 30.5974913;
 const earthLat = -6.6518153;
@@ -12,9 +13,8 @@ const earthCart = {
     z: -42100000
 };
 const r = 1737400;
-var siz = 64;
 $(document).keydown(function (){
-    switch(event.which){ 
+    switch(event.which){
         case 81: // Q
             if (!ah){
                 document.querySelector("#camera").object3D.position.y+=0.5;
@@ -32,11 +32,10 @@ $(document).keydown(function (){
                 clearInterval(interv);
                 let f = npo.split(" ");
                 n++;
-                for(var z = parseInt(f[0]) - siz/2; z < parseInt(f[0]) + siz/2; z++){
-                    for(var x = parseInt(f[1]) - siz/2; x <= parseInt(f[1]) + siz/2; x++){
-                        if($(`${fid}-top`).length){
-                            $(`${fid}-top`).attr("class", n);
-                            $(`${fid}-bot`).attr("class", n);
+                for(var z = f[0] - siz/2; z < f[0] + siz/2; z++){
+                    for(var x = f[1] - siz/2; x <= f[1] + siz/2; x++){
+                        if($(`#${z}-${x}-top`).length){
+                            update(z,x);
                         }else{
                             tri(z, x);
                         }
@@ -52,20 +51,7 @@ $(document).keydown(function (){
                     for(var z = f[0] - siz/2; z < f[0] + siz/2; z++){
                         for(var x = f[1] - siz/2; x <= f[1] + siz/2; x++){
                             if($(`#${z}-${x}-top`).length){
-                                let fid = `#${z}-${x}`;
-                                let slo = parseFloat(slope[z][x]);
-                                $(`${fid}-top`).attr("class", n);
-                                $(`${fid}-bot`).attr("class", n);
-                                if(slo>=hes&&$(`${fid}-top`).attr("src")!=="#home-red"){
-                                    $(`${fid}-top`).attr("src", "#home-red");
-                                    $(`${fid}-bot`).attr("src", "#home-red");
-                                }else if(slo<=los&&$(`${fid}-top`).attr("src")!=="#home-green"){
-                                    $(`${fid}-top`).attr("src", "#home-green");
-                                    $(`${fid}-bot`).attr("src", "#home-green");
-                                }else if((slo>los&&slo<hes)&&$(`${fid}-top`).attr("src")!=="#home-big"){
-                                    $(`${fid}-top`).attr("src", "#home-big");
-                                    $(`${fid}-bot`).attr("src", "#home-big");
-                                }
+                                update(z,x);
                             }else{
                                 tri(z, x);
                             }
@@ -201,6 +187,24 @@ function tri(subList, index){
     $("#scene").append(`<a-triangle id="${subList}-${index}-top" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" material="side: double; roughness: 1" src="#home-${col}">
     </a-triangle><a-triangle id="${subList}-${index}-bot" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" material="side: double; roughness: 1" src="#home-${col}"></a-triangle>`);
 }
+function update(z, x){
+    let fid = `${z}-${x}`;
+    let slo = parseFloat(slope[z][x]);
+    $(`#${fid}-top`).attr("class", n);
+    $(`#${fid}-bot`).attr("class", n);
+    if(!route.includes(fid)){
+        if(slo>=hes&&$(`#${fid}-top`).attr("src")!=="#home-red"){
+            $(`#${fid}-top`).attr("src", "#home-red");
+            $(`#${fid}-bot`).attr("src", "#home-red");
+        }else if(slo<=los&&$(`#${fid}-top`).attr("src")!=="#home-green"){
+            $(`#${fid}-top`).attr("src", "#home-green");
+            $(`#${fid}-bot`).attr("src", "#home-green");
+        }else if((slo>los&&slo<hes)&&$(`#${fid}-top`).attr("src")!=="#home-big"){
+            $(`#${fid}-top`).attr("src", "#home-big");
+            $(`#${fid}-bot`).attr("src", "#home-big");
+        }
+    }
+}
 function indexes(camx, camz){
     if ($("a-triangle[id*=top]").length){
         let sub, ind;
@@ -332,20 +336,7 @@ async function start(){
         for(var z = f[0] - siz/2; z < f[0] + siz/2; z++){
             for(var x = f[1] - siz/2; x <= f[1] + siz/2; x++){
                 if($(`#${z}-${x}-top`).length){
-                    let fid = `#${z}-${x}`;
-                    let slo = parseFloat(slope[z][x]);
-                    $(`${fid}-top`).attr("class", n);
-                    $(`${fid}-bot`).attr("class", n);
-                    if(slo>=hes&&$(`${fid}-top`).attr("src")!=="#home-red"){
-                        $(`${fid}-top`).attr("src", "#home-red");
-                        $(`${fid}-bot`).attr("src", "#home-red");
-                    }else if(slo<=los&&$(`${fid}-top`).attr("src")!=="#home-green"){
-                        $(`${fid}-top`).attr("src", "#home-green");
-                        $(`${fid}-bot`).attr("src", "#home-green");
-                    }else if((slo>los&&slo<hes)&&$(`${fid}-top`).attr("src")!=="#home-big"){
-                        $(`${fid}-top`).attr("src", "#home-big");
-                        $(`${fid}-bot`).attr("src", "#home-big");
-                    }
+                    update(z, x);
                 }else{
                     tri(z, x);
                 }
