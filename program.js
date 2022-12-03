@@ -34,9 +34,9 @@ $(document).keydown(function (){
                 n++;
                 for(var z = parseInt(f[0]) - siz/2; z < parseInt(f[0]) + siz/2; z++){
                     for(var x = parseInt(f[1]) - siz/2; x <= parseInt(f[1]) + siz/2; x++){
-                        if($(`#${z}-${x}-top`).length){
-                            $(`#${z}-${x}-top`).attr("class", n);
-                            $(`#${z}-${x}-bot`).attr("class", n);
+                        if($(`${fid}-top`).length){
+                            $(`${fid}-top`).attr("class", n);
+                            $(`${fid}-bot`).attr("class", n);
                         }else{
                             tri(z, x);
                         }
@@ -52,15 +52,27 @@ $(document).keydown(function (){
                     for(var z = f[0] - siz/2; z < f[0] + siz/2; z++){
                         for(var x = f[1] - siz/2; x <= f[1] + siz/2; x++){
                             if($(`#${z}-${x}-top`).length){
-                                $(`#${z}-${x}-top`).attr("class", n);
-                                $(`#${z}-${x}-bot`).attr("class", n);
+                                let fid = `#${z}-${x}`;
+                                let slo = parseFloat(slope[z][x]);
+                                $(`${fid}-top`).attr("class", n);
+                                $(`${fid}-bot`).attr("class", n);
+                                if(slo>=hes&&$(`${fid}-top`).attr("src")!=="#home-red"){
+                                    $(`${fid}-top`).attr("src", "#home-red");
+                                    $(`${fid}-bot`).attr("src", "#home-red");
+                                }else if(slo<=los&&$(`${fid}-top`).attr("src")!=="#home-green"){
+                                    $(`${fid}-top`).attr("src", "#home-green");
+                                    $(`${fid}-bot`).attr("src", "#home-green");
+                                }else if((slo>los&&slo<hes)&&$(`${fid}-top`).attr("src")!=="#home-big"){
+                                    $(`${fid}-top`).attr("src", "#home-big");
+                                    $(`${fid}-bot`).attr("src", "#home-big");
+                                }
                             }else{
                                 tri(z, x);
                             }
                         }
                     }
                     $(`.${n-1}`).remove();
-                }, 10000); 
+                }, 10000);
             }
             break;
         case 67: // C
@@ -186,8 +198,8 @@ function tri(subList, index){
             col = "big";
         }
     }
-    $("#scene").append(`<a-triangle id="${subList}-${index}-top" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" material="side: double; roughness: 1; src: #home-${col}">
-    </a-triangle><a-triangle id="${subList}-${index}-bot" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" material="side: double; roughness: 1; src: #home-${col}"></a-triangle>`);
+    $("#scene").append(`<a-triangle id="${subList}-${index}-top" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" material="side: double; roughness: 1" src="#home-${col}">
+    </a-triangle><a-triangle id="${subList}-${index}-bot" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" material="side: double; roughness: 1" src="#home-${col}"></a-triangle>`);
 }
 function indexes(camx, camz){
     if ($("a-triangle[id*=top]").length){
@@ -320,8 +332,20 @@ async function start(){
         for(var z = f[0] - siz/2; z < f[0] + siz/2; z++){
             for(var x = f[1] - siz/2; x <= f[1] + siz/2; x++){
                 if($(`#${z}-${x}-top`).length){
-                    $(`#${z}-${x}-top`).attr("class", n);
-                    $(`#${z}-${x}-bot`).attr("class", n);
+                    let fid = `#${z}-${x}`;
+                    let slo = parseFloat(slope[z][x]);
+                    $(`${fid}-top`).attr("class", n);
+                    $(`${fid}-bot`).attr("class", n);
+                    if(slo>=hes&&$(`${fid}-top`).attr("src")!=="#home-red"){
+                        $(`${fid}-top`).attr("src", "#home-red");
+                        $(`${fid}-bot`).attr("src", "#home-red");
+                    }else if(slo<=los&&$(`${fid}-top`).attr("src")!=="#home-green"){
+                        $(`${fid}-top`).attr("src", "#home-green");
+                        $(`${fid}-bot`).attr("src", "#home-green");
+                    }else if((slo>los&&slo<hes)&&$(`${fid}-top`).attr("src")!=="#home-big"){
+                        $(`${fid}-top`).attr("src", "#home-big");
+                        $(`${fid}-bot`).attr("src", "#home-big");
+                    }
                 }else{
                     tri(z, x);
                 }
@@ -329,5 +353,4 @@ async function start(){
         }
         $(`.${n-1}`).remove();
     }, 10000);
-
 }
