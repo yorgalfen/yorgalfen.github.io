@@ -26,41 +26,43 @@ $(document).keydown(function (){
             }
             break;  
         case 80: // P
-            let npo = prompt("Go to position? (row, column starting at 0, space-separated)");
-            if (npo){
-                ah = false;
-                clearInterval(interv);
-                let f = npo.split(" ");
+        let npo = prompt("Go to position? (row, column starting at 0, space-separated)");
+        if (npo){
+            ah = false;
+            clearInterval(interv);
+            let f = npo.split(" ");
+            n++;
+            for(var z = parseInt(f[0]) - siz/2; z < parseInt(f[0]) + siz/2; z++){
+                for(var x = parseInt(f[1]) - siz/2; x <= parseInt(f[1]) + siz/2; x++){
+                    if($(`#${z}-${x}-top`).length){
+                        $(`#${z}-${x}-top`).attr("class", n);
+                        $(`#${z}-${x}-bot`).attr("class", n);
+                    }else{
+                        tri(z, x);
+                    }
+                }
+            }
+            $(`.${n-1}`).remove();
+            $("#camera").attr("position", coord(parseFloat(lat(parseInt(f[0]),parseInt(f[1]))), parseFloat(long(parseInt(f[0]),parseInt(f[1]))), parseFloat(height[parseInt(f[0])][parseInt(f[1])])+1.6));
+            interv = setInterval(function(){
+                let ex = document.querySelector('#camera').object3D.position.x;
+                let ez = document.querySelector('#camera').object3D.position.z;
+                let f = indexes(ex, ez);
                 n++;
                 for(var z = f[0] - siz/2; z < f[0] + siz/2; z++){
                     for(var x = f[1] - siz/2; x <= f[1] + siz/2; x++){
                         if($(`#${z}-${x}-top`).length){
-                            update(z,x);
+                            $(`#${z}-${x}-top`).attr("class", n);
+                            $(`#${z}-${x}-bot`).attr("class", n);
                         }else{
                             tri(z, x);
                         }
                     }
                 }
                 $(`.${n-1}`).remove();
-                $("#camera").attr("position", coord(parseFloat(lat(parseInt(f[0]),parseInt(f[1]))), parseFloat(long(parseInt(f[0]),parseInt(f[1]))), parseFloat(height[parseInt(f[0])][parseInt(f[1])])+1.6));
-                interv = setInterval(function(){
-                    let ex = document.querySelector('#camera').object3D.position.x;
-                    let ez = document.querySelector('#camera').object3D.position.z;
-                    let f = indexes(ex, ez);
-                    n++;
-                    for(var z = f[0] - siz/2; z < f[0] + siz/2; z++){
-                        for(var x = f[1] - siz/2; x <= f[1] + siz/2; x++){
-                            if($(`#${z}-${x}-top`).length){
-                                update(z,x);
-                            }else{
-                                tri(z, x);
-                            }
-                        }
-                    }
-                    $(`.${n-1}`).remove();
-                }, 10000);
-            }
-            break;
+            }, 10000); 
+        }
+        break;
         case 67: // C
             let c = indexes(document.querySelector('#camera').object3D.position.x, document.querySelector('#camera').object3D.position.z);
             let la = toRad(lat(c[0],c[1]));
