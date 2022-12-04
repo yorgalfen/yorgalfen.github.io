@@ -52,15 +52,14 @@ $(document).keydown(function (){
                 for(var z = f[0] - siz/2; z < f[0] + siz/2; z++){
                     for(var x = f[1] - siz/2; x <= f[1] + siz/2; x++){
                         if($(`#${z}-${x}-top`).length){
-                            $(`#${z}-${x}-top`).attr("class", n);
-                            $(`#${z}-${x}-bot`).attr("class", n);
+                            update(z, x);
                         }else{
                             tri(z, x);
                         }
                     }
                 }
                 $(`.${n-1}`).remove();
-            }, 10000); 
+            }, 10000);
         }
         break;
         case 67: // C
