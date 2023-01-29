@@ -39,7 +39,7 @@ $(document).keydown(function (){
                 let q;
                 let c = gcdisu(centerLat,centerLong,dela,delo);
                 let ab = bearing(centerLat,centerLong,dela,delo);
-                if (ab >= 0 && a < Math.PI/2){
+                if (ab >= 0 && ab < Math.PI/2){
                     q=1;
                 }else if(ab >= Math.PI/2){
                     ab = Math.PI - ab;
