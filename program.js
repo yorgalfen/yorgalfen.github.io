@@ -34,14 +34,45 @@ $(document).keydown(function (){
             clearInterval(interv);
             if (npo.charAt(0) == "-"){
                 let f = npo.split(" ");
-                let dela = parseFloat(f[0]);
-                let delo = parseFloat(f[1]);
+                let dela = toRad(parseFloat(f[0]));
+                let delo = toRad(parseFloat(f[1]));
+                let q;
                 let c = gcdisu(centerLat,centerLong,dela,delo);
                 let ab = bearing(centerLat,centerLong,dela,delo);
+                if (ab >= 0 && a < Math.PI/2){
+                    q=1;
+                }else if(ab >= Math.PI/2){
+                    ab = Math.PI - ab;
+                    q = 4;
+                }else if(ab > -1*(Math.PI/2) && ab < 0){
+                    ab = -1*ab;
+                    q = 2;
+                }else{
+                    ab+=Math.PI;
+                    q = 3;
+                }
                 let a = Math.atan(Math.cos(ab)*Math.tan(c));
                 let b = Math.atan(Math.tan(ab)*Math.sin(a));
-                let nsu = Math.round(1160-a/vdis);
-                let nind = Math.round(1215+b/hdis);
+                switch(q){
+                    case 1:
+                        a = -1*Math.abs(a);
+                        b = Math.abs(b);
+                        break;
+                    case 2:
+                        a = -1*Math.abs(a);
+                        b = -1*Math.abs(b);
+                        break;
+                    case 3:
+                        a = Math.abs(a);
+                        b = -1*Math.abs(b);
+                        break;
+                    case 4:
+                        a = Math.abs(a);
+                        b = Math.abs(b);
+                        break;
+                }
+                let nsu = 1160 + Math.round(a/vdis);
+                let nind = 1215 + Math.round(b/hdis);
                 g = [nsu, nind];
                 n++;
                 for(var z = g[0] - siz/2; z < g[0] + siz/2; z++){
@@ -55,7 +86,7 @@ $(document).keydown(function (){
                     }
                 }
                 $(`.${n-1}`).remove();
-                $("#camera").attr("position", coord(dela, delo, parseFloat(height[g[0]][g[1]])+1.6));
+                $("#camera").attr("position", coord(parseFloat(lat(parseInt(g[0]),parseInt(g[1]))), parseFloat(long(parseInt(g[0]),parseInt(g[1]))), parseFloat(height[parseInt(g[0])][parseInt(g[1])])+1.6));
             }else{
             let f = npo.split(" ");
             n++;
