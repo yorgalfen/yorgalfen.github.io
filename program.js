@@ -7,6 +7,8 @@ var siz = 64;
 const centerLat = -85.3974303;
 const centerLong = 30.5974913;
 const earthLat = -6.6518153;
+const vdis = 0.00000287341;
+const hdis = 0.000002652383;
 const earthCart = {
     x: 361000000,
     y: 0,
@@ -26,10 +28,35 @@ $(document).keydown(function (){
             }
             break;  
         case 80: // P
-        let npo = prompt("Go to position? (row, column starting at 0, space-separated)");
+        let npo = prompt("Go to position? View help page for info.");
         if (npo){
             ah = false;
             clearInterval(interv);
+            if (npo.charAt(0) == "-"){
+                let f = npo.split(" ");
+                let dela = parseFloat(f[0]);
+                let delo = parseFloat(f[1]);
+                let c = gcdisu(centerLat,centerLong,dela,delo);
+                let ab = bearing(centerLat,centerLong,dela,delo);
+                let a = Math.atan(Math.cos(ab)*Math.tan(c));
+                let b = Math.atan(Math.tan(ab)*Math.sin(a));
+                let nsu = Math.round(1160-a/vdis);
+                let nind = Math.round(1215+b/hdis);
+                g = [nsu, nind];
+                n++;
+                for(var z = g[0] - siz/2; z < g[0] + siz/2; z++){
+                    for(var x = g[1] - siz/2; x <= g[1] + siz/2; x++){
+                        if($(`#${z}-${x}-top`).length){
+                            $(`#${z}-${x}-top`).attr("class", n);
+                            $(`#${z}-${x}-bot`).attr("class", n);
+                        }else{
+                            tri(z, x);
+                        }
+                    }
+                }
+                $(`.${n-1}`).remove();
+                $("#camera").attr("position", coord(dela, delo, parseFloat(height[g[0]][g[1]])+1.6));
+            }else{
             let f = npo.split(" ");
             n++;
             for(var z = parseInt(f[0]) - siz/2; z < parseInt(f[0]) + siz/2; z++){
@@ -43,7 +70,7 @@ $(document).keydown(function (){
                 }
             }
             $(`.${n-1}`).remove();
-            $("#camera").attr("position", coord(parseFloat(lat(parseInt(f[0]),parseInt(f[1]))), parseFloat(long(parseInt(f[0]),parseInt(f[1]))), parseFloat(height[parseInt(f[0])][parseInt(f[1])])+1.6));
+            $("#camera").attr("position", coord(parseFloat(lat(parseInt(f[0]),parseInt(f[1]))), parseFloat(long(parseInt(f[0]),parseInt(f[1]))), parseFloat(height[parseInt(f[0])][parseInt(f[1])])+1.6));}
             interv = setInterval(function(){
                 let ex = document.querySelector('#camera').object3D.position.x;
                 let ez = document.querySelector('#camera').object3D.position.z;
@@ -140,6 +167,14 @@ function gcdis(la1, lo1, la2, lo2){
     let lr2 = toRad(la2);
     let a = Math.sin(dlat/2)*Math.sin(dlat/2)+Math.sin(dlon/2)*Math.sin(dlon/2)*Math.cos(lr1)*Math.cos(lr2);
     return r*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function gcdisu(la1, lo1, la2, lo2){
+    let dlat = toRad((la2-la1));
+    let dlon = toRad((lo2-lo1));
+    let lr1 = toRad(la1);
+    let lr2 = toRad(la2);
+    let a = Math.sin(dlat/2)*Math.sin(dlat/2)+Math.sin(dlon/2)*Math.sin(dlon/2)*Math.cos(lr1)*Math.cos(lr2);
+    return 2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 function bearing(startLat, startLng, destLat, destLng){
     startLat = toRad(startLat);
