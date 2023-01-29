@@ -34,8 +34,8 @@ $(document).keydown(function (){
             clearInterval(interv);
             if (npo.charAt(0) == "-"){
                 let f = npo.split(" ");
-                let dela = toRad(parseFloat(f[0]));
-                let delo = toRad(parseFloat(f[1]));
+                let dela = parseFloat(f[0]);
+                let delo = parseFloat(f[1]);
                 let q;
                 let c = gcdisu(centerLat,centerLong,dela,delo);
                 let ab = bearing(centerLat,centerLong,dela,delo);
@@ -73,7 +73,7 @@ $(document).keydown(function (){
                 }
                 let nsu = 1160 + Math.round(a/vdis);
                 let nind = 1215 + Math.round(b/hdis);
-                g = [nsu, nind];
+                let g = [nsu, nind];
                 n++;
                 for(var z = g[0] - siz/2; z < g[0] + siz/2; z++){
                     for(var x = g[1] - siz/2; x <= g[1] + siz/2; x++){
