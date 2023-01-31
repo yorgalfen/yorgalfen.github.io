@@ -7,8 +7,8 @@ var siz = 64;
 const centerLat = -85.3974303;
 const centerLong = 30.5974913;
 const earthLat = -6.6518153;
-const vdis = 0.00000287341;
-const hdis = 0.000002652383;
+const vdis = 0.0000028734334692991463;
+const hdis = 0.0000028731084995076896;
 const earthCart = {
     x: 361000000,
     y: 0,
