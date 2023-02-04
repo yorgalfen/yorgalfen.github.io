@@ -32,7 +32,7 @@ $(document).keydown(function () {
             if (npo) {
                 ah = false;
                 clearInterval(interv);
-                if (npo.charAt(0) == "-") {
+                if (npo.charAt(0) === "-") {
                     let f = npo.split(" ");
                     let dela = parseFloat(f[0]);
                     let delo = parseFloat(f[1]);
@@ -196,10 +196,10 @@ $(document).keydown(function () {
             break;
         default: // W, A, S, D
             if (
-                (event.which == 65 ||
-                    event.which == 87 ||
-                    event.which == 83 ||
-                    event.which == 68) &&
+                (event.which === 65 ||
+                    event.which === 87 ||
+                    event.which === 83 ||
+                    event.which === 68) &&
                 ah
             ) {
                 let d = indexes(
