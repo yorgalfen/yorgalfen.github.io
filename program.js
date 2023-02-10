@@ -362,62 +362,29 @@ function indexes(camx, camz) {
 
 async function start() {
     let start = new Date();
-    let hepro = new Promise(function (resolve, reject) {
-        $.getJSON("height.json", {}, function (content) {
-            height = content;
-            resolve(true);
-        });
+
+    const assets = [
+        ["height.json", "height"],
+        ["latleft.json", "latl"],
+        ["latright.json", "latr"],
+        ["longleft.json", "longl"],
+        ["longright.json", "longr"],
+        ["routen.json", "route"],
+        ["comms.json", "comms"],
+        ["slope.json", "slope"],
+    ];
+    let promises = assets.map((item) =>
+        fetch(item[0])
+            .then((response) => response.json())
+            .then((content) => {
+                window[item[1]] = content;
+            })
+    );
+
+    await Promise.all(promises).catch((error) => {
+        console.error(error.message);
     });
-    let lapro1 = new Promise(function (resolve, reject) {
-        $.getJSON("latleft.json", {}, function (content) {
-            latl = content;
-            resolve(true);
-        });
-    });
-    let lapro2 = new Promise(function (resolve, reject) {
-        $.getJSON("latright.json", {}, function (content) {
-            latr = content;
-            resolve(true);
-        });
-    });
-    let lopro1 = new Promise(function (resolve, reject) {
-        $.getJSON("longleft.json", {}, function (content) {
-            longl = content;
-            resolve(true);
-        });
-    });
-    let lopro2 = new Promise(function (resolve, reject) {
-        $.getJSON("longright.json", {}, function (content) {
-            longr = content;
-            resolve(true);
-        });
-    });
-    let ropro = new Promise(function (resolve, reject) {
-        $.getJSON("routen.json", {}, function (content) {
-            route = content;
-            resolve(true);
-        });
-    });
-    let compro = new Promise(function (resolve, reject) {
-        $.getJSON("comms.json", {}, function (content) {
-            comms = content;
-            resolve(true);
-        });
-    });
-    let slopro = new Promise(function (resolve, reject) {
-        $.getJSON("slope.json", {}, function (content) {
-            slope = content;
-            resolve(true);
-        });
-    });
-    await hepro;
-    await lapro1;
-    await lapro2;
-    await lopro1;
-    await lopro2;
-    await ropro;
-    await compro;
-    await slopro;
+
     let time = new Date() - start;
     console.log(`Spent ${time}ms in init()`);
     interv = setInterval(update_scene, 10000);
