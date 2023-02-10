@@ -15,6 +15,29 @@ const earthCart = {
     z: -42100000,
 };
 const r = 1737400;
+
+// perf: 50-70ms idles, up to 300ms
+// Ideal: <16ms
+function update_scene() {
+    let start = new Date();
+    let ex = document.querySelector("#camera").object3D.position.x;
+    let ez = document.querySelector("#camera").object3D.position.z;
+    let f = indexes(ex, ez);
+    n++;
+    for (var z = f[0] - siz / 2; z < f[0] + siz / 2; z++) {
+        for (var x = f[1] - siz / 2; x <= f[1] + siz / 2; x++) {
+            if ($(`#${z}-${x}-top`).length) {
+                update(z, x);
+            } else {
+                tri(z, x);
+            }
+        }
+    }
+    $(`.${n - 1}`).remove();
+    let time = new Date() - start;
+    console.log(`Spent ${time}ms in update_scene`);
+}
+
 $(document).keydown(function () {
     switch (event.which) {
         case 81: // Q
@@ -117,22 +140,7 @@ $(document).keydown(function () {
                         )
                     );
                 }
-                interv = setInterval(function () {
-                    let ex = document.querySelector("#camera").object3D.position.x;
-                    let ez = document.querySelector("#camera").object3D.position.z;
-                    let f = indexes(ex, ez);
-                    n++;
-                    for (var z = f[0] - siz / 2; z < f[0] + siz / 2; z++) {
-                        for (var x = f[1] - siz / 2; x <= f[1] + siz / 2; x++) {
-                            if ($(`#${z}-${x}-top`).length) {
-                                update(z, x);
-                            } else {
-                                tri(z, x);
-                            }
-                        }
-                    }
-                    $(`.${n - 1}`).remove();
-                }, 10000);
+                interv = setInterval(update_scene, 10000);
             }
             break;
         case 67: // C
@@ -146,7 +154,7 @@ $(document).keydown(function () {
             let az = (bearing(lat(c[0], c[1]), long(c[0], c[1]), earthLat, 0) * 180) / Math.PI;
             let pc = spheToCart(la, lo, ra);
             let dpos = { x: earthCart.x - pc.x, y: earthCart.y - pc.y, z: earthCart.z - pc.z };
-            let rn = Math.sqrt(dpos.x * dpos.x + dpos.y * dpos.y + dpos.z * dpos.z);
+            let rn = Math.hypot(dpos.x, dpos.y, dpos.z);
             let rz =
                 dpos.x * Math.cos(la) * Math.cos(lo) +
                 dpos.y * Math.cos(la) * Math.sin(lo) +
@@ -348,94 +356,14 @@ function indexes(camx, camz) {
             id = $(this).attr("id");
             sub = parseInt(id.slice(0, id.indexOf("-")));
             ind = parseInt(id.slice(id.indexOf("-") + 1, id.lastIndexOf("-")));
-            let a = $(this).attr("vertex-a").split(" ");
-            let b = $(this).attr("vertex-b").split(" ");
-            let c = $(this).attr("vertex-c").split(" ");
-            let d = $(`#${sub}-${ind}-bot`).attr("vertex-c").split(" ");
-            if (
-                parseFloat(a[2]) < parseFloat(b[2]) &&
-                parseFloat(a[2]) < parseFloat(c[2]) &&
-                parseFloat(a[2]) < parseFloat(d[2])
-            ) {
-                var minz = parseFloat(a[2]);
-            } else if (
-                parseFloat(b[2]) < parseFloat(a[2]) &&
-                parseFloat(b[2]) < parseFloat(c[2]) &&
-                parseFloat(b[2]) < parseFloat(d[2])
-            ) {
-                var minz = parseFloat(b[2]);
-            } else if (
-                parseFloat(c[2]) < parseFloat(a[2]) &&
-                parseFloat(c[2]) < parseFloat(b[2]) &&
-                parseFloat(c[2]) < parseFloat(d[2])
-            ) {
-                var minz = parseFloat(c[2]);
-            } else {
-                var minz = parseFloat(d[2]);
-            }
-            if (
-                parseFloat(a[0]) < parseFloat(b[0]) &&
-                parseFloat(a[0]) < parseFloat(c[0]) &&
-                parseFloat(a[0]) < parseFloat(d[0])
-            ) {
-                var minx = parseFloat(a[0]);
-            } else if (
-                parseFloat(b[0]) < parseFloat(a[0]) &&
-                parseFloat(b[0]) < parseFloat(c[0]) &&
-                parseFloat(b[0]) < parseFloat(d[0])
-            ) {
-                var minx = parseFloat(b[0]);
-            } else if (
-                parseFloat(c[0]) < parseFloat(a[0]) &&
-                parseFloat(c[0]) < parseFloat(b[0]) &&
-                parseFloat(c[0]) < parseFloat(d[0])
-            ) {
-                var minx = parseFloat(c[0]);
-            } else {
-                var minx = parseFloat(d[0]);
-            }
-            if (
-                parseFloat(a[2]) > parseFloat(b[2]) &&
-                parseFloat(a[2]) > parseFloat(c[2]) &&
-                parseFloat(a[2]) > parseFloat(d[2])
-            ) {
-                var maxz = parseFloat(a[2]);
-            } else if (
-                parseFloat(b[2]) > parseFloat(a[2]) &&
-                parseFloat(b[2]) > parseFloat(c[2]) &&
-                parseFloat(b[2]) > parseFloat(d[2])
-            ) {
-                var maxz = parseFloat(b[2]);
-            } else if (
-                parseFloat(c[2]) > parseFloat(a[2]) &&
-                parseFloat(c[2]) > parseFloat(b[2]) &&
-                parseFloat(c[2]) > parseFloat(d[2])
-            ) {
-                var maxz = parseFloat(c[2]);
-            } else {
-                var maxz = parseFloat(d[2]);
-            }
-            if (
-                parseFloat(a[0]) > parseFloat(b[0]) &&
-                parseFloat(a[0]) > parseFloat(c[0]) &&
-                parseFloat(a[0]) > parseFloat(d[0])
-            ) {
-                var maxx = parseFloat(a[0]);
-            } else if (
-                parseFloat(b[0]) > parseFloat(a[0]) &&
-                parseFloat(b[0]) > parseFloat(c[0]) &&
-                parseFloat(b[0]) > parseFloat(d[0])
-            ) {
-                var maxx = parseFloat(b[0]);
-            } else if (
-                parseFloat(c[0]) > parseFloat(a[0]) &&
-                parseFloat(c[0]) > parseFloat(b[0]) &&
-                parseFloat(c[0]) > parseFloat(d[0])
-            ) {
-                var maxx = parseFloat(c[0]);
-            } else {
-                var maxx = parseFloat(d[0]);
-            }
+            let a = $(this).attr("vertex-a").split(" ").map(parseFloat);
+            let b = $(this).attr("vertex-b").split(" ").map(parseFloat);
+            let c = $(this).attr("vertex-c").split(" ").map(parseFloat);
+            let d = $(`#${sub}-${ind}-bot`).attr("vertex-c").split(" ").map(parseFloat);
+            let minz = Math.min(a[2], b[2], c[2], d[2]);
+            let minx = Math.min(a[0], b[0], c[0], d[0]);
+            let maxz = Math.max(a[2], b[2], c[2], d[2]);
+            let maxx = Math.max(a[0], b[0], c[0], d[0]);
             if (camx >= minx && camx <= maxx && camz >= minz && camz <= maxz) {
                 return false;
             }
@@ -446,6 +374,7 @@ function indexes(camx, camz) {
     }
 }
 async function start() {
+    let start = new Date();
     let hepro = new Promise(function (resolve, reject) {
         $.get("height.csv", {}, function (content) {
             height = content.split("\n");
@@ -520,20 +449,7 @@ async function start() {
     await ropro;
     await compro;
     await slopro;
-    interv = setInterval(function () {
-        let ex = document.querySelector("#camera").object3D.position.x;
-        let ez = document.querySelector("#camera").object3D.position.z;
-        let f = indexes(ex, ez);
-        n++;
-        for (var z = f[0] - siz / 2; z < f[0] + siz / 2; z++) {
-            for (var x = f[1] - siz / 2; x <= f[1] + siz / 2; x++) {
-                if ($(`#${z}-${x}-top`).length) {
-                    update(z, x);
-                } else {
-                    tri(z, x);
-                }
-            }
-        }
-        $(`.${n - 1}`).remove();
-    }, 10000);
+    let time = new Date() - start;
+    console.log(`Spent ${time}ms in init()`);
+    interv = setInterval(update_scene, 10000);
 }
