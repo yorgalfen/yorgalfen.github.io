@@ -15,7 +15,6 @@ const earthCart = {
     z: -42100000,
 };
 const r = 1737400;
-
 // perf: 50-70ms idles, up to 300ms
 // Ideal: <16ms
 function update_scene() {
@@ -37,7 +36,6 @@ function update_scene() {
     let time = new Date() - start;
     console.log(`Spent ${time}ms in update_scene`);
 }
-
 $(document).keydown(function () {
     switch (event.which) {
         case 81: // Q
@@ -292,27 +290,15 @@ function coord(la, lo, he) {
 }
 function tri(subList, index) {
     let col;
-    let a = coord(
-        parseFloat(lat(subList, index)),
-        parseFloat(long(subList, index)),
-        parseFloat(height[subList][index])
-    );
-    let c = coord(
-        parseFloat(lat(subList - 1, index)),
-        parseFloat(long(subList - 1, index)),
-        parseFloat(height[subList - 1][index])
-    );
+    let a = coord(lat(subList, index), long(subList, index), height[subList][index]);
+    let c = coord(lat(subList - 1, index), long(subList - 1, index), height[subList - 1][index]);
     let b = coord(
-        parseFloat(lat(subList - 1, index + 1)),
-        parseFloat(long(subList - 1, index + 1)),
-        parseFloat(height[subList - 1][index + 1])
+        lat(subList - 1, index + 1),
+        long(subList - 1, index + 1),
+        height[subList - 1][index + 1]
     );
-    let d = coord(
-        parseFloat(lat(subList, index + 1)),
-        parseFloat(long(subList, index + 1)),
-        parseFloat(height[subList][index + 1])
-    );
-    if (parseFloat(slope[subList][index]) >= hes) {
+    let d = coord(lat(subList, index + 1), long(subList, index + 1), height[subList][index + 1]);
+    if (slope[subList][index] >= hes) {
         col = "red";
     } else {
         if (route.includes(`${subList}-${index}`)) {
@@ -321,7 +307,7 @@ function tri(subList, index) {
             } else {
                 col = "yellow";
             }
-        } else if (parseFloat(slope[subList][index]) <= los) {
+        } else if (slope[subList][index] <= los) {
             col = "green";
         } else {
             col = "big";
@@ -333,7 +319,7 @@ function tri(subList, index) {
 }
 function update(z, x) {
     let fid = `${z}-${x}`;
-    let slo = parseFloat(slope[z][x]);
+    let slo = slope[z][x];
     $(`#${fid}-top`).attr("class", n);
     $(`#${fid}-bot`).attr("class", n);
     if (!route.includes(fid)) {
@@ -373,71 +359,54 @@ function indexes(camx, camz) {
         return [1160, 1215];
     }
 }
+
 async function start() {
     let start = new Date();
     let hepro = new Promise(function (resolve, reject) {
-        $.get("height.csv", {}, function (content) {
-            height = content.split("\n");
-            for (var i = 0; i < height.length; i++) {
-                height[i] = height[i].split(",");
-            }
+        $.getJSON("height.json", {}, function (content) {
+            height = content;
             resolve(true);
         });
     });
     let lapro1 = new Promise(function (resolve, reject) {
-        $.get("latleft.csv", {}, function (content) {
-            latl = content.split("\n");
-            for (var i = 0; i < latl.length; i++) {
-                latl[i] = latl[i].split(",");
-            }
+        $.getJSON("latleft.json", {}, function (content) {
+            latl = content;
             resolve(true);
         });
     });
     let lapro2 = new Promise(function (resolve, reject) {
-        $.get("latright.csv", {}, function (content) {
-            latr = content.split("\n");
-            for (var i = 0; i < latr.length; i++) {
-                latr[i] = latr[i].split(",");
-            }
+        $.getJSON("latright.json", {}, function (content) {
+            latr = content;
             resolve(true);
         });
     });
     let lopro1 = new Promise(function (resolve, reject) {
-        $.get("longleft.csv", {}, function (content) {
-            longl = content.split("\n");
-            for (var i = 0; i < longl.length; i++) {
-                longl[i] = longl[i].split(",");
-            }
+        $.getJSON("longleft.json", {}, function (content) {
+            longl = content;
             resolve(true);
         });
     });
     let lopro2 = new Promise(function (resolve, reject) {
-        $.get("longright.csv", {}, function (content) {
-            longr = content.split("\n");
-            for (var i = 0; i < longr.length; i++) {
-                longr[i] = longr[i].split(",");
-            }
+        $.getJSON("longright.json", {}, function (content) {
+            longr = content;
             resolve(true);
         });
     });
     let ropro = new Promise(function (resolve, reject) {
-        $.get("routen.csv", {}, function (content) {
-            route = content.split(",");
+        $.getJSON("routen.json", {}, function (content) {
+            route = content;
             resolve(true);
         });
     });
     let compro = new Promise(function (resolve, reject) {
-        $.get("comms.csv", {}, function (content) {
-            comms = content.split(",");
+        $.getJSON("comms.json", {}, function (content) {
+            comms = content;
             resolve(true);
         });
     });
     let slopro = new Promise(function (resolve, reject) {
-        $.get("slope.csv", {}, function (content) {
-            slope = content.split("\n");
-            for (var i = 0; i < slope.length; i++) {
-                slope[i] = slope[i].split(",");
-            }
+        $.getJSON("slope.json", {}, function (content) {
+            slope = content;
             resolve(true);
         });
     });
