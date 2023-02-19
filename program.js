@@ -17,6 +17,25 @@ const earthCart = {
 const r = 1737400;
 // perf: 50-70ms idles, up to 300ms
 // Ideal: <16ms
+function update_data(){
+    let c = indexes(
+        document.querySelector("#camera").object3D.position.x,
+        document.querySelector("#camera").object3D.position.z
+    );
+    let la = toRad(lat(c[0], c[1]));
+    let lo = toRad(long(c[0], c[1]));
+    let ra = height[c[0]][c[1]] + r;
+    let az = (bearing(lat(c[0], c[1]), long(c[0], c[1]), earthLat, 0) * 180) / Math.PI;
+    let pc = spheToCart(la, lo, ra);
+    let dpos = { x: earthCart.x - pc.x, y: earthCart.y - pc.y, z: earthCart.z - pc.z };
+    let rn = Math.hypot(dpos.x, dpos.y, dpos.z);
+    let rz =
+        dpos.x * Math.cos(la) * Math.cos(lo) +
+        dpos.y * Math.cos(la) * Math.sin(lo) +
+        dpos.z * Math.sin(la);
+    let ele = (Math.asin(rz / rn) * 180) / Math.PI;
+    $("#data").html(`Press H for help.<br>Position: ${-1*la}° S, ${lo}° E<br>Height: ${height[c[0]][c[1]]} meters<br>Azimuth to Earth: ${az.toFixed(2)}°<br>Elevation to Earth: ${ele.toFixed(2)}°<br>Data indices: row ${c[0]}, column ${c[1]}.`);
+}
 function update_scene() {
     let start = new Date();
     let ex = document.querySelector("#camera").object3D.position.x;
@@ -53,6 +72,7 @@ $(document).keydown(function () {
             if (npo) {
                 ah = false;
                 clearInterval(interv);
+                clearInterval(interv1);
                 if (npo.charAt(0) === "-") {
                     let f = npo.split(" ");
                     let dela = parseFloat(f[0]);
@@ -139,37 +159,11 @@ $(document).keydown(function () {
                     );
                 }
                 interv = setInterval(update_scene, 10000);
+                interv1 = setInterval(update_data, 2000);
             }
             break;
         case 67: // C
-            let c = indexes(
-                document.querySelector("#camera").object3D.position.x,
-                document.querySelector("#camera").object3D.position.z
-            );
-            let la = toRad(lat(c[0], c[1]));
-            let lo = toRad(long(c[0], c[1]));
-            let ra = height[c[0]][c[1]] + r;
-            let az = (bearing(lat(c[0], c[1]), long(c[0], c[1]), earthLat, 0) * 180) / Math.PI;
-            let pc = spheToCart(la, lo, ra);
-            let dpos = { x: earthCart.x - pc.x, y: earthCart.y - pc.y, z: earthCart.z - pc.z };
-            let rn = Math.hypot(dpos.x, dpos.y, dpos.z);
-            let rz =
-                dpos.x * Math.cos(la) * Math.cos(lo) +
-                dpos.y * Math.cos(la) * Math.sin(lo) +
-                dpos.z * Math.sin(la);
-            let ele = (Math.asin(rz / rn) * 180) / Math.PI;
-            alert(
-                `Your position is approximately ${lat(c[0], c[1])}°, ${long(
-                    c[0],
-                    c[1]
-                )}°.\nYour height is approximately ${
-                    height[c[0]][c[1]]
-                } meters.\nYour azimuth to Earth is ${az.toFixed(
-                    2
-                )}°.\nYour elevation angle to Earth is ${ele.toFixed(
-                    2
-                )}°.\nYour data position is row ${c[0]}, column ${c[1]}.`
-            );
+            // nothing yet
             break;
         case 88: // X
             let ne = prompt("Input a new rendering size. Must be a whole number, divisible by 2.");
@@ -394,4 +388,5 @@ async function start() {
     let time = new Date() - start;
     console.log(`Spent ${time}ms in init()`);
     interv = setInterval(update_scene, 10000);
+    interv1 = setInterval(update_data, 2000);
 }
