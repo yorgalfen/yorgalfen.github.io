@@ -200,7 +200,7 @@ $(document).keydown(function () {
                 los = parseFloat(mv);
             }
             break;
-        case 70: // F
+        case 86: // V
             let fov = prompt("Input a new field of view, in degrees, for the camera. Default is 80.");
             if (fov){
                 $("#camera").attr("camera", `far: 1000000000; fov: ${fov}`);
