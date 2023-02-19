@@ -159,12 +159,12 @@ $(document).keydown(function () {
                 dpos.z * Math.sin(la);
             let ele = (Math.asin(rz / rn) * 180) / Math.PI;
             alert(
-                `Your position is approximately ${lat(c[0], c[1])}, ${long(
+                `Your position is approximately ${lat(c[0], c[1])}°, ${long(
                     c[0],
                     c[1]
-                )}.\nYour height is approximately ${
+                )}°.\nYour height is approximately ${
                     height[c[0]][c[1]]
-                }.\nYour azimuth to Earth is ${az.toFixed(
+                } meters.\nYour azimuth to Earth is ${az.toFixed(
                     2
                 )}°.\nYour elevation angle to Earth is ${ele.toFixed(
                     2
@@ -198,6 +198,12 @@ $(document).keydown(function () {
             let mv = prompt("Input a new slope below which squares will be marked in green.");
             if (mv) {
                 los = parseFloat(mv);
+            }
+            break;
+        case 70: // F
+            let fov = prompt("Input a new field of view, in degrees, for the camera. Default is 80.");
+            if (fov){
+                $("#camera").attr("camera", `far: 1000000000; fov: ${fov}`);
             }
             break;
         default: // W, A, S, D
