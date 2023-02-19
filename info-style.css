@@ -1,0 +1,15 @@
+#info {
+    background-image: url("gui.png");
+    background-size: contain;
+    position: absolute;
+    font-family: 'Agency FB', sans-serif;
+    color: white;
+    font-size: 1.05em;
+    top: 10px;
+    left: 10px;
+    height: 190px;
+    width: 352px;
+}
+#data {
+    padding: 20px 25px;
+}
