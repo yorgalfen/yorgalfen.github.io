@@ -34,7 +34,7 @@ function update_data(){
         dpos.y * Math.cos(la) * Math.sin(lo) +
         dpos.z * Math.sin(la);
     let ele = (Math.asin(rz / rn) * 180) / Math.PI;
-    $("#data").html(`Press H for help.<br>Position: ${-1*lat(c[0], c[1])}° S, ${long(c[0], c[1])}° E<br>Height: ${height[c[0]][c[1]]} meters<br>Azimuth to Earth: ${az.toFixed(2)}°<br>Elevation to Earth: ${ele.toFixed(2)}°<br>Data indices: row ${c[0]}, column ${c[1]}.`);
+    $("#data").html(`Press H for help.<br>Position: ${-1*lat(c[0], c[1])}&#8451; S, ${long(c[0], c[1])}&#8451; E<br>Height: ${height[c[0]][c[1]]} meters<br>Azimuth to Earth: ${az.toFixed(2)}&#8451;<br>Elevation to Earth: ${ele.toFixed(2)}&#8451;<br>Data indices: row ${c[0]}, column ${c[1]}.`);
 }
 function update_scene() {
     let start = new Date();
