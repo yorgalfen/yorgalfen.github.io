@@ -1,11 +1,6 @@
-let height;
-let latl;
-let latr;
-let longl;
-let longr;
-let slope;
-let route;
-let comms;
+// rome-ignore lint/style/useSingleVarDeclarator:
+// rome-ignore lint/style/noVar: needed for window access when parsing JSONs
+var height, latl, latr, longl, longr, slope, route, comms;
 let ah = false;
 let n = 0;
 let los = 5;
@@ -291,14 +286,14 @@ function gcdisu(la1, lo1, la2, lo2) {
     return 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 function bearing(startLat, startLng, destLat, destLng) {
-    const startLat = toRad(startLat);
-    const startLng = toRad(startLng);
-    const destLat = toRad(destLat);
-    const destLng = toRad(destLng);
-    y = Math.sin(destLng - startLng) * Math.cos(destLat);
+    const startLat2 = toRad(startLat);
+    const startLng2 = toRad(startLng);
+    const destLat2 = toRad(destLat);
+    const destLng2 = toRad(destLng);
+    y = Math.sin(destLng2 - startLng2) * Math.cos(destLat2);
     x =
-        Math.cos(startLat) * Math.sin(destLat) -
-        Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
+        Math.cos(startLat2) * Math.sin(destLat2) -
+        Math.sin(startLat2) * Math.cos(destLat2) * Math.cos(destLng2 - startLng2);
     const brng = Math.atan2(y, x);
     return brng;
 }
