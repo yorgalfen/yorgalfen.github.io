@@ -309,7 +309,7 @@ function coord(la, lo, he) {
     const g = gcdis(centerLat, centerLong, la, lo);
     const sgr = Math.sin(g / r);
     const x = (r + he) * sgr * Math.sin(b);
-    const y = he * Math.sqrt(1 - sgr * sgr) - 2 * r * Math.pow(Math.sin(g / (2 * r)), 2);
+    const y = he * Math.cos(g/r) - 2 * r * Math.pow(Math.sin(g / (2 * r)), 2);
     const z = (r + he) * sgr * Math.cos(b);
     return `${x.toFixed(3)} ${y.toFixed(3)} ${z.toFixed(3)}`;
 }
