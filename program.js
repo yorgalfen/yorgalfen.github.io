@@ -6,6 +6,7 @@ let n = 0;
 let los = 5;
 let hes = 15;
 let siz = 64;
+const mult = 9.5/5; // The slope-based multiplier for great circle distance for the cost estimator
 const centerLat = -85.3974303;
 const centerLong = 30.5974913;
 const earthLat = -6.6518153;
@@ -415,4 +416,83 @@ async function start() {
     console.log(`Spent ${time}ms in init()`);
     interv = setInterval(update_scene, 10000);
     interv1 = setInterval(update_data, 2000);
+}
+
+function slopecost(sl1,in1,sl2,in2,lim){
+    const slo = slope[sl1][in1];
+    const slp = slope[sl2][in2];
+    if(slo>=lim||slp>=lim){
+        return Infinity;
+    }
+    return (slo+slp)/2;
+}
+function costestimator(sl1,in1,sl2,in2){
+    return gcdis(lat(sl1,in1),long(sl1,in1),lat(sl2,in2),long(sl2,in2))*mult;
+}
+function AStar(bsl,bind,esl,eind,lim){
+    let star = new Date();
+    let it = 0;
+    const spoi = makePoint(bsl,bind);
+    let openSet = [spoi];
+    let cameFrom = Array(makePoint(3200,3200));
+    let gScore = Array(makePoint(3200,3200));
+    gScore.fill(Infinity);
+    gScore[spoi] = 0;
+    let fScore = Array(makePoint(3200,3200));
+    fScore.fill(Infinity);
+    fScore[spoi] = costestimator(bsl,bind,esl,eind);
+    while (openSet.length>0){
+        let current = Infinity;
+        let min = Infinity;
+        for(const j of openSet){
+            if (fScore[j]<min){
+                current = j;
+                min = fScore[current];
+            }
+        }
+        if(current==makePoint(esl,eind)){
+            console.log(`Reached destination after ${new Date() - star} ms and ${it} iterations.`);
+            return reconstruct_path(cameFrom,current);
+        }
+        const inde = openSet.indexOf(current);
+        openSet.splice(inde,1);
+        const sl = getSubList(current);
+        const de = getIndex(current);
+        neighbors = [makePoint(sl-1,de-1),makePoint(sl-1,de),makePoint(sl-1,de+1),
+        makePoint(sl,de-1),makePoint(sl,de+1),makePoint(sl+1,de-1),makePoint(sl+1,de),
+        makePoint(sl+1,de-1)];
+        for(let i = 0; i<8; i++){
+            tentative_gScore = gScore[current] + slopecost(sl,de,getSubList(neighbors[i]),getIndex(neighbors[i]),lim);
+            if (tentative_gScore<gScore[neighbors[i]]){
+                cameFrom[neighbors[i]] = current;
+                gScore[neighbors[i]] = tentative_gScore;
+                fScore[neighbors[i]] = tentative_gScore + costestimator(sl,de,esl,eind);
+                if(!openSet.includes(neighbors[i])){
+                    openSet.push(neighbors[i]);
+                }
+            }
+        }
+        it++;
+    }
+    return false;
+}
+function reconstruct_path(cameFrom,current){
+    let totalPath = [current];
+    while (cameFrom[current]!=null){
+        current = cameFrom[current];
+        totalPath.unshift(current);
+    }
+    return totalPath;
+}
+function makePoint(subList,index){
+    return subList << 12 | index;
+}
+function getSubList(point){
+    return point >> 12;
+}
+function getIndex(point){
+    return point & 0xfff;
+}
+function extractPoint(point){
+    return [getSubList(point),getIndex(point)];
 }
