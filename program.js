@@ -1,11 +1,13 @@
 // rome-ignore lint/style/useSingleVarDeclarator:
 // rome-ignore lint/style/noVar: needed for window access when parsing JSONs
 var height, latl, latr, longl, longr, slope, route, comms;
+var rcalc = [];
 let ah = false;
 let n = 0;
 let los = 5;
 let hes = 15;
 let siz = 64;
+const margin = 50;
 const mult = 9.5/5; // The slope-based multiplier for great circle distance for the cost estimator
 const centerLat = -85.3974303;
 const centerLong = 30.5974913;
@@ -181,11 +183,14 @@ $(document).keydown(function () {
             break;
         case 88: {
             // X
-            const ne = prompt(
-                "Input a new rendering size. Must be a whole number, divisible by 2.",
-            );
-            if (ne) {
-                siz = parseInt(ne);
+            if($("#prompt").css("display")=="none"){
+                $("#prompt").css("display","inline");
+                $("#prompt-text").html("Input a new rendering size. Must be a whole number, divisible by 2.");
+                $("#prompt-text").css("font-size","1.55em");
+                $("#single-go").attr("onclick",`handleX();`);
+            }else{
+                $("#prompt").css("display","none");
+                $("#single").val("");
             }
             break;
         }
@@ -218,11 +223,28 @@ $(document).keydown(function () {
         }
         case 86: {
             // V
-            const fov = prompt(
-                "Input a new field of view, in degrees, for the camera. Default is 80.",
-            );
-            if (fov) {
-                $("#camera").attr("camera", `far: 1000000000; fov: ${fov}`);
+            if($("#prompt").css("display")=="none"){
+                $("#prompt").css("display","inline");
+                $("#prompt-text").html("Input a new field of view, in degrees, for the camera. Default is 80.");
+                $("#prompt-text").css("font-size","1.55em");
+                $("#single-go").attr("onclick",`handleV();`);
+            }else{
+                $("#prompt").css("display","none");
+                $("#single").val("");
+            }
+            break;
+        }
+        case 82: {
+            // R
+            if ($("#route-box").css("display")=="none"){
+                $("#route-box").css("display","block");
+                const canvas = document.getElementById("draw");
+                const ctx = canvas.getContext("2d");
+                const map = document.getElementById("map");
+                ctx.drawImage(map,0,0,3200,3200);
+            }else{
+                $("#route-box").css("display","none");
+                $(".rinp").val("");
             }
             break;
         }
@@ -418,6 +440,22 @@ async function start() {
     interv1 = setInterval(update_data, 2000);
 }
 
+function handleX(){
+    const ne = $("#single").val();
+    if (ne) {
+        siz = parseInt(ne);
+    }
+    $("#prompt").css("display","none");
+    $("#single").val("");
+}
+function handleV(){
+    const fov = $("#single").val();
+    if(fov){
+        $("#camera").attr("camera", `far: 1000000000; fov: ${fov}`);
+    }
+    $("#prompt").css("display","none");
+    $("#single").val("");
+}
 function slopecost(sl1,in1,sl2,in2,lim){
     const slo = slope[sl1][in1];
     const slp = slope[sl2][in2];
@@ -449,6 +487,9 @@ function AStar(bsl,bind,esl,eind,lim){
                 current = j;
                 min = fScore[current];
             }
+        }
+        if(it%1000000==0){
+            console.log(`Iteration: ${it}, time: ${new Date() - star}ms`);
         }
         if(current==makePoint(esl,eind)){
             console.log(`Reached destination after ${new Date() - star} ms and ${it} iterations.`);
@@ -495,4 +536,86 @@ function getIndex(point){
 }
 function extractPoint(point){
     return [getSubList(point),getIndex(point)];
+}
+function wayfind(){
+    const canvas = document.getElementById("draw");
+    const ctx = canvas.getContext("2d");
+    const canvasW = canvas.width;
+    const canvasH = canvas.height;
+    console.log(`width: ${canvasW}, height: ${canvasH}`);
+    const map = document.getElementById("map");
+    $("#progress").html("Finding route...");
+    const desl = parseInt($("#sublist").val());
+    const dein = parseInt($("#index").val());
+    const ms = parseInt($("#slope").val());
+    rcalc = [];
+    const indic = indexes(
+        document.querySelector("#camera").object3D.position.x,
+        document.querySelector("#camera").object3D.position.z,
+    );
+    if(slope[desl][dein]>=ms){
+        $("#progress").html("Route failed!");
+        return false;
+    }
+    const nrt = AStar(indic[0],indic[1],desl,dein,ms);
+    if(nrt==false){
+        $("#progress").html("Route failed!");
+        return false;
+    }
+    for(const c of nrt){
+        rcalc.push(extractPoint(c));
+    }
+    $("#progress").html("Route found!");
+    let misl = 3201;
+    for(let i = 0; i<rcalc.length; i++){
+        if(rcalc[i][0]<misl){
+            misl = rcalc[i][0];
+        }
+    }
+    misl-=margin;
+    let mind = 3200;
+    for(let i = 0; i<rcalc.length; i++){
+        if(rcalc[i][1]<mind){
+            mind = rcalc[i][1];
+        }
+    }
+    mind-=margin;
+    let masl = -1;
+    for(let i = 0; i<rcalc.length; i++){
+        if(rcalc[i][0]>masl){
+            masl = rcalc[i][0];
+        }
+    }
+    masl+=margin;
+    let mand = -1;
+    for(let i = 0; i<rcalc.length; i++){
+        if(rcalc[i][1]>mand){
+            mand = rcalc[i][1];
+        }
+    }
+    mand+=margin;
+    if(misl<0){
+        misl = 0;
+    }
+    if(mind<0){
+        mind = 0;
+    }
+    if(masl>3199){
+        masl = 3199;
+    }
+    if(mand>3199){
+        mand = 3199;
+    }
+    const wid = Math.max(mand-mind,masl-misl);
+    masl = misl+wid;
+    mand = mind+wid;
+    ctx.drawImage(map,mind,misl,wid,wid,0,0,3200,3200);
+    ctx.fillStyle = "rgb(250,121,7)";
+    ctx.fillRect((((indic[1]-mind)/wid)*canvasW)-60,(((indic[0]-misl)/wid)*canvasH)-60,120,120);
+    ctx.fillStyle = "rgb(154,93,240)";
+    ctx.fillRect((((dein-mind)/wid)*canvasW)-60,(((desl-misl)/wid)*canvasH)-60,120,120);
+    ctx.fillStyle = "rgb(56,242,96)";
+    for(let i = 0; i<rcalc.length; i++){
+        ctx.fillRect((((rcalc[i][1]-mind)/wid)*canvasW)-10,(((rcalc[i][0]-misl)/wid)*canvasH)-10,20,20);
+    }
 }

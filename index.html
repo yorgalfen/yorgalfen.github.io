@@ -52,6 +52,29 @@
                 ></a-entity>
             </a-entity>
         </a-scene>
+        <img id="map" src="slopemap.png">
 		<div id="info"><p id="data">Welcome to the Liebnitz Beta Plateau!<br>Press H for help.<br>Loading...</p></div>
+        <div id="prompt">
+            <p id="prompt-text"></p>
+            <input type="text" id="single">
+            <button id="single-go">Confirm</button>
+        </div>
+        <div id="route-box">
+            <h2>Route Planning</h2>Enter your desired destination site, in grid indices.<br><br>
+            <table id="route-inputs">
+                <tr><td>subList:</td><td>index:</td><td>Max slope:</td></tr>
+                <tr><td><input class="rinp" id="sublist"></td><td><input class="rinp" id="index"></td><td><input class="rinp" id="slope"></td></tr></table>
+            <table id="text-et-button">
+                <tr><td class="progress-cell"><p id="progress"></p></td><td class="progress-cell"><button id="plan" onclick="wayfind();">Plan Route</button></td></tr>
+            </table>
+            <table id="canvas-et-data">
+                <tr><td id="canv-cell"><canvas id="draw" width="3200" height="3200"></canvas></td><td id="subtable">
+                    <table id="data-et-apply">
+                        <tr><td id="route-data-cell"><p id="route-data">This is where the path length, minimum slope, and other data will appear.</p></td></tr>
+                        <tr><td id="apply-contain"><button id="route-applier">Apply Route</button></td></tr>
+                    </table>
+                </td></tr>
+            </table>
+        </div>
     </body>
 </html>
