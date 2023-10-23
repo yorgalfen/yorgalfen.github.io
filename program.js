@@ -152,17 +152,27 @@ $(document).keydown(() => {
             break;
         case 77: {
             // M
-            const me = prompt("Input a new slope above which squares will be marked in red.");
-            if (me) {
-                hes = parseFloat(me);
+            if($("#prompt").css("display")=="none"){
+                $("#prompt").css("display","inline");
+                $("#prompt-text").html("Input a new slope, in degrees, below which slopes will be part of the gradient.");
+                $("#prompt-text").css("font-size","1.4em");
+                $("#single-go").attr("onclick",`handleM();`);
+            }else{
+                $("#prompt").css("display","none");
+                $("#single").val("");
             }
             break;
         }
         case 78: {
             // N
-            const mv = prompt("Input a new slope below which squares will be marked in green.");
-            if (mv) {
-                los = parseFloat(mv);
+            if($("#prompt").css("display")=="none"){
+                $("#prompt").css("display","inline");
+                $("#prompt-text").html("Input a new slope, in degrees, above which slopes will be part of the gradient.");
+                $("#prompt-text").css("font-size","1.4em");
+                $("#single-go").attr("onclick",`handleN();`);
+            }else{
+                $("#prompt").css("display","none");
+                $("#single").val("");
             }
             break;
         }
@@ -502,7 +512,7 @@ class TerrainGeometry {
         const routeColor = new THREE.Color(0x0000ff);
         const commsColor = new THREE.Color(0x00ffff);
         for (const pt of route) {
-            let [z, x] = pt.split("-");
+            let [z, x] = [pt[0],pt[1]];
             z -= z_off;
             x -= x_off;
             if (0 <= z && z < siz && 0 <= x && x < siz) {
@@ -515,7 +525,7 @@ class TerrainGeometry {
             }
         }
         for (const pt of comms) {
-            let [z, x] = pt.split("-");
+            let [z, x] = [pt[0],pt[1]];
             z -= z_off;
             x -= x_off;
             if (0 <= z && z < siz && 0 <= x && x < siz) {
@@ -552,6 +562,24 @@ function handleV(){
     const fov = $("#single").val();
     if(fov){
         $("#camera").attr("camera", `far: 1000000000; fov: ${fov}`);
+    }
+    $("#prompt").css("display","none");
+    $("#single").val("");
+}
+function handleM(){
+    const sl = $("#single").val();
+    if(sl){
+        hes = parseInt(sl);
+        geo.redraw();
+    }
+    $("#prompt").css("display","none");
+    $("#single").val("");
+}
+function handleN(){
+    const sl = $("#single").val();
+    if(sl){
+        los = parseInt(sl);
+        geo.redraw();
     }
     $("#prompt").css("display","none");
     $("#single").val("");
@@ -649,7 +677,7 @@ function wayfind(){
     const dein = parseInt($("#index").val());
     const ms = parseInt($("#slope").val());
     rcalc = [];
-    const indic = indexes(
+    const indic = dataIndexOf(
         document.querySelector("#camera").object3D.position.x,
         document.querySelector("#camera").object3D.position.z,
     );
@@ -718,6 +746,11 @@ function wayfind(){
     for(let i = 0; i<rcalc.length; i++){
         ctx.fillRect((((rcalc[i][1]-mind)/wid)*canvasW)-10,(((rcalc[i][0]-misl)/wid)*canvasH)-10,20,20);
     }
+}
+
+function applyRoute(){
+    route = rcalc;
+    geo.redraw();
 }
 
 const geo = new TerrainGeometry();
