@@ -1,27 +1,30 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
     <head>
         <title>NASA ADC</title>
         <script
             type="text/javascript"
-            src="https://aframe.io/releases/1.4.0/aframe.min.js"
+            src="https://aframe.io/releases/1.4.2/aframe.min.js"
         ></script>
         <link rel="icon" sizes="any" type="image/png" href="favicon.png" />
-		<link href="info-style.css" rel="stylesheet">
+        <link href="info-style.css" rel="stylesheet" />
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.slim.min.js"></script>
         <script type="text/javascript" src="program.js"></script>
     </head>
     <body>
-        <a-scene id="scene" build>
-            <a-assets>
-                <img id="home-small" src="home-small.png" />
+        <a-scene id="scene">
+            <a-assets timeout="30000">
                 <img id="home-big" src="home-big.png" />
-                <img id="home-red" src="home-red.png" />
-                <img id="home-green" src="home-green.png" />
-                <img id="home-yellow" src="home-yellow.png" />
-                <img id="home-blue" src="home-blue.png" />
                 <img id="earth" src="earth.png" />
                 <img id="sky" src="sky.jpg" />
+                <a-asset-item id="height" src="height.json"></a-asset-item>
+                <a-asset-item id="latl" src="latleft.json"></a-asset-item>
+                <a-asset-item id="latr" src="latright.json"></a-asset-item>
+                <a-asset-item id="longl" src="longleft.json"></a-asset-item>
+                <a-asset-item id="longr" src="longright.json"></a-asset-item>
+                <a-asset-item id="route" src="routen.json"></a-asset-item>
+                <a-asset-item id="comms" src="comms.json"></a-asset-item>
+                <a-asset-item id="slope" src="slope.json"></a-asset-item>
             </a-assets>
             <a-sky id="caelum" src="#sky" radius="500000000"></a-sky>
             <a-entity
@@ -34,7 +37,7 @@
             <a-sphere
                 id="terra"
                 position="-183750345 65161417 306355624"
-				rotation="165 64 -12"
+                rotation="165 64 -12"
                 material="src: #earth; shader: flat"
                 radius="6378100"
             ></a-sphere>
@@ -44,6 +47,7 @@
                 look-controls
                 position="0 6154.2 0"
                 id="camera"
+                frame-adjust
             >
                 <a-entity
                     position="0 0 1"
@@ -51,6 +55,12 @@
                     light="type: spot; angle: 55; intensity: 0.8; distance: 60; penumbra: 0.35; target: #camera;"
                 ></a-entity>
             </a-entity>
+            <a-entity
+                id="luna"
+                geometry="primitive: terrain; latl: #latl; latr: #latr; longl: #longl; longr: #longr;
+                    height: #height; slope: #slope; route: #route; comms: #comms;"
+                material="src: #home-big; side: double; roughness: 1; vertexColorsEnabled: true;"
+            ></a-entity>
         </a-scene>
         <img id="map" src="slopemap.png">
 		<div id="info"><p id="data">Welcome to the Liebnitz Beta Plateau!<br>Press H for help.<br>Loading...</p></div>

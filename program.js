@@ -1,12 +1,12 @@
-// rome-ignore lint/style/useSingleVarDeclarator:
-// rome-ignore lint/style/noVar: needed for window access when parsing JSONs
-var height, latl, latr, longl, longr, slope, route, comms;
-var rcalc = [];
+// biome-ignore lint/style/useSingleVarDeclarator:
+let height, latl, latr, longl, longr, slope, route, comms;
+let rcalc = [];
+let dataInterval;
+let frame = [1160, 1215];
 let ah = false;
-let n = 0;
 let los = 5;
 let hes = 15;
-let siz = 64;
+let siz = 200;
 const margin = 50;
 const mult = 9.5/5; // The slope-based multiplier for great circle distance for the cost estimator
 const centerLat = -85.3974303;
@@ -20,13 +20,10 @@ const earthCart = {
     z: -42100000,
 };
 const r = 1737400;
-// perf: 50-70ms idles, up to 300ms
-// Ideal: <16ms
+
 function update_data() {
-    const c = indexes(
-        document.querySelector("#camera").object3D.position.x,
-        document.querySelector("#camera").object3D.position.z,
-    );
+    const cameraPos = document.querySelector("#camera").object3D.position;
+    const c = dataIndexOf(cameraPos.x, cameraPos.z);
     const la = toRad(lat(c[0], c[1]));
     const lo = toRad(long(c[0], c[1]));
     const ra = height[c[0]][c[1]] + r;
@@ -50,35 +47,17 @@ function update_data() {
         }, column ${c[1]}.`,
     );
 }
-function update_scene() {
-    const start = new Date();
-    const ex = document.querySelector("#camera").object3D.position.x;
-    const ez = document.querySelector("#camera").object3D.position.z;
-    const f = indexes(ex, ez);
-    n++;
-    for (let z = f[0] - siz / 2; z < f[0] + siz / 2; z++) {
-        for (let x = f[1] - siz / 2; x <= f[1] + siz / 2; x++) {
-            if ($(`#${z}-${x}-top`).length) {
-                update(z, x);
-            } else {
-                tri(z, x);
-            }
-        }
-    }
-    $(`.${n - 1}`).remove();
-    const time = new Date() - start;
-    console.log(`Spent ${time}ms in update_scene`);
-}
-$(document).keydown(function () {
+$(document).keydown(() => {
+    const cameraPos = document.querySelector("#camera").object3D.position;
     switch (event.which) {
         case 81: // Q
             if (!ah) {
-                document.querySelector("#camera").object3D.position.y += 0.5;
+                cameraPos.y += 0.5;
             }
             break;
         case 69: // E
             if (!ah) {
-                document.querySelector("#camera").object3D.position.y -= 0.5;
+                cameraPos.y -= 0.5;
             }
             break;
         case 80: {
@@ -86,8 +65,7 @@ $(document).keydown(function () {
             const npo = prompt("Go to position? View help page for info.");
             if (npo) {
                 ah = false;
-                clearInterval(interv);
-                clearInterval(interv1);
+                clearInterval(dataInterval);
                 if (npo.charAt(0) === "-") {
                     const f = npo.split(" ");
                     const dela = parseFloat(f[0]);
@@ -127,54 +105,21 @@ $(document).keydown(function () {
                             b = Math.abs(b);
                             break;
                     }
-                    const nsu = 1160 + Math.round(a / vdis);
-                    const nind = 1215 + Math.round(b / hdis);
-                    const g = [nsu, nind];
-                    n++;
-                    for (let z = g[0] - siz / 2; z < g[0] + siz / 2; z++) {
-                        for (let x = g[1] - siz / 2; x <= g[1] + siz / 2; x++) {
-                            if ($(`#${z}-${x}-top`).length) {
-                                $(`#${z}-${x}-top`).attr("class", n);
-                                $(`#${z}-${x}-bot`).attr("class", n);
-                            } else {
-                                tri(z, x);
-                            }
-                        }
-                    }
-                    $(`.${n - 1}`).remove();
-                    $("#camera").attr(
-                        "position",
-                        coord(
-                            parseFloat(lat(parseInt(g[0]), parseInt(g[1]))),
-                            parseFloat(long(parseInt(g[0]), parseInt(g[1]))),
-                            parseFloat(height[parseInt(g[0])][parseInt(g[1])]) + 1.6,
-                        ),
-                    );
+                    frame[0] = 1160 + Math.round(a / vdis);
+                    frame[1] = 1215 + Math.round(b / hdis);
                 } else {
-                    const f = npo.split(" ");
-                    n++;
-                    for (let z = parseInt(f[0]) - siz / 2; z < parseInt(f[0]) + siz / 2; z++) {
-                        for (let x = parseInt(f[1]) - siz / 2; x <= parseInt(f[1]) + siz / 2; x++) {
-                            if ($(`#${z}-${x}-top`).length) {
-                                $(`#${z}-${x}-top`).attr("class", n);
-                                $(`#${z}-${x}-bot`).attr("class", n);
-                            } else {
-                                tri(z, x);
-                            }
-                        }
-                    }
-                    $(`.${n - 1}`).remove();
-                    $("#camera").attr(
-                        "position",
-                        coord(
-                            parseFloat(lat(parseInt(f[0]), parseInt(f[1]))),
-                            parseFloat(long(parseInt(f[0]), parseInt(f[1]))),
-                            parseFloat(height[parseInt(f[0])][parseInt(f[1])]) + 1.6,
-                        ),
-                    );
+                    frame = npo.split(" ").map(Number);
                 }
-                interv = setInterval(update_scene, 10000);
-                interv1 = setInterval(update_data, 2000);
+                const newPosition = coord(
+                    lat(frame[0], frame[1]),
+                    long(frame[0], frame[1]),
+                    height[frame[0]][frame[1]] + 1.6,
+                );
+                $("#camera").attr("position", newPosition.map((x) => x.toFixed(3)).join(" "));
+                geo.redraw();
+                update_data();
+                // Re-set intervals for redraw and data
+                dataInterval = setInterval(update_data, 2000);
             }
             break;
         }
@@ -248,28 +193,7 @@ $(document).keydown(function () {
             }
             break;
         }
-        default: // W, A, S, D
-            if (
-                (event.which === 65 ||
-                    event.which === 87 ||
-                    event.which === 83 ||
-                    event.which === 68) &&
-                ah
-            ) {
-                const d = indexes(
-                    document.querySelector("#camera").object3D.position.x,
-                    document.querySelector("#camera").object3D.position.z,
-                );
-                document.querySelector("#camera").object3D.position.y =
-                    parseFloat($(`#${d[0]}-${d[1]}-bot`).attr("vertex-c").split(" ")[1]) + 1.6;
-            }
-            break;
     }
-});
-AFRAME.registerComponent("build", {
-    init: function () {
-        start();
-    },
 });
 function toRad(x) {
     return (x * Math.PI) / 180;
@@ -332,118 +256,294 @@ function coord(la, lo, he) {
     const g = gcdis(centerLat, centerLong, la, lo);
     const sgr = Math.sin(g / r);
     const x = (r + he) * sgr * Math.sin(b);
-    const y = he * Math.cos(g/r) - 2 * r * Math.pow(Math.sin(g / (2 * r)), 2);
+    const y = he * Math.cos(g / r) - 2 * r * Math.sin(g / (2 * r)) ** 2;
     const z = (r + he) * sgr * Math.cos(b);
-    return `${x.toFixed(3)} ${y.toFixed(3)} ${z.toFixed(3)}`;
+    return [x, y, z];
 }
-function tri(subList, index) {
-    let col;
-    const a = coord(lat(subList, index), long(subList, index), height[subList][index]);
-    const c = coord(lat(subList - 1, index), long(subList - 1, index), height[subList - 1][index]);
-    const b = coord(
-        lat(subList - 1, index + 1),
-        long(subList - 1, index + 1),
-        height[subList - 1][index + 1],
-    );
-    const d = coord(lat(subList, index + 1), long(subList, index + 1), height[subList][index + 1]);
-    if (slope[subList][index] >= hes) {
-        col = "red";
-    } else {
-        if (route.includes(`${subList}-${index}`)) {
-            if (comms.includes(`${subList}-${index}`)) {
-                col = "blue";
-            } else {
-                col = "yellow";
+
+// Usually, z would be subList and x would be index,
+// but are named here for consistency with its caller TerrainGeometry
+function rectCoord(z, x) {
+    const a = coord(lat(z, x), long(z, x), height[z][x]);
+    const c = coord(lat(z - 1, x), long(z - 1, x), height[z - 1][x]);
+    const b = coord(lat(z - 1, x + 1), long(z - 1, x + 1), height[z - 1][x + 1]);
+    const d = coord(lat(z, x + 1), long(z, x + 1), height[z][x + 1]);
+    return [...a, ...b, ...c, ...d];
+}
+
+// Map slope of points in frame to a color between green and red,
+// where a slope of 0 is #00ff00 and 25.5 is #ff0000
+function colorizeSlope(colors) {
+    const sub_off = frame[0] - siz / 2;
+    const ind_off = frame[1] - siz / 2;
+
+    const color = new THREE.Color();
+    const red = new THREE.Color(0xff0000);
+    const green = new THREE.Color(0x00ff00);
+    for (let sub = 0; sub < siz; sub++) {
+        for (let ind = 0; ind < siz; ind++) {
+            const at = sub * siz * 18 + ind * 18;
+
+            // Color slopes <= los completely green
+            // and slopes >= hes completely red
+            const intensity = Math.max(
+                Math.min((slope[sub + sub_off][ind + ind_off] - los) / (hes - los), 1.0),
+                0.0,
+            );
+            // Interpolate between green and red,
+            // where an intensity closer to 1 is more red
+            color.copy(green);
+            color.lerp(red, intensity);
+            for (let i = 0; i < 18; i += 3) {
+                colors[at + i + 0] = color.r;
+                colors[at + i + 1] = color.g;
+                colors[at + i + 2] = color.b;
             }
-        } else if (slope[subList][index] <= los) {
-            col = "green";
-        } else {
-            col = "big";
-        }
-    }
-    $("#scene")
-        .append(`<a-triangle id="${subList}-${index}-top" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${c}" material="side: double; roughness: 1" src="#home-${col}">
-    </a-triangle><a-triangle id="${subList}-${index}-bot" class="${n}" vertex-a="${a}" vertex-b="${b}" vertex-c="${d}" material="side: double; roughness: 1" src="#home-${col}"></a-triangle>`);
-}
-function update(z, x) {
-    const fid = `${z}-${x}`;
-    const slo = slope[z][x];
-    $(`#${fid}-top`).attr("class", n);
-    $(`#${fid}-bot`).attr("class", n);
-    if (!route.includes(fid)) {
-        if (slo >= hes && $(`#${fid}-top`).attr("src") !== "#home-red") {
-            $(`#${fid}-top`).attr("src", "#home-red");
-            $(`#${fid}-bot`).attr("src", "#home-red");
-        } else if (slo <= los && $(`#${fid}-top`).attr("src") !== "#home-green") {
-            $(`#${fid}-top`).attr("src", "#home-green");
-            $(`#${fid}-bot`).attr("src", "#home-green");
-        } else if (slo > los && slo < hes && $(`#${fid}-top`).attr("src") !== "#home-big") {
-            $(`#${fid}-top`).attr("src", "#home-big");
-            $(`#${fid}-bot`).attr("src", "#home-big");
         }
     }
 }
-function indexes(camx, camz) {
-    if ($("a-triangle[id*=top]").length) {
-        let sub;
-        let ind;
-        $("a-triangle[id*=top]").each(function () {
-            id = $(this).attr("id");
-            sub = parseInt(id.slice(0, id.indexOf("-")));
-            ind = parseInt(id.slice(id.indexOf("-") + 1, id.lastIndexOf("-")));
-            const a = $(this).attr("vertex-a").split(" ").map(parseFloat);
-            const b = $(this).attr("vertex-b").split(" ").map(parseFloat);
-            const c = $(this).attr("vertex-c").split(" ").map(parseFloat);
-            const d = $(`#${sub}-${ind}-bot`).attr("vertex-c").split(" ").map(parseFloat);
+
+// Returns the [subList, index] within the latitude and longitude
+// corresponding to the A-Frame coordinates camx and camz.
+// camx and camz must be coordinates on the mesh
+// perf: this function is the slowest part of the program,
+// try to avoid calls here when possible
+function dataIndexOf(camx, camz) {
+    const sub_off = frame[0] - siz / 2;
+    const ind_off = frame[1] - siz / 2;
+
+    for (let sub = 0; sub < siz; sub++) {
+        for (let ind = 0; ind < siz; ind++) {
+            const at = sub * siz * 18 + ind * 18;
+
+            // get four corners of rectangle
+            // depends on order in TerrainGeometry's triangle_spec
+            const a = geo.vertices.slice(at + 0, at + 3);
+            const b = geo.vertices.slice(at + 3, at + 6);
+            const c = geo.vertices.slice(at + 6, at + 9);
+            const d = geo.vertices.slice(at + 15, at + 18);
+
             const minz = Math.min(a[2], b[2], c[2], d[2]);
             const minx = Math.min(a[0], b[0], c[0], d[0]);
             const maxz = Math.max(a[2], b[2], c[2], d[2]);
             const maxx = Math.max(a[0], b[0], c[0], d[0]);
+
             if (camx >= minx && camx <= maxx && camz >= minz && camz <= maxz) {
-                return false;
+                return [sub + sub_off, ind + ind_off];
             }
-        });
-        return [sub, ind];
-    } else {
-        return [1160, 1215];
+        }
+    }
+    throw RangeError(`Camera position (${camx}, ${camz}) is not on screen!`);
+}
+
+class JSONAssetType {
+    #tag;
+
+    constructor() {
+        this.type = "asset";
+        // These assignments look unnecessary,
+        // but are required to make A-Frame recognize the class methods.
+        this.parse = this.parse;
+        this.stringify = this.stringify;
+    }
+    parse(value) {
+        this.#tag = value;
+        // Remove initial # character
+        const el = document.getElementById(value.substr(1));
+        return JSON.parse(el.data);
+    }
+    stringify() {
+        return this.#tag;
     }
 }
 
-async function start() {
-    const start = new Date();
+class TerrainGeometry {
+    constructor() {
+        this.geometry = new THREE.BufferGeometry();
+        this.resize();
 
-    const assets = [
-        ["height.json", "height"],
-        ["latleft.json", "latl"],
-        ["latright.json", "latr"],
-        ["longleft.json", "longl"],
-        ["longright.json", "longr"],
-        ["routen.json", "route"],
-        ["comms.json", "comms"],
-        ["slope.json", "slope"],
-    ];
-    const promises = assets.map((item) =>
-        fetch(item[0])
-            .then((response) => response.json())
-            .then((content) => {
-                window[item[1]] = content;
-            }),
-    );
+        this.colorizer = colorizeSlope;
 
-    await Promise.all(promises).catch((error) => {
-        console.error(error.message);
-    });
+        // Properties from HTML attributes
+        this.schema = {
+            latl: new JSONAssetType(),
+            latr: new JSONAssetType(),
+            longl: new JSONAssetType(),
+            longr: new JSONAssetType(),
+            height: new JSONAssetType(),
+            slope: new JSONAssetType(),
+            route: new JSONAssetType(),
+            comms: new JSONAssetType(),
+        };
+        // Same reason for usually unnecessary assignment
+        this.init = this.init;
+        this.redraw = this.redraw;
+        this.resize = this.resize;
+    }
+    resize() {
+        this.vertices = new Float32Array(3 * 6 * siz * siz);
+        this.verticesAttr = new THREE.BufferAttribute(this.vertices, 3);
+        this.verticesAttr.setUsage(THREE.DynamicDrawUsage);
+        this.normals = new Float32Array(this.vertices.length);
+        this.normalAttr = new THREE.BufferAttribute(this.normals, 3);
+        this.normalAttr.setUsage(THREE.DynamicDrawUsage);
+        this.uvs = new Float32Array(2 * 6 * siz * siz);
+        this.uvAttr = new THREE.BufferAttribute(this.uvs, 2);
+        this.uvAttr.setUsage(THREE.DynamicDrawUsage);
+        this.color = new Float32Array(this.vertices.length);
+        this.colorAttr = new THREE.BufferAttribute(this.color, 3);
+        this.colorAttr.setUsage(THREE.DynamicDrawUsage);
+        this.indices = Array(6 * siz * siz);
 
-    const time = new Date() - start;
-    console.log(`Spent ${time}ms in init()`);
-    interv = setInterval(update_scene, 10000);
-    interv1 = setInterval(update_data, 2000);
+        this.geometry.setAttribute("position", this.verticesAttr);
+        this.geometry.setAttribute("normal", this.normalAttr);
+        this.geometry.setAttribute("uv", this.uvAttr);
+        this.geometry.setAttribute("color", this.colorAttr);
+    }
+    init(data) {
+        const start = new Date();
+
+        latl = data.latl;
+        latr = data.latr;
+        longl = data.longl;
+        longr = data.longr;
+        height = data.height;
+        slope = data.slope;
+        route = data.route;
+        comms = data.comms;
+
+        this.redraw();
+
+        // Ready to start drawing HUD
+        dataInterval = setInterval(update_data, 2000);
+
+        const time = new Date() - start;
+        console.log(`Spent ${time}ms in TerrainGeometry.init()`);
+    }
+    redraw() {
+        // perf: kept as local variables to avoid slow object accesses
+        const vertices = this.vertices;
+        const normals = this.normals;
+        const indices = this.indices;
+        const color = this.color;
+
+        const triangle_spec = [0, 1, 2, 0, 1, 3];
+        // Texture coordinates in 2 bits,
+        // where the low bit is U (texture X) and the high bit is V (texture Y)
+        const uv_spec = [2, 1, 0, 2, 1, 3];
+
+        const pA = new THREE.Vector3();
+        const pB = new THREE.Vector3();
+        const pC = new THREE.Vector3();
+        const cb = new THREE.Vector3();
+        const ab = new THREE.Vector3();
+
+        // Normally, z would be called subList and x would be index,
+        // however, I use z and x instead to avoid confusing index
+        // with the three.js indices array
+        // fixme: inverted mesh
+        const z_off = frame[0] - siz / 2;
+        const x_off = frame[1] - siz / 2;
+        for (let z = 0; z < siz; z++) {
+            for (let x = 0; x < siz; x++) {
+                const at = z * siz * 18 + x * 18;
+
+                const rect = rectCoord(z + z_off, x + x_off);
+                const uvAt = z * siz * 12 + x * 12;
+                for (let i = 0; i < 6; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        vertices[at + i * 3 + j] = rect[3 * triangle_spec[i] + j];
+                    }
+                    this.uvs[uvAt + 2 * i + 0] = (uv_spec[i] & 0x1) >> 0;
+                    this.uvs[uvAt + 2 * i + 1] = (uv_spec[i] & 0x2) >> 1;
+                }
+
+                // Calculate flat face normals for:
+
+                // Triangle 1
+                pA.set(rect[0], rect[1], rect[2]);
+                pB.set(rect[3], rect[4], rect[5]);
+                pC.set(rect[6], rect[7], rect[8]);
+
+                cb.subVectors(pC, pB);
+                ab.subVectors(pA, pB);
+                cb.cross(ab);
+                cb.normalize();
+                for (let i = 0; i < 9; i += 3) {
+                    normals[at + i + 0] = cb.x;
+                    normals[at + i + 1] = cb.y;
+                    normals[at + i + 2] = cb.z;
+                }
+
+                // Triangle 2
+                pC.set(rect[9], rect[10], rect[11]);
+
+                cb.subVectors(pC, pB);
+                ab.subVectors(pA, pB);
+                cb.cross(ab);
+                cb.normalize();
+                for (let i = 9; i < 18; i += 3) {
+                    normals[at + i + 0] = cb.x;
+                    normals[at + i + 1] = cb.y;
+                    normals[at + i + 2] = cb.z;
+                }
+
+                // Calculate indices
+                const indexStart = z * siz * 6 + x * 6;
+                const indexAt = z * siz * 6 + x * 6;
+                for (let i = 0; i < 6; i++) {
+                    indices[indexAt + i] = indexStart + i;
+                }
+            }
+        }
+        this.colorizer(color);
+        // Always apply route and comms coloring,
+        // which overrides anything set by the colorizer
+        const routeColor = new THREE.Color(0x0000ff);
+        const commsColor = new THREE.Color(0x00ffff);
+        for (const pt of route) {
+            let [z, x] = pt.split("-");
+            z -= z_off;
+            x -= x_off;
+            if (0 <= z && z < siz && 0 <= x && x < siz) {
+                const at = z * siz * 18 + x * 18;
+                for (let i = 0; i < 18; i += 3) {
+                    color[at + i + 0] = routeColor.r;
+                    color[at + i + 1] = routeColor.g;
+                    color[at + i + 2] = routeColor.b;
+                }
+            }
+        }
+        for (const pt of comms) {
+            let [z, x] = pt.split("-");
+            z -= z_off;
+            x -= x_off;
+            if (0 <= z && z < siz && 0 <= x && x < siz) {
+                const at = z * siz * 18 + x * 18;
+                for (let i = 0; i < 18; i += 3) {
+                    color[at + i + 0] = commsColor.r;
+                    color[at + i + 1] = commsColor.g;
+                    color[at + i + 2] = commsColor.b;
+                }
+            }
+        }
+
+        this.verticesAttr.needsUpdate = true;
+        this.normalAttr.needsUpdate = true;
+        this.uvAttr.needsUpdate = true;
+        this.colorAttr.needsUpdate = true;
+
+        this.geometry.setIndex(indices);
+        this.geometry.computeBoundingSphere();
+    }
 }
 
 function handleX(){
     const ne = $("#single").val();
     if (ne) {
         siz = parseInt(ne);
+        geo.resize();
+        geo.redraw();
     }
     $("#prompt").css("display","none");
     $("#single").val("");
@@ -619,3 +719,36 @@ function wayfind(){
         ctx.fillRect((((rcalc[i][1]-mind)/wid)*canvasW)-10,(((rcalc[i][0]-misl)/wid)*canvasH)-10,20,20);
     }
 }
+
+const geo = new TerrainGeometry();
+AFRAME.registerGeometry("terrain", geo);
+
+// Adjust height (if set) and check if moving the frame is necessary
+AFRAME.registerComponent("frame-adjust", {
+    tick: function () {
+        const start = new Date();
+        const cameraPos = this.el.object3D.position;
+        if (this.cameraPos?.equals(cameraPos)) {
+            // position didn't change
+            return;
+        }
+        this.cameraPos = cameraPos.clone();
+
+        // If the camera position exceeds one-fourth the radius from the center
+        // of the geometry's bounding sphere,
+        // re-center the frame at the camera position.
+        const view = geo.geometry.boundingSphere;
+        if (view.distanceToPoint(cameraPos) >= -3 * view.radius / 4) {
+            frame = dataIndexOf(cameraPos.x, cameraPos.z);
+            geo.redraw();
+        }
+
+        // Shouldn't matter, but automatic height adjustment occurs after recentering
+        if (ah) {
+            const d = dataIndexOf(cameraPos.x, cameraPos.z);
+            cameraPos.y = height[d[0]][d[1]] + 1.6;
+        }
+        const time = new Date() - start;
+        console.log(`Spent ${time}ms in tick()`);
+    },
+});
