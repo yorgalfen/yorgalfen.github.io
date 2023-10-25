@@ -7,6 +7,7 @@ let ah = false;
 let los = 5;
 let hes = 15;
 let siz = 200;
+const zeroCostSlope = 5;
 const margin = 50;
 const mult = 9.5/5; // The slope-based multiplier for great circle distance for the cost estimator
 const centerLat = -85.3974303;
@@ -200,6 +201,7 @@ $(document).keydown(() => {
             }else{
                 $("#route-box").css("display","none");
                 $(".rinp").val("");
+                $("#progress").empty();
             }
             break;
         }
@@ -585,26 +587,35 @@ function handleN(){
     $("#single").val("");
 }
 function slopecost(sl1,in1,sl2,in2,lim){
-    const slo = slope[sl1][in1];
-    const slp = slope[sl2][in2];
-    if(slo>=lim||slp>=lim){
+    const slo = slope[sl1]?.[in1];
+    const slp = slope[sl2]?.[in2];
+    if(slo===undefined||slp===undefined||slo>=lim||slp>=lim){
         return Infinity;
     }
-    return (slo+slp)/2;
+    const x = Math.max(slo,slp);
+    const five_lim = zeroCostSlope-lim;
+    const m = -1/(five_lim*five_lim*five_lim);
+    const x_lim = x-lim;
+    const estim = costestimator(sl1,in1,sl2,in2);
+    return Math.max(estim*(2-m*x_lim*x_lim*x_lim),estim);
 }
 function costestimator(sl1,in1,sl2,in2){
-    return gcdis(lat(sl1,in1),long(sl1,in1),lat(sl2,in2),long(sl2,in2))*mult;
+        let cs = coord(lat(sl1,in1),long(sl1,in1),height[sl1][in1]);
+        let cd = coord(lat(sl2,in2),long(sl2,in2),height[sl2][in2]);
+        // return Math.max(Math.abs(cd[0]-cs[0]),Math.abs(cd[1]-cs[1]),Math.abs(cd[2]-cs[2]));
+        return Math.hypot(cs[0]-cd[0],cs[1]-cd[1],cs[2]-cd[2]);
 }
 function AStar(bsl,bind,esl,eind,lim){
     let star = new Date();
     let it = 0;
     const spoi = makePoint(bsl,bind);
     let openSet = [spoi];
-    let cameFrom = Array(makePoint(3200,3200));
-    let gScore = Array(makePoint(3200,3200));
+    const cameFrom = new Int32Array(makePoint(3200,3200));
+    cameFrom.fill(-1);
+    const gScore = new Float32Array(makePoint(3200,3200));
     gScore.fill(Infinity);
     gScore[spoi] = 0;
-    let fScore = Array(makePoint(3200,3200));
+    const fScore = new Float32Array(makePoint(3200,3200));
     fScore.fill(Infinity);
     fScore[spoi] = costestimator(bsl,bind,esl,eind);
     while (openSet.length>0){
@@ -617,7 +628,11 @@ function AStar(bsl,bind,esl,eind,lim){
             }
         }
         if(it%1000000==0){
-            console.log(`Iteration: ${it}, time: ${new Date() - star}ms`);
+            console.log(`Iteration: ${it}, time: ${new Date() - star}ms, current: ${extractPoint(current)}, openSet is ${openSet.length} long.`);
+        }
+        if(it==10240000){
+            console.log(`Broken after ${new Date() - star}ms, openSet is ${openSet.length} long. current is ${extractPoint(current)}`);
+            return false;
         }
         if(current==makePoint(esl,eind)){
             console.log(`Reached destination after ${new Date() - star} ms and ${it} iterations.`);
@@ -643,11 +658,12 @@ function AStar(bsl,bind,esl,eind,lim){
         }
         it++;
     }
+    console.log("About to end due to openSet being empty.");
     return false;
 }
 function reconstruct_path(cameFrom,current){
     let totalPath = [current];
-    while (cameFrom[current]!=null){
+    while (cameFrom[current]!==-1){
         current = cameFrom[current];
         totalPath.unshift(current);
     }
@@ -670,12 +686,11 @@ function wayfind(){
     const ctx = canvas.getContext("2d");
     const canvasW = canvas.width;
     const canvasH = canvas.height;
-    console.log(`width: ${canvasW}, height: ${canvasH}`);
     const map = document.getElementById("map");
     $("#progress").html("Finding route...");
     const desl = parseInt($("#sublist").val());
     const dein = parseInt($("#index").val());
-    const ms = parseInt($("#slope").val());
+    const ms = parseFloat($("#slinp").val());
     rcalc = [];
     const indic = dataIndexOf(
         document.querySelector("#camera").object3D.position.x,
@@ -742,7 +757,7 @@ function wayfind(){
     ctx.fillRect((((indic[1]-mind)/wid)*canvasW)-60,(((indic[0]-misl)/wid)*canvasH)-60,120,120);
     ctx.fillStyle = "rgb(154,93,240)";
     ctx.fillRect((((dein-mind)/wid)*canvasW)-60,(((desl-misl)/wid)*canvasH)-60,120,120);
-    ctx.fillStyle = "rgb(56,242,96)";
+    ctx.fillStyle = "rgb(19,19,209)";
     for(let i = 0; i<rcalc.length; i++){
         ctx.fillRect((((rcalc[i][1]-mind)/wid)*canvasW)-10,(((rcalc[i][0]-misl)/wid)*canvasH)-10,20,20);
     }
@@ -759,7 +774,7 @@ AFRAME.registerGeometry("terrain", geo);
 // Adjust height (if set) and check if moving the frame is necessary
 AFRAME.registerComponent("frame-adjust", {
     tick: function () {
-        const start = new Date();
+        // const start = new Date();
         const cameraPos = this.el.object3D.position;
         if (this.cameraPos?.equals(cameraPos)) {
             // position didn't change
@@ -781,7 +796,7 @@ AFRAME.registerComponent("frame-adjust", {
             const d = dataIndexOf(cameraPos.x, cameraPos.z);
             cameraPos.y = height[d[0]][d[1]] + 1.6;
         }
-        const time = new Date() - start;
-        console.log(`Spent ${time}ms in tick()`);
+        // const time = new Date() - start;
+        // console.log(`Spent ${time}ms in tick()`);
     },
 });
