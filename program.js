@@ -21,6 +21,18 @@ const earthCart = {
     z: -42100000,
 };
 const r = 1737400;
+const costFunction = {
+    "std": slopecost,
+    "dis": distancecost,
+    "hil": heightcost,
+    // "ear": visibilitycost,
+}
+const estimators = {
+    "std": costestimator,
+    "dis": costestimator,
+    "hil": heightestimator,
+    // "ear": visibilityestimator,
+}
 
 function update_data() {
     const cameraPos = document.querySelector("#camera").object3D.position;
@@ -599,13 +611,32 @@ function slopecost(sl1,in1,sl2,in2,lim){
     const estim = costestimator(sl1,in1,sl2,in2);
     return Math.max(estim*(2-m*x_lim*x_lim*x_lim),estim);
 }
+function distancecost(sl1,in1,sl2,in2,lim){
+    const slo = slope[sl1]?.[in1];
+    const slp = slope[sl2]?.[in2];
+    if(slo===undefined||slp===undefined||slo>=lim||slp>=lim){
+        return Infinity;
+    }
+    return costestimator(sl1,in1,sl2,in2);
+}
+function heightestimator(sl1,in1,sl2,in2){
+    return Math.max(height[sl2][in2]-height[sl1][in1],0);
+}
+function heightcost(sl1,in1,sl2,in2,lim){
+    const slo = slope[sl1]?.[in1];
+    const slp = slope[sl2]?.[in2];
+    if(slo===undefined||slp===undefined||slo>=lim||slp>=lim){
+        return Infinity;
+    }
+    return heightestimator(sl1,in1,sl2,in2);
+}
 function costestimator(sl1,in1,sl2,in2){
         let cs = coord(lat(sl1,in1),long(sl1,in1),height[sl1][in1]);
         let cd = coord(lat(sl2,in2),long(sl2,in2),height[sl2][in2]);
         // return Math.max(Math.abs(cd[0]-cs[0]),Math.abs(cd[1]-cs[1]),Math.abs(cd[2]-cs[2]));
         return Math.hypot(cs[0]-cd[0],cs[1]-cd[1],cs[2]-cd[2]);
 }
-function AStar(bsl,bind,esl,eind,lim){
+function AStar(bsl,bind,esl,eind,lim,cost,est){
     let star = new Date();
     let it = 0;
     const spoi = makePoint(bsl,bind);
@@ -617,7 +648,7 @@ function AStar(bsl,bind,esl,eind,lim){
     gScore[spoi] = 0;
     const fScore = new Float32Array(makePoint(3200,3200));
     fScore.fill(Infinity);
-    fScore[spoi] = costestimator(bsl,bind,esl,eind);
+    fScore[spoi] = est(bsl,bind,esl,eind);
     while (openSet.length>0){
         let current = Infinity;
         let min = Infinity;
@@ -646,11 +677,11 @@ function AStar(bsl,bind,esl,eind,lim){
         makePoint(sl,de-1),makePoint(sl,de+1),makePoint(sl+1,de-1),makePoint(sl+1,de),
         makePoint(sl+1,de-1)];
         for(let i = 0; i<8; i++){
-            tentative_gScore = gScore[current] + slopecost(sl,de,getSubList(neighbors[i]),getIndex(neighbors[i]),lim);
+            tentative_gScore = gScore[current] + cost(sl,de,getSubList(neighbors[i]),getIndex(neighbors[i]),lim);
             if (tentative_gScore<gScore[neighbors[i]]){
                 cameFrom[neighbors[i]] = current;
                 gScore[neighbors[i]] = tentative_gScore;
-                fScore[neighbors[i]] = tentative_gScore + costestimator(sl,de,esl,eind);
+                fScore[neighbors[i]] = tentative_gScore + est(sl,de,esl,eind);
                 if(!openSet.includes(neighbors[i])){
                     openSet.push(neighbors[i]);
                 }
@@ -682,6 +713,7 @@ function extractPoint(point){
     return [getSubList(point),getIndex(point)];
 }
 function wayfind(){
+    const opt = $("#opt-drop").val();
     const canvas = document.getElementById("draw");
     const ctx = canvas.getContext("2d");
     const canvasW = canvas.width;
@@ -700,8 +732,8 @@ function wayfind(){
         $("#progress").html("Route failed!");
         return false;
     }
-    const nrt = AStar(indic[0],indic[1],desl,dein,ms);
-    if(nrt==false){
+    const nrt = AStar(indic[0],indic[1],desl,dein,ms,costFunction[opt],estimators[opt]);
+    if(!nrt){
         $("#progress").html("Route failed!");
         return false;
     }

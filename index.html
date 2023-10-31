@@ -70,7 +70,18 @@
             <button id="single-go">Confirm</button>
         </div>
         <div id="route-box">
-            <h2>Route Planning</h2>Enter your desired destination site, in grid indices.<br><br>
+            <h2>Route Planning</h2>
+            <table id="opt-select">
+                <tr>
+                    <td id="opt-text">Optimization:</td>
+                    <td><select id="opt-drop">
+                        <option value="std">Standard</option>
+                        <option value="dis">Distance</option>
+                        <option value="hil">Hill Climbing</option>
+                        <option value="ear">Earth Visibility</option>
+                    </select>
+                </tr>
+            </table><br><br>
             <table id="route-inputs">
                 <tr><td>subList:</td><td>index:</td><td>Max slope:</td></tr>
                 <tr><td><input class="rinp" id="sublist"></td><td><input class="rinp" id="index"></td><td><input class="rinp" id="slinp"></td></tr></table>
