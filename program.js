@@ -223,18 +223,10 @@ function toRad(x) {
     return (x * Math.PI) / 180;
 }
 function lat(su, ind) {
-    if (ind >= 1600) {
-        return latr[su][ind - 1600];
-    } else {
-        return latl[su][ind];
-    }
+    return ind >= 1600 ? latr[su][ind - 1600] : latl[su][ind];
 }
 function long(su, ind) {
-    if (ind >= 1600) {
-        return longr[su][ind - 1600];
-    } else {
-        return longl[su][ind];
-    }
+    return ind >= 1600 ? longr[su][ind - 1600] : longl[su][ind];
 }
 function gcdis(la1, lo1, la2, lo2) {
     const dlat = toRad(la2 - la1);
@@ -261,8 +253,8 @@ function bearing(startLat, startLng, destLat, destLng) {
     const startLng2 = toRad(startLng);
     const destLat2 = toRad(destLat);
     const destLng2 = toRad(destLng);
-    y = Math.sin(destLng2 - startLng2) * Math.cos(destLat2);
-    x =
+    const y = Math.sin(destLng2 - startLng2) * Math.cos(destLat2);
+    const x =
         Math.cos(startLat2) * Math.sin(destLat2) -
         Math.sin(startLat2) * Math.cos(destLat2) * Math.cos(destLng2 - startLng2);
     const brng = Math.atan2(y, x);
@@ -598,23 +590,34 @@ function handleN(){
     $("#prompt").css("display","none");
     $("#single").val("");
 }
+function slopeInRange(sl, ind) {
+    return sl >= 0 && ind >= 0 && sl < slope.length && ind < slope[0].length;
+}
 function slopecost(sl1,in1,sl2,in2,lim){
-    const slo = slope[sl1]?.[in1];
-    const slp = slope[sl2]?.[in2];
-    if(slo===undefined||slp===undefined||slo>=lim||slp>=lim){
+    // perf: out-of-bounds indexing is expensive,
+    // but a bounds check before is cheap
+    if (!slopeInRange(sl1, in1) && !slopeInRange(sl2, in2)) {
         return Infinity;
     }
-    const x = Math.max(slo,slp);
-    const five_lim = zeroCostSlope-lim;
-    const m = -1/(five_lim*five_lim*five_lim);
-    const x_lim = x-lim;
-    const estim = costestimator(sl1,in1,sl2,in2);
-    return Math.max(estim*(2-m*x_lim*x_lim*x_lim),estim);
+    const slo = slope[sl1][in1];
+    const slp = slope[sl2][in2];
+    if (slo >= lim || slp >= lim) {
+        return Infinity;
+    }
+    const x = Math.max(slo, slp);
+    const five_lim = zeroCostSlope - lim;
+    const m = -1 / (five_lim * five_lim * five_lim);
+    const x_lim = x - lim;
+    const estim = costestimator(sl1, in1, sl2, in2);
+    return Math.max(estim * (2 - m * x_lim * x_lim * x_lim), estim);
 }
 function distancecost(sl1,in1,sl2,in2,lim){
-    const slo = slope[sl1]?.[in1];
-    const slp = slope[sl2]?.[in2];
-    if(slo===undefined||slp===undefined||slo>=lim||slp>=lim){
+    if (!slopeInRange(sl1, in1) && !slopeInRange(sl2, in2)) {
+        return Infinity;
+    }
+    const slo = slope[sl1][in1];
+    const slp = slope[sl2][in2];
+    if(slo>=lim || slp>=lim){
         return Infinity;
     }
     return costestimator(sl1,in1,sl2,in2);
@@ -623,18 +626,21 @@ function heightestimator(sl1,in1,sl2,in2){
     return Math.max(height[sl2][in2]-height[sl1][in1],0);
 }
 function heightcost(sl1,in1,sl2,in2,lim){
-    const slo = slope[sl1]?.[in1];
-    const slp = slope[sl2]?.[in2];
-    if(slo===undefined||slp===undefined||slo>=lim||slp>=lim){
+    if (!slopeInRange(sl1, in1) && !slopeInRange(sl2, in2)) {
+        return Infinity;
+    }
+    const slo = slope[sl1][in1];
+    const slp = slope[sl2][in2];
+    if(slo>=lim || slp>=lim){
         return Infinity;
     }
     return heightestimator(sl1,in1,sl2,in2);
 }
 function costestimator(sl1,in1,sl2,in2){
-        let cs = coord(lat(sl1,in1),long(sl1,in1),height[sl1][in1]);
-        let cd = coord(lat(sl2,in2),long(sl2,in2),height[sl2][in2]);
-        // return Math.max(Math.abs(cd[0]-cs[0]),Math.abs(cd[1]-cs[1]),Math.abs(cd[2]-cs[2]));
-        return Math.hypot(cs[0]-cd[0],cs[1]-cd[1],cs[2]-cd[2]);
+    const cs = coord(lat(sl1,in1),long(sl1,in1),height[sl1][in1]);
+    const cd = coord(lat(sl2,in2),long(sl2,in2),height[sl2][in2]);
+    // return Math.max(Math.abs(cd[0]-cs[0]),Math.abs(cd[1]-cs[1]),Math.abs(cd[2]-cs[2]));
+    return Math.hypot(cs[0]-cd[0],cs[1]-cd[1],cs[2]-cd[2]);
 }
 function AStar(bsl,bind,esl,eind,lim,cost,est){
     let star = new Date();
@@ -661,11 +667,11 @@ function AStar(bsl,bind,esl,eind,lim,cost,est){
         if(it%1000000==0){
             console.log(`Iteration: ${it}, time: ${new Date() - star}ms, current: ${extractPoint(current)}, openSet is ${openSet.length} long.`);
         }
-        if(it==10240000){
+        if (it === 10240000) {
             console.log(`Broken after ${new Date() - star}ms, openSet is ${openSet.length} long. current is ${extractPoint(current)}`);
             return false;
         }
-        if(current==makePoint(esl,eind)){
+        if (current === makePoint(esl, eind)) {
             console.log(`Reached destination after ${new Date() - star} ms and ${it} iterations.`);
             return reconstruct_path(cameFrom,current);
         }
@@ -673,11 +679,11 @@ function AStar(bsl,bind,esl,eind,lim,cost,est){
         openSet.splice(inde,1);
         const sl = getSubList(current);
         const de = getIndex(current);
-        neighbors = [makePoint(sl-1,de-1),makePoint(sl-1,de),makePoint(sl-1,de+1),
+        const neighbors = [makePoint(sl-1,de-1),makePoint(sl-1,de),makePoint(sl-1,de+1),
         makePoint(sl,de-1),makePoint(sl,de+1),makePoint(sl+1,de-1),makePoint(sl+1,de),
         makePoint(sl+1,de-1)];
         for(let i = 0; i<8; i++){
-            tentative_gScore = gScore[current] + cost(sl,de,getSubList(neighbors[i]),getIndex(neighbors[i]),lim);
+            const tentative_gScore = gScore[current] + cost(sl,de,getSubList(neighbors[i]),getIndex(neighbors[i]),lim);
             if (tentative_gScore<gScore[neighbors[i]]){
                 cameFrom[neighbors[i]] = current;
                 gScore[neighbors[i]] = tentative_gScore;
@@ -711,6 +717,17 @@ function getIndex(point){
 }
 function extractPoint(point){
     return [getSubList(point),getIndex(point)];
+}
+function totalRouteHillClimb(rout) {
+    let total = 0;
+    for (let i = 0; i < rout.length-1; i++) {
+        const h1 = height[rout[i][0]][rout[i][1]];
+        const h2 = height[rout[i+1][0]][rout[i+1][1]];
+        if (h2 > h1) {
+            total += h2 - h1;
+        }
+    }
+    return total;
 }
 function wayfind(){
     const opt = $("#opt-drop").val();
