@@ -159,6 +159,20 @@ td {
     height: 100%;
     font-family: 'Agency FB', sans-serif;
     color: white;
-    background-color: rgb(38,171,226);
+    background-color: rgb(0,29,69);
+    border: 1px solid rgb(38,171,226);
     font-size: 1.35em;
+}
+#color-select {
+    display: none;
+    position: absolute;
+    top: 65%;
+    left: 20px;
+    height: 15%;
+    font-family: 'Agency FB', sans-serif;
+    width: 60%;
+    font-size: 1.35em;
+    color: white;
+    background-color: rgb(0,29,69);
+    border: 1px solid rgb(38,171,226);
 }

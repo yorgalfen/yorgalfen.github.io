@@ -137,12 +137,23 @@ $(document).keydown(() => {
             break;
         }
         case 67: // C
-            // nothing yet
+            if($("#prompt").css("display")=="none"){
+                $("#prompt").css("display","inline");
+                $("#single").css("display","none");
+                $("#color-select").css("display","inline");
+                $("#prompt-text").html("Select a new terrain colorization scheme.");
+                $("#prompt-text").css("font-size","1.55em");
+                $("#single-go").attr("onclick",`handleC();`);
+            }else{
+                $("#prompt").css("display","none");
+            }
             break;
         case 88: {
             // X
             if($("#prompt").css("display")=="none"){
                 $("#prompt").css("display","inline");
+                $("#single").css("display","inline");
+                $("#color-select").css("display","none");
                 $("#prompt-text").html("Input a new rendering size. Must be a whole number, divisible by 2.");
                 $("#prompt-text").css("font-size","1.55em");
                 $("#single-go").attr("onclick",`handleX();`);
@@ -167,6 +178,8 @@ $(document).keydown(() => {
             // M
             if($("#prompt").css("display")=="none"){
                 $("#prompt").css("display","inline");
+                $("#single").css("display","inline");
+                $("#color-select").css("display","none");
                 $("#prompt-text").html("Input a new slope, in degrees, below which slopes will be part of the gradient.");
                 $("#prompt-text").css("font-size","1.4em");
                 $("#single-go").attr("onclick",`handleM();`);
@@ -180,6 +193,8 @@ $(document).keydown(() => {
             // N
             if($("#prompt").css("display")=="none"){
                 $("#prompt").css("display","inline");
+                $("#single").css("display","inline");
+                $("#color-select").css("display","none");
                 $("#prompt-text").html("Input a new slope, in degrees, above which slopes will be part of the gradient.");
                 $("#prompt-text").css("font-size","1.4em");
                 $("#single-go").attr("onclick",`handleN();`);
@@ -193,6 +208,8 @@ $(document).keydown(() => {
             // V
             if($("#prompt").css("display")=="none"){
                 $("#prompt").css("display","inline");
+                $("#single").css("display","inline");
+                $("#color-select").css("display","none");
                 $("#prompt-text").html("Input a new field of view, in degrees, for the camera. Default is 80.");
                 $("#prompt-text").css("font-size","1.55em");
                 $("#single-go").attr("onclick",`handleV();`);
@@ -206,6 +223,7 @@ $(document).keydown(() => {
             // R
             if ($("#route-box").css("display")=="none"){
                 $("#route-box").css("display","block");
+                $("#prompt").css("display","none");
                 const canvas = document.getElementById("draw");
                 const ctx = canvas.getContext("2d");
                 const map = document.getElementById("map");
@@ -223,10 +241,18 @@ function toRad(x) {
     return (x * Math.PI) / 180;
 }
 function lat(su, ind) {
-    return ind >= 1600 ? latr[su][ind - 1600] : latl[su][ind];
+    if (ind >= 1600) {
+        return latr[su][ind - 1600];
+    } else {
+        return latl[su][ind];
+    }
 }
 function long(su, ind) {
-    return ind >= 1600 ? longr[su][ind - 1600] : longl[su][ind];
+    if (ind >= 1600) {
+        return longr[su][ind - 1600];
+    } else {
+        return longl[su][ind];
+    }
 }
 function gcdis(la1, lo1, la2, lo2) {
     const dlat = toRad(la2 - la1);
@@ -564,6 +590,9 @@ function handleX(){
     $("#prompt").css("display","none");
     $("#single").val("");
 }
+function handleC(){
+    // nothing yet
+}
 function handleV(){
     const fov = $("#single").val();
     if(fov){
@@ -590,13 +619,8 @@ function handleN(){
     $("#prompt").css("display","none");
     $("#single").val("");
 }
-function slopeInRange(sl, ind) {
-    return sl >= 0 && ind >= 0 && sl < slope.length && ind < slope[0].length;
-}
 function slopecost(sl1,in1,sl2,in2,lim){
-    // perf: out-of-bounds indexing is expensive,
-    // but a bounds check before is cheap
-    if (!slopeInRange(sl1, in1) && !slopeInRange(sl2, in2)) {
+    if (sl2>=3200||sl2<0||in2>=3200||in2<0){
         return Infinity;
     }
     const slo = slope[sl1][in1];
@@ -612,7 +636,7 @@ function slopecost(sl1,in1,sl2,in2,lim){
     return Math.max(estim * (2 - m * x_lim * x_lim * x_lim), estim);
 }
 function distancecost(sl1,in1,sl2,in2,lim){
-    if (!slopeInRange(sl1, in1) && !slopeInRange(sl2, in2)) {
+    if (sl2>=3200||sl2<0||in2>=3200||in2<0){
         return Infinity;
     }
     const slo = slope[sl1][in1];
@@ -626,7 +650,7 @@ function heightestimator(sl1,in1,sl2,in2){
     return Math.max(height[sl2][in2]-height[sl1][in1],0);
 }
 function heightcost(sl1,in1,sl2,in2,lim){
-    if (!slopeInRange(sl1, in1) && !slopeInRange(sl2, in2)) {
+    if (sl2>=3200||sl2<0||in2>=3200||in2<0){
         return Infinity;
     }
     const slo = slope[sl1][in1];
