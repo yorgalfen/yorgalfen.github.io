@@ -93,7 +93,7 @@
                 <tr><td>subList:</td><td>index:</td><td>Max slope:</td></tr>
                 <tr><td><input class="rinp" id="sublist"></td><td><input class="rinp" id="index"></td><td><input class="rinp" id="slinp"></td></tr></table>
             <table id="text-et-button">
-                <tr><td class="progress-cell"><p id="progress"></p></td><td class="progress-cell"><button id="plan" onclick="wayfind();">Plan Route</button></td></tr>
+                <tr><td class="progress-cell"><p id="progress"></p><button id="route-clear" onclick="routeReset();">Clear Route</button></td><td class="progress-cell"><button id="plan" onclick="wayfind();">Plan Route</button></td></tr>
             </table>
             <table id="canvas-et-data">
                 <tr><td id="canv-cell"><canvas id="draw" width="3200" height="3200" onclick="getClick(event);"></canvas></td><td id="subtable">

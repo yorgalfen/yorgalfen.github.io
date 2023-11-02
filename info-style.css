@@ -100,7 +100,13 @@ td {
     display: inline;
 }
 #progress {
-    display: inline;
+    display: none;
+}
+#route-clear {
+    height: 2em;
+    width: 100%;
+    font-size: 1em;
+    display: none;
 }
 #draw {
     position: relative;

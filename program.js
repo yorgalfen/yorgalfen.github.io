@@ -7,7 +7,7 @@ let ah = false;
 let los = 5;
 let hes = 15;
 let siz = 200;
-let rapp = false;
+let fdr = true;
 let rdis = false;
 const zeroCostSlope = 5;
 const margin = 50;
@@ -226,11 +226,9 @@ $(document).keydown(() => {
             if ($("#route-box").css("display")=="none"){
                 $("#route-box").css("display","block");
                 $("#prompt").css("display","none");
-                if(!rapp){
-                    const canvas = document.getElementById("draw");
-                    const ctx = canvas.getContext("2d");
-                    const map = document.getElementById("map");
-                    ctx.drawImage(map,0,0,3200,3200);
+                if(fdr){
+                    routeReset();
+                    fdr = false;
                 }
             }else{
                 $("#route-box").css("display","none");
@@ -678,6 +676,16 @@ function costestimator(sl1,in1,sl2,in2){
     // return Math.max(Math.abs(cd[0]-cs[0]),Math.abs(cd[1]-cs[1]),Math.abs(cd[2]-cs[2]));
     return Math.hypot(cs[0]-cd[0],cs[1]-cd[1],cs[2]-cd[2]);
 }
+function routeReset(){
+    const canvas = document.getElementById("draw");
+    const ctx = canvas.getContext("2d");
+    const map = document.getElementById("map");
+    ctx.drawImage(map,0,0,3200,3200);
+    route = [];
+    geo.redraw();
+    rdis = false;
+    $("#route-clear").css("display","none");
+}
 function AStar(bsl,bind,esl,eind,lim,cost,est){
     let star = new Date();
     let it = 0;
@@ -788,6 +796,8 @@ function totalRouteHillClimb(rout) {
     return total;
 }
 function wayfind(){
+    $("#route-clear").css("display","none");
+    $("#progress").css("display","inline");
     const opt = $("#opt-drop").val();
     const canvas = document.getElementById("draw");
     const ctx = canvas.getContext("2d");
@@ -815,7 +825,8 @@ function wayfind(){
     for(const c of nrt){
         rcalc.push(extractPoint(c));
     }
-    $("#progress").html("Route found!");
+    $("#route-clear").css("display","inline");
+    $("#progress").css("display","none");
     let misl = 3201;
     for(let i = 0; i<rcalc.length; i++){
         if(rcalc[i][0]<misl){
