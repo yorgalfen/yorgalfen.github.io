@@ -624,10 +624,12 @@ function handleN(){
     $("#single").val("");
 }
 function getClick(event){
-    let dex = Math.round((event.offsetX/$("#draw").width())*3200);
-    let sbl = Math.round((event.offsetY/$("#draw").height())*3200);
-    $("#sublist").val(sbl);
-    $("#index").val(dex);
+    if(!rdis){
+        let dex = Math.round((event.offsetX/$("#draw").width())*3200);
+        let sbl = Math.round((event.offsetY/$("#draw").height())*3200);
+        $("#sublist").val(sbl);
+        $("#index").val(dex);
+    }
 }
 function slopecost(sl1,in1,sl2,in2,lim){
     if (sl2>=3200||sl2<0||in2>=3200||in2<0){
@@ -866,10 +868,12 @@ function wayfind(){
     for(let i = 0; i<rcalc.length; i++){
         ctx.fillRect((((rcalc[i][1]-mind)/wid)*canvasW)-10,(((rcalc[i][0]-misl)/wid)*canvasH)-10,20,20);
     }
+    rdis = true;
 }
 
 function applyRoute(){
     route = rcalc;
+    rapp = true;
     geo.redraw();
 }
 
