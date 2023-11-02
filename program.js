@@ -81,6 +81,7 @@ $(document).keydown(() => {
             if (npo) {
                 ah = false;
                 clearInterval(dataInterval);
+                let newPlace = [];
                 if (npo.charAt(0) === "-") {
                     const f = npo.split(" ");
                     const dela = parseFloat(f[0]);
@@ -120,17 +121,19 @@ $(document).keydown(() => {
                             b = Math.abs(b);
                             break;
                     }
-                    frame[0] = 1160 + Math.round(a / vdis);
-                    frame[1] = 1215 + Math.round(b / hdis);
+                    newPlace = [1160 + Math.round(a / vdis), 1215 + Math.round(b / hdis)];
                 } else {
-                    frame = npo.split(" ").map(Number);
+                    newPlace = npo.split(" ").map(Number)
                 }
+                setFrame(...newPlace);
                 const newPosition = coord(
-                    lat(frame[0], frame[1]),
-                    long(frame[0], frame[1]),
-                    height[frame[0]][frame[1]] + 1.6,
+                    lat(newPlace[0], newPlace[1]),
+                    long(newPlace[0], newPlace[1]),
+                    height[newPlace[0]][newPlace[1]] + 1.6,
                 );
-                $("#camera").attr("position", newPosition.map((x) => x.toFixed(3)).join(" "));
+                cameraPos.x = newPosition[0];
+                cameraPos.y = newPosition[1];
+                cameraPos.z = newPosition[2];
                 geo.redraw();
                 update_data();
                 // Re-set intervals for redraw and data
@@ -377,7 +380,8 @@ function dataIndexOf(camx, camz) {
             }
         }
     }
-    throw RangeError(`Camera position (${camx}, ${camz}) is not on screen!`);
+    // Off the mesh, returning a known good value
+    return frame;
 }
 
 class JSONAssetType {
@@ -582,10 +586,18 @@ class TerrainGeometry {
     }
 }
 
+function setFrame(sub, ind) {
+    frame[0] = Math.min(Math.max(sub, siz / 2 + 1), 3200 - siz / 2 - 1);
+    frame[1] = Math.min(Math.max(ind, siz / 2 + 1), 3200 - siz / 2 - 1);
+}
+
 function handleX(){
     const ne = $("#single").val();
     if (ne) {
         siz = parseInt(ne);
+        // Make sure that the new size doesn't cause the mesh to access out of
+        // bounds indices
+        setFrame(...frame);
         geo.resize();
         geo.redraw();
     }
@@ -897,7 +909,7 @@ AFRAME.registerComponent("frame-adjust", {
         // re-center the frame at the camera position.
         const view = geo.geometry.boundingSphere;
         if (view.distanceToPoint(cameraPos) >= -3 * view.radius / 4) {
-            frame = dataIndexOf(cameraPos.x, cameraPos.z);
+            setFrame(...dataIndexOf(cameraPos.x, cameraPos.z));
             geo.redraw();
         }
 
