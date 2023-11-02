@@ -24,16 +24,16 @@ const earthCart = {
 };
 const r = 1737400;
 const costFunction = {
-    "std": slopecost,
-    "dis": distancecost,
-    "hil": heightcost,
-    // "ear": visibilitycost,
+    std: slopecost,
+    dis: distancecost,
+    hil: heightcost,
+    // ear: visibilitycost,
 }
 const estimators = {
-    "std": costestimator,
-    "dis": costestimator,
-    "hil": heightestimator,
-    // "ear": visibilityestimator,
+    std: costestimator,
+    dis: costestimator,
+    hil: heightestimator,
+    // ear: visibilityestimator,
 }
 
 function update_data() {
