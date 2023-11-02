@@ -623,16 +623,13 @@ function handleN(){
 }
 function getClick(event){
     if(!rdis){
-        let dex = Math.round((event.offsetX/$("#draw").width())*3200);
-        let sbl = Math.round((event.offsetY/$("#draw").height())*3200);
+        const dex = Math.round((event.offsetX/$("#draw").width())*3200);
+        const sbl = Math.round((event.offsetY/$("#draw").height())*3200);
         $("#sublist").val(sbl);
         $("#index").val(dex);
     }
 }
 function slopecost(sl1,in1,sl2,in2,lim){
-    if (sl2>=3200||sl2<0||in2>=3200||in2<0){
-        return Infinity;
-    }
     const slo = slope[sl1][in1];
     const slp = slope[sl2][in2];
     if (slo >= lim || slp >= lim) {
@@ -646,9 +643,6 @@ function slopecost(sl1,in1,sl2,in2,lim){
     return Math.max(estim * (2 - m * x_lim * x_lim * x_lim), estim);
 }
 function distancecost(sl1,in1,sl2,in2,lim){
-    if (sl2>=3200||sl2<0||in2>=3200||in2<0){
-        return Infinity;
-    }
     const slo = slope[sl1][in1];
     const slp = slope[sl2][in2];
     if(slo>=lim || slp>=lim){
@@ -660,9 +654,6 @@ function heightestimator(sl1,in1,sl2,in2){
     return Math.max(height[sl2][in2]-height[sl1][in1],0);
 }
 function heightcost(sl1,in1,sl2,in2,lim){
-    if (sl2>=3200||sl2<0||in2>=3200||in2<0){
-        return Infinity;
-    }
     const slo = slope[sl1][in1];
     const slp = slope[sl2][in2];
     if(slo>=lim || slp>=lim){
@@ -708,7 +699,7 @@ function AStar(bsl,bind,esl,eind,lim,cost,est){
                 min = fScore[current];
             }
         }
-        if(it%500000==0){
+        if(it%500000 === 0){
             console.log(`Iteration: ${it}, time: ${new Date() - star}ms, current: ${extractPoint(current)}, openSet is ${openSet.length} long.`);
         }
         if (it === 10240000) {
@@ -884,7 +875,6 @@ function wayfind(){
 
 function applyRoute(){
     route = rcalc;
-    rapp = true;
     geo.redraw();
 }
 
