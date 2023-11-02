@@ -7,6 +7,8 @@ let ah = false;
 let los = 5;
 let hes = 15;
 let siz = 200;
+let rapp = false;
+let rdis = false;
 const zeroCostSlope = 5;
 const margin = 50;
 const mult = 9.5/5; // The slope-based multiplier for great circle distance for the cost estimator
@@ -224,10 +226,12 @@ $(document).keydown(() => {
             if ($("#route-box").css("display")=="none"){
                 $("#route-box").css("display","block");
                 $("#prompt").css("display","none");
-                const canvas = document.getElementById("draw");
-                const ctx = canvas.getContext("2d");
-                const map = document.getElementById("map");
-                ctx.drawImage(map,0,0,3200,3200);
+                if(!rapp){
+                    const canvas = document.getElementById("draw");
+                    const ctx = canvas.getContext("2d");
+                    const map = document.getElementById("map");
+                    ctx.drawImage(map,0,0,3200,3200);
+                }
             }else{
                 $("#route-box").css("display","none");
                 $(".rinp").val("");
@@ -619,6 +623,12 @@ function handleN(){
     $("#prompt").css("display","none");
     $("#single").val("");
 }
+function getClick(event){
+    let dex = Math.round((event.offsetX/$("#draw").width())*3200);
+    let sbl = Math.round((event.offsetY/$("#draw").height())*3200);
+    $("#sublist").val(sbl);
+    $("#index").val(dex);
+}
 function slopecost(sl1,in1,sl2,in2,lim){
     if (sl2>=3200||sl2<0||in2>=3200||in2<0){
         return Infinity;
@@ -688,7 +698,7 @@ function AStar(bsl,bind,esl,eind,lim,cost,est){
                 min = fScore[current];
             }
         }
-        if(it%1000000==0){
+        if(it%500000==0){
             console.log(`Iteration: ${it}, time: ${new Date() - star}ms, current: ${extractPoint(current)}, openSet is ${openSet.length} long.`);
         }
         if (it === 10240000) {
@@ -703,10 +713,32 @@ function AStar(bsl,bind,esl,eind,lim,cost,est){
         openSet.splice(inde,1);
         const sl = getSubList(current);
         const de = getIndex(current);
-        const neighbors = [makePoint(sl-1,de-1),makePoint(sl-1,de),makePoint(sl-1,de+1),
-        makePoint(sl,de-1),makePoint(sl,de+1),makePoint(sl+1,de-1),makePoint(sl+1,de),
-        makePoint(sl+1,de-1)];
-        for(let i = 0; i<8; i++){
+        const neighbors = [];
+        if(sl<3199){
+            neighbors.push(makePoint(sl+1,de));
+            if(de<3199){
+                neighbors.push(makePoint(sl+1,de+1));
+            }
+            if (de>0){
+                neighbors.push(makePoint(sl+1,de-1));
+            }
+        }
+        if(sl>0){
+            neighbors.push(makePoint(sl-1,de));
+            if(de<3199){
+                neighbors.push(makePoint(sl-1,de+1));
+            }
+            if (de>0){
+                neighbors.push(makePoint(sl-1,de-1));
+            }
+        }
+        if(de<3199){
+            neighbors.push(makePoint(sl,de+1));
+        }
+        if(de>0){
+            neighbors.push(makePoint(sl,de-1));
+        }
+        for(let i = 0; i<neighbors.length; i++){
             const tentative_gScore = gScore[current] + cost(sl,de,getSubList(neighbors[i]),getIndex(neighbors[i]),lim);
             if (tentative_gScore<gScore[neighbors[i]]){
                 cameFrom[neighbors[i]] = current;
