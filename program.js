@@ -610,7 +610,7 @@ function handleP(){
     } else {
         newPlace = [Math.floor(pu1),Math.floor(pu2)];
     }
-    if((!newPlace)||newPlace[0]>3199||newPlace[1]<0||newPlace[1]>3199||isNaN(newPlace[0])||isNaN(newPlace[1])){
+    if((!newPlace)||newPlace[0]>3199||newPlace[1]<0||newPlace[1]>3199||Number.isNaN(newPlace[0])||Number.isNaN(newPlace[1])){
         $("#invinp").css("display","inline");
         return false;
     }
