@@ -796,6 +796,8 @@ function totalRouteHillClimb(rout) {
     return total;
 }
 function wayfind(){
+    let exi = false;
+    let desl, dein;
     $("#route-clear").css("display","none");
     $("#progress").css("display","inline");
     const opt = $("#opt-drop").val();
@@ -805,15 +807,31 @@ function wayfind(){
     const canvasH = canvas.height;
     const map = document.getElementById("map");
     $("#progress").html("Finding route...");
-    const desl = parseInt($("#sublist").val());
-    const dein = parseInt($("#index").val());
+    const osl = $("#sublist").val();
+    const oin = $("#index").val();
+    if(osl.charAt(0)==="-"){
+        const b = fromLatLong(parseFloat(osl),parseFloat(oin));
+        if(!b){
+            exi = true;
+        }else{
+            desl = b[0];
+            dein = b[1];
+        }
+    }else{
+        desl = parseInt(osl);
+        dein = parseInt(oin);
+    }
     const ms = parseFloat($("#slinp").val());
+    // biome-ignore lint/nursery/noGlobalIsNan: regular isNaN must be used here to return true if desl, dein, or ms is undefined.
+    if(desl<0||desl>3199||dein<0||dein>3199||isNaN(desl)||isNaN(dein)||isNaN(ms)){
+        exi = true;
+    }
     rcalc = [];
     const indic = dataIndexOf(
         document.querySelector("#camera").object3D.position.x,
         document.querySelector("#camera").object3D.position.z,
     );
-    if(slope[desl][dein]>=ms){
+    if(slope[desl]?.[dein]>=ms||exi){
         $("#progress").html("Route failed!");
         return false;
     }
