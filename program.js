@@ -283,36 +283,42 @@ function rectCoord(z, x) {
     return [...a, ...b, ...c, ...d];
 }
 
-// Map slope of points in frame to a color between green and red,
-// where a slope of 0 is #00ff00 and 25.5 is #ff0000
-function colorizeSlope(colors) {
-    const sub_off = frame[0] - siz / 2;
-    const ind_off = frame[1] - siz / 2;
+// Map a point of sub-list and index to an intensity between 0.0 and 1.0,
+// where slopes <= los return 0.0 and slopes >= hes return 1.0.
+function colorizeSlope(sub, ind) {
+    return Math.max(Math.min((slope[sub][ind] - los) / (hes - los), 1.0), 0.0);
+}
 
-    const color = new THREE.Color();
-    const red = new THREE.Color(0xff0000);
-    const green = new THREE.Color(0x00ff00);
-    for (let sub = 0; sub < siz; sub++) {
-        for (let ind = 0; ind < siz; ind++) {
-            const at = sub * siz * 18 + ind * 18;
+// Map a point of sub-list and index to an number between 0.0 and 1.0,
+// where 0.0 is the global greatest height and 1.0 is the lowest height.
+function colorizeHeight(sub, ind) {
+    return (6463.86 - height[sub][ind]) / (6463.86 - 2796.34);
+}
 
-            // Color slopes <= los completely green
-            // and slopes >= hes completely red
-            const intensity = Math.max(
-                Math.min((slope[sub + sub_off][ind + ind_off] - los) / (hes - los), 1.0),
-                0.0,
-            );
-            // Interpolate between green and red,
-            // where an intensity closer to 1 is more red
-            color.copy(green);
-            color.lerp(red, intensity);
-            for (let i = 0; i < 18; i += 3) {
-                colors[at + i + 0] = color.r;
-                colors[at + i + 1] = color.g;
-                colors[at + i + 2] = color.b;
-            }
-        }
-    }
+// Map a point of sub-list and index to an intensity between 0.0 and 1.0,
+// where 0.0 is the global least elevation angle and 1.0 is the greatest angle.
+function colorizeElevationAngle(sub, ind) {
+    const la = toRad(lat(sub, ind));
+    const lo = toRad(long(sub, ind));
+    const ra = height[sub][ind] + r;
+    const pc = spheToCart(la, lo, ra);
+    const dpos = { x: earthCart.x - pc.x, y: earthCart.y - pc.y, z: earthCart.z - pc.z };
+    const rn = Math.hypot(dpos.x, dpos.y, dpos.z);
+    const rz =
+        dpos.x * Math.cos(la) * Math.cos(lo) +
+        dpos.y * Math.cos(la) * Math.sin(lo) +
+        dpos.z * Math.sin(la);
+    const ele = Math.asin(rz / rn);
+    // Scale from max values to 0.0 to 1.0
+    return (ele - 0.17450426) / (0.18376232 - 0.17450426);
+}
+
+// Map a point of sub-list and index to an intensity between 0.0 and 1.0,
+// where 0.0 is the global least azimuth angle and 1.0 is the greatest angle.
+function colorizeAzimuth(sub, ind) {
+    const az = bearing(lat(sub, ind), long(sub, ind), earthLat, 0);
+    // Scale from max values to 0.0 to 1.0
+    return -(az + 0.4820631) / (0.6416581 - 0.4820631);
 }
 
 // Returns the [subList, index] within the latitude and longitude
@@ -438,7 +444,7 @@ class TerrainGeometry {
         const vertices = this.vertices;
         const normals = this.normals;
         const indices = this.indices;
-        const color = this.color;
+        const colors = this.color;
 
         const triangle_spec = [0, 1, 2, 0, 1, 3];
         // Texture coordinates in 2 bits,
@@ -450,6 +456,10 @@ class TerrainGeometry {
         const pC = new THREE.Vector3();
         const cb = new THREE.Vector3();
         const ab = new THREE.Vector3();
+
+        const color = new THREE.Color(0xffffff);
+        const red = new THREE.Color(0xff0000);
+        const green = new THREE.Color(0x00ff00);
 
         // Normally, z would be called subList and x would be index,
         // however, I use z and x instead to avoid confusing index
@@ -507,36 +517,48 @@ class TerrainGeometry {
                 for (let i = 0; i < 6; i++) {
                     indices[indexAt + i] = indexStart + i;
                 }
+
+                // Run colorizer
+                if (this.colorizer != null) {
+                    const intensity = this.colorizer(z + z_off, x + x_off);
+                    // Interpolate between green and red,
+                    // where an intensity closer to 1 is more red
+                    color.copy(green);
+                    color.lerp(red, intensity);
+                }
+                for (let i = 0; i < 18; i += 3) {
+                    colors[at + i + 0] = color.r;
+                    colors[at + i + 1] = color.g;
+                    colors[at + i + 2] = color.b;
+                }
             }
         }
-        this.colorizer(color);
+
         // Always apply route and comms coloring,
         // which overrides anything set by the colorizer
         const routeColor = new THREE.Color(0x0000ff);
         const commsColor = new THREE.Color(0x00ffff);
-        for (const pt of route) {
-            let [z, x] = [pt[0],pt[1]];
+        for (let [z, x] of route) {
             z -= z_off;
             x -= x_off;
             if (0 <= z && z < siz && 0 <= x && x < siz) {
                 const at = z * siz * 18 + x * 18;
                 for (let i = 0; i < 18; i += 3) {
-                    color[at + i + 0] = routeColor.r;
-                    color[at + i + 1] = routeColor.g;
-                    color[at + i + 2] = routeColor.b;
+                    colors[at + i + 0] = routeColor.r;
+                    colors[at + i + 1] = routeColor.g;
+                    colors[at + i + 2] = routeColor.b;
                 }
             }
         }
-        for (const pt of comms) {
-            let [z, x] = [pt[0],pt[1]];
+        for (let [z, x] of comms) {
             z -= z_off;
             x -= x_off;
             if (0 <= z && z < siz && 0 <= x && x < siz) {
                 const at = z * siz * 18 + x * 18;
                 for (let i = 0; i < 18; i += 3) {
-                    color[at + i + 0] = commsColor.r;
-                    color[at + i + 1] = commsColor.g;
-                    color[at + i + 2] = commsColor.b;
+                    colors[at + i + 0] = commsColor.r;
+                    colors[at + i + 1] = commsColor.g;
+                    colors[at + i + 2] = commsColor.b;
                 }
             }
         }
@@ -570,7 +592,27 @@ function handleX(){
     $("#single").val("");
 }
 function handleC(){
-    // nothing yet
+    const scheme = $("#color-select").val();
+    switch (scheme) {
+    case "slo":
+        geo.colorizer = colorizeSlope;
+        break;
+    case "lif":
+        geo.colorizer = null;
+        break;
+    case "hei":
+        geo.colorizer = colorizeHeight;
+        break;
+    case "ele":
+        geo.colorizer = colorizeElevationAngle;
+        break;
+    case "azi":
+        geo.colorizer = colorizeAzimuth;
+        break;
+    }
+    geo.redraw();
+    $("#prompt").css("display","none");
+    $("#single").val("");
 }
 function handleV(){
     const fov = $("#single").val();
