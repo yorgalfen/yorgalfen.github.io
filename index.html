@@ -71,10 +71,15 @@
                 <option value="slo">Slope</option>
                 <option value="lif">Lifelike</option>
                 <option value="hei">Height</option>
-                <option value="slo">Elevation Angle</option>
+                <option value="ele">Elevation Angle</option>
                 <option value="azi">Azimuth Angle</option>
             </select>
+            <table id="teleport-table">
+                <tr><td class="posintro">subList or Latitude</td><td class="posinp"><input class="telinp" id="slla"></td></tr>
+                <tr><td class="posintro">index or Longitude</td><td class="posinp"><input class="telinp" id="inlo"></td></tr>
+            </table>
             <button id="single-go">Confirm</button>
+            <p id="invinp">Invalid input!</p>
         </div>
         <div id="route-box">
             <h2>Route Planning</h2>

@@ -11,7 +11,6 @@ let fdr = true;
 let rdis = false;
 const zeroCostSlope = 5;
 const margin = 50;
-const mult = 9.5/5; // The slope-based multiplier for great circle distance for the cost estimator
 const centerLat = -85.3974303;
 const centerLong = 30.5974913;
 const earthLat = -6.6518153;
@@ -77,67 +76,18 @@ $(document).keydown(() => {
             break;
         case 80: {
             // P
-            const npo = prompt("Go to position? View help page for info.");
-            if (npo) {
-                ah = false;
-                clearInterval(dataInterval);
-                let newPlace = [];
-                if (npo.charAt(0) === "-") {
-                    const f = npo.split(" ");
-                    const dela = parseFloat(f[0]);
-                    const delo = parseFloat(f[1]);
-                    let q;
-                    const c = gcdisu(centerLat, centerLong, dela, delo);
-                    let ab = bearing(centerLat, centerLong, dela, delo);
-                    if (ab >= 0 && ab < Math.PI / 2) {
-                        q = 1;
-                    } else if (ab >= Math.PI / 2) {
-                        ab = Math.PI - ab;
-                        q = 4;
-                    } else if (ab > -1 * (Math.PI / 2) && ab < 0) {
-                        ab = -1 * ab;
-                        q = 2;
-                    } else {
-                        ab += Math.PI;
-                        q = 3;
-                    }
-                    let a = Math.atan(Math.cos(ab) * Math.tan(c));
-                    let b = Math.atan(Math.tan(ab) * Math.sin(a));
-                    switch (q) {
-                        case 1:
-                            a = -1 * Math.abs(a);
-                            b = Math.abs(b);
-                            break;
-                        case 2:
-                            a = -1 * Math.abs(a);
-                            b = -1 * Math.abs(b);
-                            break;
-                        case 3:
-                            a = Math.abs(a);
-                            b = -1 * Math.abs(b);
-                            break;
-                        case 4:
-                            a = Math.abs(a);
-                            b = Math.abs(b);
-                            break;
-                    }
-                    newPlace = [1160 + Math.round(a / vdis), 1215 + Math.round(b / hdis)];
-                } else {
-                    newPlace = npo.split(" ").map(Number)
-                }
-                setFrame(...newPlace);
-                const newPosition = coord(
-                    lat(newPlace[0], newPlace[1]),
-                    long(newPlace[0], newPlace[1]),
-                    height[newPlace[0]][newPlace[1]] + 1.6,
-                );
-                cameraPos.x = newPosition[0];
-                cameraPos.y = newPosition[1];
-                cameraPos.z = newPosition[2];
-                geo.redraw();
-                update_data();
-                // Re-set intervals for redraw and data
-                dataInterval = setInterval(update_data, 2000);
+            if($("#prompt").css("display")=="none"){
+                $("#prompt").css("display","inline");
+                $("#single").css("display","none");
+                $("#color-select").css("display","none");
+                $("#teleport-table").css("display","inline");
+                $("#prompt-text").html("");
+                $("#single-go").attr("onclick",`handleP();`);
+                $("#single-go").css("top","72%");
+                $("#invinp").css("display","none");
+            }else{
+                $("#prompt").css("display","none");
+                $(".telinp").val("");
             }
             break;
         }
@@ -146,9 +96,12 @@ $(document).keydown(() => {
                 $("#prompt").css("display","inline");
                 $("#single").css("display","none");
                 $("#color-select").css("display","inline");
+                $("#teleport-table").css("display","none");
                 $("#prompt-text").html("Select a new terrain colorization scheme.");
                 $("#prompt-text").css("font-size","1.55em");
                 $("#single-go").attr("onclick",`handleC();`);
+                $("#single-go").css("top","65%");
+                $("#invinp").css("display","none");
             }else{
                 $("#prompt").css("display","none");
             }
@@ -159,9 +112,12 @@ $(document).keydown(() => {
                 $("#prompt").css("display","inline");
                 $("#single").css("display","inline");
                 $("#color-select").css("display","none");
+                $("#teleport-table").css("display","none");
                 $("#prompt-text").html("Input a new rendering size. Must be a whole number, divisible by 2.");
                 $("#prompt-text").css("font-size","1.55em");
                 $("#single-go").attr("onclick",`handleX();`);
+                $("#single-go").css("top","65%");
+                $("#invinp").css("display","none");
             }else{
                 $("#prompt").css("display","none");
                 $("#single").val("");
@@ -185,9 +141,12 @@ $(document).keydown(() => {
                 $("#prompt").css("display","inline");
                 $("#single").css("display","inline");
                 $("#color-select").css("display","none");
+                $("#teleport-table").css("display","none");
                 $("#prompt-text").html("Input a new slope, in degrees, below which slopes will be part of the gradient.");
                 $("#prompt-text").css("font-size","1.4em");
                 $("#single-go").attr("onclick",`handleM();`);
+                $("#single-go").css("top","65%");
+                $("#invinp").css("display","none");
             }else{
                 $("#prompt").css("display","none");
                 $("#single").val("");
@@ -200,9 +159,12 @@ $(document).keydown(() => {
                 $("#prompt").css("display","inline");
                 $("#single").css("display","inline");
                 $("#color-select").css("display","none");
+                $("#teleport-table").css("display","none");
                 $("#prompt-text").html("Input a new slope, in degrees, above which slopes will be part of the gradient.");
                 $("#prompt-text").css("font-size","1.4em");
                 $("#single-go").attr("onclick",`handleN();`);
+                $("#single-go").css("top","65%");
+                $("#invinp").css("display","none");
             }else{
                 $("#prompt").css("display","none");
                 $("#single").val("");
@@ -215,9 +177,12 @@ $(document).keydown(() => {
                 $("#prompt").css("display","inline");
                 $("#single").css("display","inline");
                 $("#color-select").css("display","none");
+                $("#teleport-table").css("display","none");
                 $("#prompt-text").html("Input a new field of view, in degrees, for the camera. Default is 80.");
                 $("#prompt-text").css("font-size","1.55em");
                 $("#single-go").attr("onclick",`handleV();`);
+                $("#single-go").css("top","65%");
+                $("#invinp").css("display","none");
             }else{
                 $("#prompt").css("display","none");
                 $("#single").val("");
@@ -633,6 +598,38 @@ function handleN(){
     $("#prompt").css("display","none");
     $("#single").val("");
 }
+function handleP(){
+    const cameraPos = document.querySelector("#camera").object3D.position;
+    const pu1 = parseFloat($("#slla").val());
+    const pu2 = parseFloat($("#inlo").val());
+    ah = false;
+    clearInterval(dataInterval);
+    let newPlace = [];
+    if (pu1<0) {
+        newPlace = fromLatLong(pu1,pu2);
+    } else {
+        newPlace = [Math.floor(pu1),Math.floor(pu2)];
+    }
+    if((!newPlace)||newPlace[0]>3199||newPlace[1]<0||newPlace[1]>3199||isNaN(newPlace[0])||isNaN(newPlace[1])){
+        $("#invinp").css("display","inline");
+        return false;
+    }
+    setFrame(...newPlace);
+    const newPosition = coord(
+        lat(newPlace[0], newPlace[1]),
+        long(newPlace[0], newPlace[1]),
+        height[newPlace[0]][newPlace[1]] + 1.6,
+    );
+    cameraPos.x = newPosition[0];
+    cameraPos.y = newPosition[1];
+    cameraPos.z = newPosition[2];
+    geo.redraw();
+    update_data();
+    // Re-set intervals for redraw and data
+    dataInterval = setInterval(update_data, 2000);
+    $("#prompt").css("display","none");
+    $(".telinp").val("");
+}
 function getClick(event){
     if(!rdis){
         const dex = Math.round((event.offsetX/$("#draw").width())*3200);
@@ -922,3 +919,20 @@ AFRAME.registerComponent("frame-adjust", {
         // console.log(`Spent ${time}ms in tick()`);
     },
 });
+function fromLatLong(la, lo){
+    const dat = new Date();
+    for(let sl = 0; sl<3199; sl++){
+        for(let de = 0; de<3199; de++){
+            const minla = Math.min(lat(sl,de), lat(sl+1,de), lat(sl+1,de+1), lat(sl,de+1));
+            const minlo = Math.min(long(sl,de), long(sl+1,de), long(sl+1,de+1), long(sl,de+1));
+            const maxla = Math.max(lat(sl,de), lat(sl+1,de), lat(sl+1,de+1), lat(sl,de+1));
+            const maxlo = Math.max(long(sl,de), long(sl+1,de), long(sl+1,de+1), long(sl,de+1));
+            if (la >= minla && la <= maxla && lo >= minlo && lo <= maxlo) {
+                console.log(`Spent ${new Date() - dat}ms in fromLatLong()`);
+                return [sl,de];
+            }
+        }
+    }
+    console.log(`Spent ${new Date() - dat}ms in fromLatLong()`);
+    return false;
+}
