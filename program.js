@@ -4,6 +4,7 @@ let rcalc = [];
 let dataInterval;
 let frame = [1160, 1215];
 let ah = false;
+let ahTimeout;
 let los = 5;
 let hes = 15;
 let siz = 200;
@@ -75,6 +76,7 @@ $(document).keydown(() => {
             }
             break;
         case 80: {
+            clearTimeout(ahTimeout);
             // P
             if($("#prompt").css("display")=="none"){
                 $("#prompt").css("display","inline");
@@ -82,6 +84,7 @@ $(document).keydown(() => {
                 $("#color-select").css("display","none");
                 $("#teleport-table").css("display","inline");
                 $("#prompt-text").html("");
+                $("#single-go").css("display","inline");
                 $("#single-go").attr("onclick",`handleP();`);
                 $("#single-go").css("top","72%");
                 $("#invinp").css("display","none");
@@ -92,13 +95,15 @@ $(document).keydown(() => {
             break;
         }
         case 67: // C
-            if($("#prompt").css("display")=="none"){
+        clearTimeout(ahTimeout);
+            if($("#prompt").css("display")==="none"){
                 $("#prompt").css("display","inline");
                 $("#single").css("display","none");
                 $("#color-select").css("display","inline");
                 $("#teleport-table").css("display","none");
                 $("#prompt-text").html("Select a new terrain colorization scheme.");
                 $("#prompt-text").css("font-size","1.55em");
+                $("#single-go").css("display","inline");
                 $("#single-go").attr("onclick",`handleC();`);
                 $("#single-go").css("top","65%");
                 $("#invinp").css("display","none");
@@ -108,13 +113,15 @@ $(document).keydown(() => {
             break;
         case 88: {
             // X
-            if($("#prompt").css("display")=="none"){
+            clearTimeout(ahTimeout);
+            if($("#prompt").css("display")==="none"){
                 $("#prompt").css("display","inline");
                 $("#single").css("display","inline");
                 $("#color-select").css("display","none");
                 $("#teleport-table").css("display","none");
                 $("#prompt-text").html("Input a new rendering size. Must be a whole number, divisible by 2.");
                 $("#prompt-text").css("font-size","1.55em");
+                $("#single-go").css("display","inline");
                 $("#single-go").attr("onclick",`handleX();`);
                 $("#single-go").css("top","65%");
                 $("#invinp").css("display","none");
@@ -126,24 +133,33 @@ $(document).keydown(() => {
         }
         case 76: // L
             ah = !ah;
+            $("#route-box").css("display","none");
+            $("#prompt").css("display","inline");
+            $(".nonah").css("display","none");
+            $("#prompt-text").css("font-size","1.7em");
             if (ah) {
-                alert("Automatic height adjustment set to ON.");
+                $("#prompt-text").html("Automatic height adjustment set to ON.");
             } else {
-                alert("Automatic height adjustment set to OFF.");
+                $("#prompt-text").html("Automatic height adjustment set to OFF.");
             }
+            ahTimeout = setTimeout(function() {
+                $("#prompt").css("display","none");
+            },2500);
             break;
         case 72: // H
             window.open("help.html", "_blank");
             break;
         case 77: {
             // M
-            if($("#prompt").css("display")=="none"){
+            clearTimeout(ahTimeout);
+            if($("#prompt").css("display")==="none"){
                 $("#prompt").css("display","inline");
                 $("#single").css("display","inline");
                 $("#color-select").css("display","none");
                 $("#teleport-table").css("display","none");
                 $("#prompt-text").html("Input a new slope, in degrees, below which slopes will be part of the gradient.");
                 $("#prompt-text").css("font-size","1.4em");
+                $("#single-go").css("display","inline");
                 $("#single-go").attr("onclick",`handleM();`);
                 $("#single-go").css("top","65%");
                 $("#invinp").css("display","none");
@@ -155,13 +171,15 @@ $(document).keydown(() => {
         }
         case 78: {
             // N
-            if($("#prompt").css("display")=="none"){
+            clearTimeout(ahTimeout);
+            if($("#prompt").css("display")==="none"){
                 $("#prompt").css("display","inline");
                 $("#single").css("display","inline");
                 $("#color-select").css("display","none");
                 $("#teleport-table").css("display","none");
                 $("#prompt-text").html("Input a new slope, in degrees, above which slopes will be part of the gradient.");
                 $("#prompt-text").css("font-size","1.4em");
+                $("#single-go").css("display","inline");
                 $("#single-go").attr("onclick",`handleN();`);
                 $("#single-go").css("top","65%");
                 $("#invinp").css("display","none");
@@ -173,13 +191,15 @@ $(document).keydown(() => {
         }
         case 86: {
             // V
-            if($("#prompt").css("display")=="none"){
+            clearTimeout(ahTimeout);
+            if($("#prompt").css("display")==="none"){
                 $("#prompt").css("display","inline");
                 $("#single").css("display","inline");
                 $("#color-select").css("display","none");
                 $("#teleport-table").css("display","none");
                 $("#prompt-text").html("Input a new field of view, in degrees, for the camera. Default is 80.");
                 $("#prompt-text").css("font-size","1.55em");
+                $("#single-go").css("display","inline");
                 $("#single-go").attr("onclick",`handleV();`);
                 $("#single-go").css("top","65%");
                 $("#invinp").css("display","none");
@@ -191,7 +211,7 @@ $(document).keydown(() => {
         }
         case 82: {
             // R
-            if ($("#route-box").css("display")=="none"){
+            if ($("#route-box").css("display")==="none"){
                 $("#route-box").css("display","block");
                 $("#prompt").css("display","none");
                 if(fdr){
