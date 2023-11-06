@@ -51,6 +51,11 @@ function update_data() {
         dpos.y * Math.cos(la) * Math.sin(lo) +
         dpos.z * Math.sin(la);
     const ele = (Math.asin(rz / rn) * 180) / Math.PI;
+    const canvas = document.getElementById("minimap");
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0,0,3200,3200);
+    ctx.fillStyle = "rgb(255,255,255)";
+    ctx.fillRect(c[1]-20,c[0]-20,40,40);
     $("#data").html(
         `Press H for help.<br>Position: ${-1 * lat(c[0], c[1])}&deg; S, ${long(
             c[0],
@@ -264,6 +269,7 @@ function gcdisu(la1, lo1, la2, lo2) {
         Math.sin(dlon / 2) * Math.sin(dlon / 2) * Math.cos(lr1) * Math.cos(lr2);
     return 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
+// N: 0, E: -π/2, W: π/2, S: π or -π. the negative in coord swaps E and W
 function bearing(startLat, startLng, destLat, destLng) {
     const startLat2 = toRad(startLat);
     const startLng2 = toRad(startLng);
@@ -284,11 +290,11 @@ function spheToCart(la, lo, ra) {
     };
 }
 function coord(la, lo, he) {
-    const b = bearing(centerLat, centerLong, la, lo);
-    const g = gcdis(centerLat, centerLong, la, lo);
-    const sgr = Math.sin(g / r);
+    const b = -bearing(centerLat, centerLong, la, lo);
+    const g = gcdisu(centerLat, centerLong, la, lo);
+    const sgr = Math.sin(g);
     const x = (r + he) * sgr * Math.sin(b);
-    const y = he * Math.cos(g / r) - 2 * r * Math.sin(g / (2 * r)) ** 2;
+    const y = he * Math.cos(g) - 2 * r * Math.sin(g/2) ** 2;
     const z = (r + he) * sgr * Math.cos(b);
     return [x, y, z];
 }
@@ -700,6 +706,14 @@ function getClick(event){
         $("#index").val(dex);
     }
 }
+function minimapClick(event){
+    if($("#single-go").attr("onclick")===`handleP();`){
+        const dex = Math.round((event.offsetX/$("#minimap").width())*3200);
+        const sbl = Math.round((event.offsetY/$("#minimap").height())*3200);
+        $("#slla").val(sbl);
+        $("#inlo").val(dex);
+    }
+}
 function slopecost(sl1,in1,sl2,in2,lim){
     const slo = slope[sl1][in1];
     const slp = slope[sl2][in2];
@@ -743,6 +757,9 @@ function routeReset(){
     const ctx = canvas.getContext("2d");
     const map = document.getElementById("map");
     ctx.drawImage(map,0,0,3200,3200);
+    const cnv = document.getElementById("minimap-route");
+    const ct = cnv.getContext("2d");
+    ct.clearRect(0,0,cnv.width,cnv.height);
     route = [];
     geo.redraw();
     rdis = false;
@@ -770,7 +787,7 @@ function AStar(bsl,bind,esl,eind,lim,cost,est){
                 min = fScore[current];
             }
         }
-        if(it%500000 === 0){
+        if(it%250000 === 0){
             console.log(`Iteration: ${it}, time: ${new Date() - star}ms, current: ${extractPoint(current)}, openSet is ${openSet.length} long.`);
         }
         if (it === 10240000) {
@@ -778,7 +795,7 @@ function AStar(bsl,bind,esl,eind,lim,cost,est){
             return false;
         }
         if (current === makePoint(esl, eind)) {
-            console.log(`Reached destination after ${new Date() - star} ms and ${it} iterations.`);
+            console.log(`Reached destination after ${new Date() - star} ms and ${it} iterations, openSet is ${openSet.length} long.`);
             return reconstruct_path(cameFrom,current);
         }
         const inde = openSet.indexOf(current);
@@ -951,9 +968,9 @@ function wayfind(){
     masl = misl+wid;
     mand = mind+wid;
     ctx.drawImage(map,mind,misl,wid,wid,0,0,3200,3200);
-    ctx.fillStyle = "rgb(250,121,7)";
+    ctx.fillStyle = "rgb(255,255,255)";
     ctx.fillRect((((indic[1]-mind)/wid)*canvasW)-60,(((indic[0]-misl)/wid)*canvasH)-60,120,120);
-    ctx.fillStyle = "rgb(154,93,240)";
+    ctx.fillStyle = "rgb(0,0,0)";
     ctx.fillRect((((dein-mind)/wid)*canvasW)-60,(((desl-misl)/wid)*canvasH)-60,120,120);
     ctx.fillStyle = "rgb(19,19,209)";
     for(let i = 0; i<rcalc.length; i++){
@@ -964,6 +981,15 @@ function wayfind(){
 
 function applyRoute(){
     route = rcalc;
+    const canvas = document.getElementById("minimap-route");
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = "rgb(0,0,0)";
+    ctx.fillRect(route[route.length-1][1]-20,route[route.length-1][0]-20,40,40);
+    ctx.fillStyle = "rgb(19,19,209)";
+    for(let i = 0; i<route.length; i++){
+        ctx.fillRect(route[i][1]-10,route[i][0]-10,20,20);
+    }   
     geo.redraw();
 }
 
