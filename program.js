@@ -1012,8 +1012,11 @@ AFRAME.registerComponent("frame-adjust", {
         // re-center the frame at the camera position.
         const view = geo.geometry.boundingSphere;
         if (view.distanceToPoint(cameraPos) >= -3 * view.radius / 4) {
+            const oldFrame = frame.slice();
             setFrame(...dataIndexOf(cameraPos.x, cameraPos.z));
-            geo.redraw();
+            if (frame[0] !== oldFrame[0] || frame[1] !== oldFrame[1]) {
+                geo.redraw();
+            }
         }
 
         // Shouldn't matter, but automatic height adjustment occurs after recentering
