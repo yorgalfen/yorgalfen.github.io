@@ -65,10 +65,10 @@ button {
     font-family: 'Agency FB', sans-serif;
     color: white;
     font-size: 1.35em;
-    top: 10px;
+    top: 1vh;
     left: 400px;
-    height: 80vh;    
-    width: 44.7vw;
+    height: 95vh;    
+    width: 46vw;
     padding-top: 30px;
     line-height: 0.8em;
 }

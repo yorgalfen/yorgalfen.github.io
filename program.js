@@ -874,6 +874,29 @@ function totalRouteHillClimb(rout) {
     }
     return total;
 }
+function totalRouteDistance(rout) {
+    let total = 0;
+    for (let i = 0; i < rout.length-1; i++) {
+        total += costestimator(rout[i][0],rout[i][1],rout[i+1][0],rout[i+1][1]);
+    }
+    return total;
+}
+function routeAverageSlope(rout){
+    let total = 0;
+    for (let i = 0; i < rout.length; i++) {
+        total += slope[rout[i][0]][rout[i][1]];
+    }
+    return total/rout.length;
+}
+function routeMaxSlope(rout){
+    let ma = -1;
+    for (let i = 0; i < rout.length; i++) {
+        if(slope[rout[i][0]][rout[i][1]]>ma){
+            ma = slope[rout[i][0]][rout[i][1]];
+        }
+    }
+    return ma;
+}
 function wayfind(){
     let exi = false;
     let desl, dein;
@@ -976,7 +999,20 @@ function wayfind(){
     for(let i = 0; i<rcalc.length; i++){
         ctx.fillRect((((rcalc[i][1]-mind)/wid)*canvasW)-10,(((rcalc[i][0]-misl)/wid)*canvasH)-10,20,20);
     }
+    let data = `Route length: ${totalRouteDistance(rcalc).toFixed(1)} meters<br>Max slope: ${routeMaxSlope(rcalc)}&deg;`
     rdis = true;
+    switch(opt){
+        case "std":
+            data+=`<br>Average slope: ${routeAverageSlope(rcalc).toFixed(1)}&deg;`;
+            break;
+        case "dis":
+            data+=`<br>Average slope: ${routeAverageSlope(rcalc).toFixed(1)}&deg;`;
+            break;
+        case "hil":
+            data+=`<br>Total Hill Climb: ${totalRouteHillClimb(rcalc).toFixed(1)} meters`;
+            break;
+    }
+    $("#route-data").html(data);
 }
 
 function applyRoute(){
