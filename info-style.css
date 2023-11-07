@@ -90,6 +90,9 @@ td {
     background-color: rgb(0,29,69);
     border: 1px solid rgb(38,171,226);
 }
+#arrow {
+    display: none;
+}
 #plan {
     height: 2em;
     width: 100%;

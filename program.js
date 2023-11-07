@@ -35,9 +35,12 @@ const estimators = {
     hil: heightestimator,
     // ear: visibilityestimator,
 }
+const compOffset = toRad(26);
 
 function update_data() {
-    const cameraPos = document.querySelector("#camera").object3D.position;
+    const camera = $("#camera")[0];
+    const cameraPos = camera.object3D.position;
+    const rot = camera.object3D.rotation.y;
     const c = dataIndexOf(cameraPos.x, cameraPos.z);
     const la = toRad(lat(c[0], c[1]));
     const lo = toRad(long(c[0], c[1]));
@@ -51,11 +54,15 @@ function update_data() {
         dpos.y * Math.cos(la) * Math.sin(lo) +
         dpos.z * Math.sin(la);
     const ele = (Math.asin(rz / rn) * 180) / Math.PI;
-    const canvas = document.getElementById("minimap");
+    const canvas = $("#minimap")[0];
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0,0,3200,3200);
-    ctx.fillStyle = "rgb(255,255,255)";
-    ctx.fillRect(c[1]-20,c[0]-20,40,40);
+    ctx.save();
+    ctx.translate(c[1],c[0]);
+    ctx.rotate(Math.PI+compOffset-rot);
+    const arr = $("#arrow")[0];
+    ctx.drawImage(arr,-100,-163);
+    ctx.restore();
     $("#data").html(
         `Press H for help.<br>Position: ${-1 * lat(c[0], c[1])}&deg; S, ${long(
             c[0],
@@ -230,8 +237,7 @@ $(document).keydown(() => {
             }
             break;
         }
-    }
-});
+}});
 function toRad(x) {
     return (x * Math.PI) / 180;
 }
@@ -460,7 +466,7 @@ class TerrainGeometry {
         this.redraw();
 
         // Ready to start drawing HUD
-        dataInterval = setInterval(update_data, 2000);
+        dataInterval = setInterval(update_data, Math.round((siz**2)/40));
 
         const time = new Date() - start;
         console.log(`Spent ${time}ms in TerrainGeometry.init()`);
@@ -613,6 +619,8 @@ function handleX(){
         setFrame(...frame);
         geo.resize();
         geo.redraw();
+        clearInterval(dataInterval);
+        dataInterval = setInterval(update_data, Math.round((siz**2)/40));
     }
     $("#prompt").css("display","none");
     $("#single").val("");
@@ -694,7 +702,7 @@ function handleP(){
     geo.redraw();
     update_data();
     // Re-set intervals for redraw and data
-    dataInterval = setInterval(update_data, 2000);
+    dataInterval = setInterval(update_data, Math.round((siz**2)/40));
     $("#prompt").css("display","none");
     $(".telinp").val("");
 }
@@ -763,6 +771,7 @@ function routeReset(){
     route = [];
     geo.redraw();
     rdis = false;
+    $("#route-data").html("This is where the path length, minimum slope, and other data will appear.");
     $("#route-clear").css("display","none");
 }
 function AStar(bsl,bind,esl,eind,lim,cost,est){
