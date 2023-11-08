@@ -34,13 +34,15 @@ const estimators = {
     dis: costestimator,
     hil: heightestimator,
     // ear: visibilityestimator,
-}
-const compOffset = toRad(26);
+}   
+const compOffset = 0.5346887200211221;
+const directions = ["N","NW","W","SW","S","SE","E","NE"];
 
 function update_data() {
+    let di;
     const camera = $("#camera")[0];
     const cameraPos = camera.object3D.position;
-    const rot = camera.object3D.rotation.y;
+    let rot = camera.object3D.rotation.y;
     const c = dataIndexOf(cameraPos.x, cameraPos.z);
     const la = toRad(lat(c[0], c[1]));
     const lo = toRad(long(c[0], c[1]));
@@ -63,6 +65,12 @@ function update_data() {
     const arr = $("#arrow")[0];
     ctx.drawImage(arr,-100,-163);
     ctx.restore();
+    rot = Math.floor(((rot+3*Math.PI)%(2*Math.PI))/(Math.PI/4));
+    if(directions[rot]){
+        di = directions[rot];
+    }else{
+        di = rot;
+    }
     $("#data").html(
         `Press H for help.<br>Position: ${-1 * lat(c[0], c[1])}&deg; S, ${long(
             c[0],
@@ -71,7 +79,7 @@ function update_data() {
             2,
         )}&deg;<br>Elevation to Earth: ${ele.toFixed(2)}&deg;<br>Data indices: row ${
             c[0]
-        }, column ${c[1]}.`,
+        }, column ${c[1]}.<br>Heading: ${di}`,
     );
 }
 $(document).keydown(() => {

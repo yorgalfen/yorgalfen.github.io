@@ -4,11 +4,15 @@
     position: absolute;
     font-family: 'Agency FB', sans-serif;
     color: white;
-    font-size: 1.05em;
+    font-size: 1.07em;
     top: 10px;
     left: 10px;
     height: 190px;
-    width: 352px;
+    width: 326px;
+}
+#data {
+    padding-left: 40px;
+    padding-top: 0px;
 }
 p {
     padding: 20px 25px;
@@ -19,7 +23,7 @@ button {
     color: white;
 }
 #prompt {
-    background-image: url("gui.png");
+    background-image: url("gui-uncut.png");
     background-size: contain;
     position: absolute;
     font-family: 'Agency FB', sans-serif;
@@ -228,6 +232,6 @@ td {
     height: 20vw;
     left: 79%;
     top: 1%;
-    background-image: url("slopemap.png");
+    background-image: url("nocardinal.png");
     background-size: contain;
 }
