@@ -149,14 +149,9 @@ td {
 #data-et-apply {
     width: 150%;
 }
-#route-applier {
-    width: 100%;
-    height: 2em;
-    font-size: 1.35em;
-    transform: translate(10%,-20%);
-}
 #route-data {
     line-height: 1em;
+    padding: 0px;
 }
 #opt-select {
     width: 90%;
@@ -234,4 +229,12 @@ td {
     top: 1%;
     background-image: url("nocardinal.png");
     background-size: contain;
+}
+#route-20-contain {
+    display: none;
+}
+.rapplic {
+    width: 150%;
+    height: 2em;
+    font-size: 1.35em;
 }
