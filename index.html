@@ -25,6 +25,7 @@
                 <a-asset-item id="route" src="routen.json"></a-asset-item>
                 <a-asset-item id="comms" src="comms.json"></a-asset-item>
                 <a-asset-item id="slope" src="slope.json"></a-asset-item>
+                <a-asset-item id="visib" src="visibility.json"></a-asset-item>
             </a-assets>
             <a-sky id="caelum" src="#sky" radius="500000000"></a-sky>
             <a-entity
@@ -58,7 +59,7 @@
             <a-entity
                 id="luna"
                 geometry="primitive: terrain; latl: #latl; latr: #latr; longl: #longl; longr: #longr;
-                    height: #height; slope: #slope; route: #route; comms: #comms;"
+                    height: #height; slope: #slope; route: #route; comms: #comms; visib: #visib;"
                 material="src: #home-big; side: double; roughness: 1; vertexColorsEnabled: true;"
             ></a-entity>
         </a-scene>

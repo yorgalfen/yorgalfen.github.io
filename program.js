@@ -1,9 +1,9 @@
 // biome-ignore lint/style/useSingleVarDeclarator:
-let height, latl, latr, longl, longr, slope, route, comms;
+let height, latl, latr, longl, longr, slope, route, comms, visib;
 let rcalc = [];
 let rcalc20 = [];
 let dataInterval;
-let frame = [1160, 1215];
+const frame = [1160, 1215];
 let ah = false;
 let ahTimeout;
 let los = 5;
@@ -265,6 +265,9 @@ function long(su, ind) {
         return longl[su][ind];
     }
 }
+function vis(su, ind) {
+    return (visib[su][Math.floor(ind / 64)] >> ind % 64) & 1;
+}
 function gcdis(la1, lo1, la2, lo2) {
     const dlat = toRad(la2 - la1);
     const dlon = toRad(lo2 - lo1);
@@ -435,6 +438,7 @@ class TerrainGeometry {
             slope: new JSONAssetType(),
             route: new JSONAssetType(),
             comms: new JSONAssetType(),
+            visib: new JSONAssetType(),
         };
         // Same reason for usually unnecessary assignment
         this.init = this.init;
@@ -472,6 +476,7 @@ class TerrainGeometry {
         slope = data.slope;
         route = data.route;
         comms = data.comms;
+        visib = data.visib;
 
         this.redraw();
 
