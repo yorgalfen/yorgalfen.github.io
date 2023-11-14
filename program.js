@@ -284,8 +284,6 @@ function long(su, ind) {
     }
 }
 function vis(su, ind) {
-    console.log(visib[su][Math.floor(ind / 32)].toString(2));
-    console.log(visib[su][Math.floor(ind / 32)] >> (ind % 32));
     return (visib[su][Math.floor(ind / 32)] >> (ind % 32)) & 1;
 }
 function gcdis(la1, lo1, la2, lo2) {
