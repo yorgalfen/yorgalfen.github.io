@@ -17,6 +17,7 @@
                 <img id="home-big" src="home-big.png" />
                 <img id="earth" src="earth.png" />
                 <img id="sky" src="sky.jpg" />
+                <a-asset-item id="flag" src="flag.obj"></a-asset-item>
                 <a-asset-item id="height" src="height.json"></a-asset-item>
                 <a-asset-item id="latl" src="latleft.json"></a-asset-item>
                 <a-asset-item id="latr" src="latright.json"></a-asset-item>
@@ -62,6 +63,8 @@
                     height: #height; slope: #slope; route: #route; comms: #comms; visib: #visib;"
                 material="src: #home-big; side: double; roughness: 1; vertexColorsEnabled: true;"
             ></a-entity>
+            <a-light type="ambient" intensity="0" id="lux"></a-light>
+            <a-obj-model flag-comp id="vexillum" src="#flag" material="color: #32a852" scale="0.002 0.002 0.002" rotation="180 0 0" position="0 0 0"></a-obj-model>
         </a-scene>
         <img id="map" src="slopemap.png">
         <img id="arrow" src="arrow.png">

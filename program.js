@@ -1,5 +1,5 @@
 // biome-ignore lint/style/useSingleVarDeclarator:
-let height, latl, latr, longl, longr, slope, route, comms, visib;
+let height, latl, latr, longl, longr, slope, route, comms, dest, visib;
 let rcalc = [];
 let rcalc20 = [];
 let dataInterval;
@@ -17,8 +17,6 @@ const margin = 50;
 const centerLat = -85.3974303;
 const centerLong = 30.5974913;
 const earthLat = -6.6518153;
-const vdis = 0.0000028734334692991463;
-const hdis = 0.0000028731084995076896;
 const earthCart = {
     x: 361000000,
     y: 0,
@@ -247,6 +245,26 @@ $(document).keydown(() => {
             }
             break;
         }
+        case 71: {
+            // G
+            if($("#prompt").css("display")==="none"){
+                $("#prompt").css("display","inline");
+                $("#single").css("display","inline");
+                $("#color-select").css("display","none");
+                $("#teleport-table").css("display","none");
+                $("#prompt-text").html("Input a new intensity for the ambient light.");
+                $("#prompt-text").css("font-size","1.55em");
+                $("#single-go").css("display","inline");
+                $("#single-go").attr("onclick",`handleG();`);
+                $("#single-go").css("top","65%");
+                $("#invinp").css("display","none");
+            }else{
+                $("#prompt").css("display","none");
+                $("#single").val("");
+            }
+            break;
+        }
+
 }});
 function toRad(x) {
     return (x * Math.PI) / 180;
@@ -266,7 +284,9 @@ function long(su, ind) {
     }
 }
 function vis(su, ind) {
-    return (visib[su][Math.floor(ind / 64)] >> ind % 64) & 1;
+    console.log(visib[su][Math.floor(ind / 32)].toString(2));
+    console.log(visib[su][Math.floor(ind / 32)] >> (ind % 32));
+    return (visib[su][Math.floor(ind / 32)] >> (ind % 32)) & 1;
 }
 function gcdis(la1, lo1, la2, lo2) {
     const dlat = toRad(la2 - la1);
@@ -477,6 +497,10 @@ class TerrainGeometry {
         route = data.route;
         comms = data.comms;
         visib = data.visib;
+        dest = route[route.length-1];
+        for(let i = 0; i<visib.length; i++){
+            visib[i] = new Uint32Array(visib[i]);
+        }
 
         this.redraw();
 
@@ -720,6 +744,20 @@ function handleP(){
     dataInterval = setInterval(update_data, Math.round((siz**2)/40));
     $("#prompt").css("display","none");
     $(".telinp").val("");
+}
+function handleG(){
+    let nint = parseFloat($("#single").val());
+    if(!isNaN(nint)){
+        if(nint>=100){
+            $("#lux").attr("intensity","0.5");
+        }else if(nint<=0){
+            $("#lux").attr("intensity","0");
+        }else{
+            $("#lux").attr("intensity",nint*0.005);
+        }
+    }
+    $("#prompt").css("display","none");
+    $("#single").val("");
 }
 function getClick(event){
     if(!rdis){
@@ -1167,6 +1205,8 @@ function applyRoute(){
     for(let i = 0; i<route.length; i++){
         ctx.fillRect(route[i][1]-10,route[i][0]-10,20,20);
     }   
+    dest = route[route.length-1];
+    update_flag();
     geo.redraw();
 }
 function applyRcalc20(){
@@ -1179,7 +1219,9 @@ function applyRcalc20(){
     ctx.fillStyle = "rgb(19,19,209)";
     for(let i = 0; i<route.length; i++){
         ctx.fillRect(route[i][1]-10,route[i][0]-10,20,20);
-    }   
+    }
+    dest = route[route.length-1];
+    update_flag();
     geo.redraw();
 }
 
@@ -1212,11 +1254,21 @@ AFRAME.registerComponent("frame-adjust", {
         // Shouldn't matter, but automatic height adjustment occurs after recentering
         if (ah) {
             const d = dataIndexOf(cameraPos.x, cameraPos.z);
-            cameraPos.y = height[d[0]][d[1]] + 1.6;
+            cameraPos.y = coord(lat(d[0],d[1]),long(d[0],d[1]),height[d[0]][d[1]]+1.6)[1];
         }
         // const time = new Date() - start;
         // console.log(`Spent ${time}ms in tick()`);
     },
+});
+AFRAME.registerComponent("flag-comp", {
+    init: function () {
+        const flagPos = this.el.object3D.position;
+        const target = coord(lat(route[route.length-1][0],route[route.length-1][1]),long(route[route.length-1][0],route[route.length-1][1]),height[route[route.length-1][0]][route[route.length-1][1]]+15);
+        flagPos.x = target[0];
+        flagPos.y = target[1];
+        flagPos.z = target[2];
+        flagInterval = setInterval(update_flag,1000);
+    }
 });
 function fromLatLong(la, lo){
     const dat = new Date();
@@ -1236,11 +1288,19 @@ function fromLatLong(la, lo){
     return false;
 }
 function processMS(ms){
-    if(isNaN(parseFloat(ms))&&!ms==="?"){
+    if(Number.isNaN(parseFloat(ms))&&!ms==="?"){
         return false;
     }else if(ms==="?"){
         return "?";
     }else{
         return parseFloat(ms);
     }
+}
+function update_flag(){
+    const flag3D = $("#vexillum")[0].object3D;
+    const flagPos = flag3D.position;
+    const nPos = coord(lat(dest[0],dest[1]),long(dest[0],dest[1]),height[dest[0]][dest[1]]+15);
+    flagPos.x = nPos[0];
+    flagPos.y = nPos[1];
+    flagPos.z = nPos[2];
 }
