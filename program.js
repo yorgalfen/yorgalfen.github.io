@@ -927,7 +927,7 @@ function routeStatistics(path) {
         const sub = path[i][0];
         const ind = path[i][1];
         totalSlope += slope[sub][ind];
-        visibility += vis(p[0],p[1]);
+        visibility += vis(sub, ind);
         if (slope[sub][ind] > maxSlope) {
             maxSlope = slope[sub][ind];
         }
@@ -947,7 +947,7 @@ function routeStatistics(path) {
         distance: distance,
         hillClimb: hillClimb,
         maxSlope: maxSlope,
-        visibility: (1 - tot / rout.length) * 100,
+        visibility: (1 - visibility / path.length) * 100,
     };
 }
 
@@ -1093,7 +1093,7 @@ function wayfind() {
     }
     data += ` meters<br>Max slope: ${stats.maxSlope}`;
     if (stats20 !== undefined) {
-        data += `/${stats.maxSlope}`;
+        data += `/${stats20.maxSlope}`;
     }
     data += "&deg;";
     switch (opt) {
