@@ -27,13 +27,13 @@ const costFunction = {
     std: slopecost,
     dis: distancecost,
     hil: heightcost,
-    // ear: visibilitycost,
+    ear: visibilitycost,
 }
 const estimators = {
     std: costestimator,
     dis: costestimator,
     hil: heightestimator,
-    // ear: visibilityestimator,
+    ear: costestimator,
 }   
 const compOffset = 0.5346887200211221;
 const directions = ["N","NW","W","SW","S","SE","E","NE"];
@@ -809,6 +809,22 @@ function costestimator(sl1,in1,sl2,in2){
     // return Math.max(Math.abs(cd[0]-cs[0]),Math.abs(cd[1]-cs[1]),Math.abs(cd[2]-cs[2]));
     return Math.hypot(cs[0]-cd[0],cs[1]-cd[1],cs[2]-cd[2]);
 }
+function visibilitycost(sl1,in1,sl2,in2,lim){
+    const slo = slope[sl1][in1];
+    const slp = slope[sl2][in2];
+    if(slo>=lim || slp>=lim){
+        return Infinity;
+    }
+    const estim = costestimator(sl1,in1,sl2,in2);
+    return estim*(9*vis(sl2,in2)+1);
+}
+function routeVisibility(rout){
+    let tot = 0;
+    for(const p of rout){
+        tot+=vis(p[0],p[1]);
+    }
+    return (1-(tot/rout.length))*100;
+}
 function routeReset(){
     $("#route-20-contain").css("display","none");
     $("#route-applier").html("Apply Route");
@@ -1105,6 +1121,9 @@ function wayfind(){
                 case "hil":
                     data+=`<br>Total Hill Climb: ${totalRouteHillClimb(rcalc).toFixed(1)}/${totalRouteHillClimb(rcalc20).toFixed(1)} meters`;
                     break;
+                case "ear":
+                    data+=`<br>Earth Visible ${routeVisibility(rcalc).toFixed(1)}/${routeVisibility(rcalc20).toFixed(1)}% of the time`;
+                    break;
             }
             $("#route-data").html(data);
             return false;
@@ -1187,6 +1206,9 @@ function wayfind(){
             break;
         case "hil":
             data+=`<br>Total Hill Climb: ${totalRouteHillClimb(rcalc).toFixed(1)} meters`;
+            break;
+        case "ear":
+            data+=`<br>Earth Visible ${routeVisibility(rcalc).toFixed(1)}% of the time`;
             break;
     }
     $("#route-data").html(data);
