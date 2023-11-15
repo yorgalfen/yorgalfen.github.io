@@ -818,30 +818,6 @@ function visibilitycost(sl1,in1,sl2,in2,lim){
     const estim = costestimator(sl1,in1,sl2,in2);
     return estim*(9*vis(sl2,in2)+1);
 }
-function routeVisibility(rout){
-    let tot = 0;
-    for(const p of rout){
-        tot+=vis(p[0],p[1]);
-    }
-    return (1-(tot/rout.length))*100;
-}
-function routeReset(){
-    $("#route-20-contain").css("display","none");
-    $("#route-applier").html("Apply Route");
-    $("#draw").css("transform","translateX(-40%)");
-    const canvas = document.getElementById("draw");
-    const ctx = canvas.getContext("2d");
-    const map = document.getElementById("map");
-    ctx.drawImage(map,0,0,3200,3200);
-    const cnv = document.getElementById("minimap-route");
-    const ct = cnv.getContext("2d");
-    ct.clearRect(0,0,cnv.width,cnv.height);
-    route = [];
-    geo.redraw();
-    rdis = false;
-    $("#route-data").html("This is where the path length, minimum slope, and other data will appear.");
-    $("#route-clear").css("display","none");
-}
 function AStar(bsl,bind,esl,eind,lim,cost,est){
     let star = new Date();
     let it = 0;
@@ -940,297 +916,220 @@ function getIndex(point){
 function extractPoint(point){
     return [getSubList(point),getIndex(point)];
 }
-function totalRouteHillClimb(rout) {
-    let total = 0;
-    for (let i = 0; i < rout.length-1; i++) {
-        const h1 = height[rout[i][0]][rout[i][1]];
-        const h2 = height[rout[i+1][0]][rout[i+1][1]];
-        if (h2 > h1) {
-            total += h2 - h1;
+
+function routeStatistics(path) {
+    let distance = 0;
+    let hillClimb = 0;
+    let maxSlope = -Infinity;
+    let totalSlope = 0;
+    let visibility = 0;
+    for (let i = 0, len = path.length; i < len; i++) {
+        const sub = path[i][0];
+        const ind = path[i][1];
+        totalSlope += slope[sub][ind];
+        visibility += vis(p[0],p[1]);
+        if (slope[sub][ind] > maxSlope) {
+            maxSlope = slope[sub][ind];
+        }
+        if (i < len - 1) {
+            const nextSub = path[i + 1][0];
+            const nextInd = path[i + 1][1];
+            const h1 = height[sub][ind];
+            const h2 = height[nextSub][nextInd];
+            if (h2 > h1) {
+                hillClimb += h2 - h1;
+            }
+            distance += costestimator(sub, ind, nextSub, nextInd);
         }
     }
-    return total;
+    return {
+        averageSlope: totalSlope / path.length,
+        distance: distance,
+        hillClimb: hillClimb,
+        maxSlope: maxSlope,
+        visibility: (1 - tot / rout.length) * 100,
+    };
 }
-function totalRouteDistance(rout) {
-    let total = 0;
-    for (let i = 0; i < rout.length-1; i++) {
-        total += costestimator(rout[i][0],rout[i][1],rout[i+1][0],rout[i+1][1]);
-    }
-    return total;
-}
-function routeAverageSlope(rout){
-    let total = 0;
-    for (let i = 0; i < rout.length; i++) {
-        total += slope[rout[i][0]][rout[i][1]];
-    }
-    return total/rout.length;
-}
-function routeMaxSlope(rout){
-    let ma = -1;
-    for (let i = 0; i < rout.length; i++) {
-        if(slope[rout[i][0]][rout[i][1]]>ma){
-            ma = slope[rout[i][0]][rout[i][1]];
-        }
-    }
-    return ma;
-}
-function wayfind(){
-    let exi = false;
-    let desl, dein;
+
+function wayfind() {
     $("#route-clear").css("display","none");
     $("#progress").css("display","inline");
     $("#route-20-contain").css("display","none");
     $("#draw").css("transform","translateX(-40%)");
     const opt = $("#opt-drop").val();
-    const canvas = document.getElementById("draw");
+    const canvas = $("#draw")[0];
     const ctx = canvas.getContext("2d");
     const canvasW = canvas.width;
     const canvasH = canvas.height;
-    const map = document.getElementById("map");
+    const map = $("#map")[0];
     $("#progress").html("Finding route...");
-    const osl = $("#sublist").val();
-    const oin = $("#index").val();
-    if(osl.charAt(0)==="-"){
-        const b = fromLatLong(parseFloat(osl),parseFloat(oin));
-        if(!b){
+
+    let desl = parseFloat($("#sublist").val());
+    let dein = parseFloat($("#index").val());
+    let exi = false;
+    if (desl !== undefined && dein !== undefined) {
+        if (desl < 0) {
+            const b = fromLatLong(desl, dein);
+            if (b) {
+                desl = b[0];
+                dein = b[1];
+            }
+        } else if (!Number.isInteger(desl) || !Number.isInteger(dein)) {
             exi = true;
-        }else{
-            desl = b[0];
-            dein = b[1];
         }
-    }else{
-        desl = parseInt(osl);
-        dein = parseInt(oin);
     }
     const oms = $("#slinp").val();
-    const ms = processMS(oms);
-    // biome-ignore lint/nursery/noGlobalIsNan: regular isNaN must be used here to return true if desl, dein, or ms is undefined.
-    if(desl<0||desl>3199||dein<0||dein>3199||isNaN(desl)||isNaN(dein)||isNaN(ms)){
+    let ms = oms === "?" ? "?" : parseFloat(oms);
+    // All non-number values compare as false
+    if (!(0 <= desl && desl < 3200 && 0 <= dein && dein < 3200)) {
         exi = true;
     }
-    rcalc = [];
-    rcalc20 = [];
-    const indic = dataIndexOf(
-        document.querySelector("#camera").object3D.position.x,
-        document.querySelector("#camera").object3D.position.z,
-    );
-    if(slope[desl]?.[dein]>=ms||exi){
-        if(ms==="?"){
-            $("#route-applier").html("Apply Blue");
-            $("#route-20-contain").css("display","inline");
-            $("#draw").css("transform","translate(-40%,-2%)");
-            const r15 = AStar(indic[0],indic[1],desl,dein,15,costFunction[opt],estimators[opt]);
-            const r20 = AStar(indic[0],indic[1],desl,dein,20,costFunction[opt],estimators[opt]);
-            if(!r15||!r20){
-                $("#progress").html("Route(s) failed!");
-                return false;
-            }
-            for(const c of r15){
-                rcalc.push(extractPoint(c));
-            }
-            for(const c of r20){
-                rcalc20.push(extractPoint(c));
-            }
-            $("#route-clear").css("display","inline");
-            $("#progress").css("display","none");
-            let misl = 3200;
-            for(let i = 0; i<rcalc.length; i++){
-                if(rcalc[i][0]<misl){
-                    misl = rcalc[i][0];
-                }
-            }
-            for(let i = 0; i<rcalc20.length; i++){
-                if(rcalc20[i][0]<misl){
-                    misl = rcalc20[i][0];
-                }
-            }
-            misl-=margin;
-            let mind = 3200;
-            for(let i = 0; i<rcalc.length; i++){
-                if(rcalc[i][1]<mind){
-                    mind = rcalc[i][1];
-                }
-            }
-            for(let i = 0; i<rcalc20.length; i++){
-                if(rcalc20[i][1]<mind){
-                    mind = rcalc20[i][1];
-                }
-            }
-            mind-=margin;
-            let masl = -1;
-            for(let i = 0; i<rcalc.length; i++){
-                if(rcalc[i][0]>masl){
-                    masl = rcalc[i][0];
-                }
-            }
-            for(let i = 0; i<rcalc20.length; i++){
-                if(rcalc20[i][0]>masl){
-                    masl = rcalc20[i][0];
-                }
-            }
-            masl+=margin;
-            let mand = -1;
-            for(let i = 0; i<rcalc.length; i++){
-                if(rcalc[i][1]>mand){
-                    mand = rcalc[i][1];
-                }
-            }
-            for(let i = 0; i<rcalc20.length; i++){
-                if(rcalc20[i][1]>mand){
-                    mand = rcalc20[i][1];
-                }
-            }
-            mand+=margin;
-            if(misl<0){
-                misl = 0;
-            }
-            if(mind<0){
-                mind = 0;
-            }
-            if(masl>3199){
-                masl = 3199;
-            }
-            if(mand>3199){
-                mand = 3199;
-            }
-            const wid = Math.max(mand-mind,masl-misl);
-            masl = misl+wid;
-            mand = mind+wid;
-            ctx.drawImage(map,mind,misl,wid,wid,0,0,3200,3200);
-            ctx.fillStyle = "rgb(255,255,255)";
-            ctx.fillRect((((indic[1]-mind)/wid)*canvasW)-60,(((indic[0]-misl)/wid)*canvasH)-60,120,120);
-            ctx.fillStyle = "rgb(0,0,0)";
-            ctx.fillRect((((dein-mind)/wid)*canvasW)-60,(((desl-misl)/wid)*canvasH)-60,120,120);
-            ctx.fillStyle = "rgb(19,19,209)";
-            for(let i = 0; i<rcalc.length; i++){
-                ctx.fillRect((((rcalc[i][1]-mind)/wid)*canvasW)-10,(((rcalc[i][0]-misl)/wid)*canvasH)-10,20,20);
-            }
-            ctx.fillStyle = "rgb(46,16,2)";
-            for(let i = 0; i<rcalc20.length; i++){
-                ctx.fillRect((((rcalc20[i][1]-mind)/wid)*canvasW)-10,(((rcalc20[i][0]-misl)/wid)*canvasH)-10,20,20);
-            }
-            let data = `Route length: ${totalRouteDistance(rcalc).toFixed(1)}/${totalRouteDistance(rcalc20).toFixed(1)} meters<br>Max slope: ${routeMaxSlope(rcalc)}/${routeMaxSlope(rcalc20)}&deg;`
-            rdis = true;
-            switch(opt){
-                case "std":
-                    data+=`<br>Average slope: ${routeAverageSlope(rcalc).toFixed(1)}/${routeAverageSlope(rcalc20).toFixed(1)}&deg;`;
-                    break;
-                case "dis":
-                    data+=`<br>Average slope: ${routeAverageSlope(rcalc).toFixed(1)}/${routeAverageSlope(rcalc20).toFixed(1)}&deg;`;
-                    break;
-                case "hil":
-                    data+=`<br>Total Hill Climb: ${totalRouteHillClimb(rcalc).toFixed(1)}/${totalRouteHillClimb(rcalc20).toFixed(1)} meters`;
-                    break;
-                case "ear":
-                    data+=`<br>Earth Visible ${routeVisibility(rcalc).toFixed(1)}/${routeVisibility(rcalc20).toFixed(1)}% of the time`;
-                    break;
-            }
-            $("#route-data").html(data);
-            return false;
-        }else{
-            $("#progress").html("Route failed!");
-            return false;
-        }
-    }
-    $("#route-applier").html("Apply Route");
-    const nrt = AStar(indic[0],indic[1],desl,dein,ms,costFunction[opt],estimators[opt]);
-    if(!nrt){
+    if (exi) {
         $("#progress").html("Route failed!");
         return false;
     }
-    for(const c of nrt){
-        rcalc.push(extractPoint(c));
+
+    const cameraPos = $("#camera")[0].object3D.position;
+    const indic = dataIndexOf(cameraPos.x, cameraPos.z);
+
+    rcalc = [];
+    rcalc20 = undefined;
+
+    let misl = 3200;
+    let mind = 3200;
+    let masl = -1;
+    let mand = -1;
+    if (ms === "?") {
+        $("#route-applier").html("Apply Blue");
+        $("#route-20-contain").css("display", "inline");
+        $("#route-20-applier").on("click", () => {
+            route = rcalc20;
+            applyRoute();
+        });
+        $("#draw").css("transform", "translate(-40%,-2%)");
+        const r20 = AStar(indic[0], indic[1], desl, dein, 20, costFunction[opt], estimators[opt]);
+        if (!r20) {
+            $("#progress").html("Route failed!");
+            return false;
+        }
+        rcalc20 = r20.map(extractPoint);
+        for (let i = 0; i < rcalc20.length; i++){
+            if (rcalc20[i][0] < misl) {
+                misl = rcalc20[i][0];
+            }
+            if (rcalc20[i][1] < mind) {
+                mind = rcalc20[i][1];
+            }
+            if (rcalc20[i][0] > masl) {
+                masl = rcalc20[i][0];
+            }
+            if (rcalc20[i][1] > mand) {
+                mand = rcalc20[i][1];
+            }
+        }
+        ms = 15;
+    } else {
+        $("#route-applier").html("Apply Route");
     }
-    $("#route-clear").css("display","inline");
-    $("#progress").css("display","none");
-    let misl = 3201;
-    for(let i = 0; i<rcalc.length; i++){
-        if(rcalc[i][0]<misl){
+    $("#route-applier").on("click", () => {
+        route = rcalc;
+        applyRoute();
+    });
+
+    const nrt = AStar(indic[0], indic[1], desl, dein, ms, costFunction[opt], estimators[opt]);
+    if (!nrt) {
+        $("#progress").html("Route failed!");
+        return false;
+    }
+    rcalc = nrt.map(extractPoint);
+    $("#route-clear").css("display", "inline");
+    $("#progress").css("display", "none");
+    for (let i = 0; i < rcalc.length; i++){
+        if (rcalc[i][0] < misl) {
             misl = rcalc[i][0];
         }
-    }
-    misl-=margin;
-    let mind = 3200;
-    for(let i = 0; i<rcalc.length; i++){
-        if(rcalc[i][1]<mind){
+        if (rcalc[i][1] < mind) {
             mind = rcalc[i][1];
         }
-    }
-    mind-=margin;
-    let masl = -1;
-    for(let i = 0; i<rcalc.length; i++){
-        if(rcalc[i][0]>masl){
+        if (rcalc[i][0] > masl) {
             masl = rcalc[i][0];
         }
-    }
-    masl+=margin;
-    let mand = -1;
-    for(let i = 0; i<rcalc.length; i++){
-        if(rcalc[i][1]>mand){
+        if (rcalc[i][1] > mand) {
             mand = rcalc[i][1];
         }
     }
-    mand+=margin;
-    if(misl<0){
-        misl = 0;
-    }
-    if(mind<0){
-        mind = 0;
-    }
-    if(masl>3199){
-        masl = 3199;
-    }
-    if(mand>3199){
-        mand = 3199;
-    }
-    const wid = Math.max(mand-mind,masl-misl);
-    masl = misl+wid;
-    mand = mind+wid;
-    ctx.drawImage(map,mind,misl,wid,wid,0,0,3200,3200);
+
+    misl = Math.max(misl - margin, 0);
+    mind = Math.max(mind - margin, 0);
+    masl = Math.min(masl + margin, 3199);
+    mand = Math.min(mand + margin, 3199);
+
+    const wid = Math.max(mand - mind, masl - misl);
+    masl = misl + wid;
+    mand = mind + wid;
+
+    ctx.drawImage(map, mind, misl, wid, wid, 0, 0, 3200, 3200);
     ctx.fillStyle = "rgb(255,255,255)";
     ctx.fillRect((((indic[1]-mind)/wid)*canvasW)-60,(((indic[0]-misl)/wid)*canvasH)-60,120,120);
     ctx.fillStyle = "rgb(0,0,0)";
     ctx.fillRect((((dein-mind)/wid)*canvasW)-60,(((desl-misl)/wid)*canvasH)-60,120,120);
     ctx.fillStyle = "rgb(19,19,209)";
-    for(let i = 0; i<rcalc.length; i++){
+    for (let i = 0; i < rcalc.length; i++){
         ctx.fillRect((((rcalc[i][1]-mind)/wid)*canvasW)-10,(((rcalc[i][0]-misl)/wid)*canvasH)-10,20,20);
     }
-    let data = `Route length: ${totalRouteDistance(rcalc).toFixed(1)} meters<br>Max slope: ${routeMaxSlope(rcalc)}&deg;`
+    if (rcalc20 !== undefined) {
+        ctx.fillStyle = "rgb(46,16,2)";
+        for (let i = 0; i < rcalc20.length; i++) {
+            ctx.fillRect((((rcalc20[i][1]-mind)/wid)*canvasW)-10,(((rcalc20[i][0]-misl)/wid)*canvasH)-10,20,20);
+        }
+    }
+
     rdis = true;
-    switch(opt){
+    const stats = routeStatistics(rcalc);
+    const stats20 = rcalc20 === undefined ? undefined : routeStatistics(rcalc20);
+    let data = `Route length: ${stats.distance.toFixed(1)}`;
+    if (stats20 !== undefined) {
+        data += `/${stats20.distance.toFixed(1)}`;
+    }
+    data += ` meters<br>Max slope: ${stats.maxSlope}`;
+    if (stats20 !== undefined) {
+        data += `/${stats.maxSlope}`;
+    }
+    data += "&deg;";
+    switch (opt) {
         case "std":
-            data+=`<br>Average slope: ${routeAverageSlope(rcalc).toFixed(1)}&deg;`;
+            data += `<br>Average slope: ${stats.averageSlope.toFixed(1)}`;
+            if (stats20 !== undefined) {
+                data += `/${stats20.averageSlope.toFixed(1)}`;
+            }
+            data += "&deg;";
             break;
         case "dis":
-            data+=`<br>Average slope: ${routeAverageSlope(rcalc).toFixed(1)}&deg;`;
+            data += `<br>Average slope: ${stats.averageSlope.toFixed(1)}`;
+            if (stats20 !== undefined) {
+                data += `/${stats20.averageSlope.toFixed(1)}`;
+            }
+            data += "&deg;";
             break;
         case "hil":
-            data+=`<br>Total Hill Climb: ${totalRouteHillClimb(rcalc).toFixed(1)} meters`;
+            data += `<br>Total Hill Climb: ${stats.hillClimb.toFixed(1)}`;
+            if (stats20 !== undefined) {
+                data += `/${stats20.hillClimb.toFixed(1)}`;
+            }
+            data += " meters";
             break;
         case "ear":
-            data+=`<br>Earth Visible ${routeVisibility(rcalc).toFixed(1)}% of the time`;
+            data += `<br>Earth Visible ${stats.visibility.toFixed(1)}%`;
+            if (stats20 !== undefined) {
+                data += `/${stats20.visibility.toFixed(1)}%`;
+            }
+            data += " of the time";
             break;
     }
     $("#route-data").html(data);
 }
 
-function applyRoute(){
-    route = rcalc;
-    const canvas = document.getElementById("minimap-route");
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle = "rgb(0,0,0)";
-    ctx.fillRect(route[route.length-1][1]-20,route[route.length-1][0]-20,40,40);
-    ctx.fillStyle = "rgb(19,19,209)";
-    for(let i = 0; i<route.length; i++){
-        ctx.fillRect(route[i][1]-10,route[i][0]-10,20,20);
-    }   
-    dest = route[route.length-1];
-    update_flag();
-    geo.redraw();
-}
-function applyRcalc20(){
-    route = rcalc20;
+function applyRoute() {
     const canvas = document.getElementById("minimap-route");
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -1243,6 +1142,24 @@ function applyRcalc20(){
     dest = route[route.length-1];
     update_flag();
     geo.redraw();
+}
+
+function routeReset() {
+    $("#route-20-contain").css("display","none");
+    $("#route-applier").html("Apply Route");
+    $("#draw").css("transform","translateX(-40%)");
+    const canvas = document.getElementById("draw");
+    const ctx = canvas.getContext("2d");
+    const map = document.getElementById("map");
+    ctx.drawImage(map,0,0,3200,3200);
+    const cnv = document.getElementById("minimap-route");
+    const ct = cnv.getContext("2d");
+    ct.clearRect(0,0,cnv.width,cnv.height);
+    route = [];
+    geo.redraw();
+    rdis = false;
+    $("#route-data").html("This is where the path length, minimum slope, and other data will appear.");
+    $("#route-clear").css("display","none");
 }
 
 const geo = new TerrainGeometry();
@@ -1306,15 +1223,6 @@ function fromLatLong(la, lo){
     }
     console.log(`Spent ${new Date() - dat}ms in fromLatLong()`);
     return false;
-}
-function processMS(ms){
-    if(Number.isNaN(parseFloat(ms))&&!ms==="?"){
-        return false;
-    }else if(ms==="?"){
-        return "?";
-    }else{
-        return parseFloat(ms);
-    }
 }
 function update_flag(){
     const flag3D = $("#vexillum")[0].object3D;
