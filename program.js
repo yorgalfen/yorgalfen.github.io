@@ -2,6 +2,8 @@
 let height, latl, latr, longl, longr, slope, route, comms, dest, visib;
 let rcalc = [];
 let rcalc20 = [];
+let commcalc = [];
+let commcalc20 = [];
 let dataInterval;
 const frame = [1160, 1215];
 let ah = false;
@@ -37,6 +39,7 @@ const estimators = {
 }   
 const compOffset = 0.5346887200211221;
 const directions = ["N","NW","W","SW","S","SE","E","NE"];
+console.log(`jQuery version: ${$.fn.jquery.split(" ")[0]}`);
 
 function update_data() {
     let di;
@@ -499,7 +502,6 @@ class TerrainGeometry {
         for(let i = 0; i<visib.length; i++){
             visib[i] = new Uint32Array(visib[i]);
         }
-
         this.redraw();
 
         // Ready to start drawing HUD
@@ -904,6 +906,20 @@ function reconstruct_path(cameFrom,current){
     }
     return totalPath;
 }
+function checkpoints(rout){
+    const path = [];
+    const points = [];
+    for(let i = 0; i<rout.length; i++){
+        if(vis(rout[i][0],rout[i][1])===0){
+            path.push(rout[i]);
+        }
+    }
+    const inte = path.length/11;
+    for(let i = 1; i<11; i++){
+        points.push(path[Math.round(i*inte)]);
+    }
+    return points;
+}
 function makePoint(subList,index){
     return subList << 12 | index;
 }
@@ -963,7 +979,6 @@ function wayfind() {
     const canvasH = canvas.height;
     const map = $("#map")[0];
     $("#progress").html("Finding route...");
-
     let desl = parseFloat($("#sublist").val());
     let dein = parseFloat($("#index").val());
     let exi = false;
@@ -1004,6 +1019,7 @@ function wayfind() {
         $("#route-20-contain").css("display", "inline");
         $("#route-20-applier").on("click", () => {
             route = rcalc20;
+            comms = commcalc20;
             applyRoute();
         });
         $("#draw").css("transform", "translate(-40%,-2%)");
@@ -1013,6 +1029,7 @@ function wayfind() {
             return false;
         }
         rcalc20 = r20.map(extractPoint);
+        commcalc20 = checkpoints(rcalc20);
         for (let i = 0; i < rcalc20.length; i++){
             if (rcalc20[i][0] < misl) {
                 misl = rcalc20[i][0];
@@ -1033,6 +1050,7 @@ function wayfind() {
     }
     $("#route-applier").on("click", () => {
         route = rcalc;
+        comms = commcalc;
         applyRoute();
     });
 
@@ -1042,6 +1060,7 @@ function wayfind() {
         return false;
     }
     rcalc = nrt.map(extractPoint);
+    commcalc = checkpoints(rcalc);
     $("#route-clear").css("display", "inline");
     $("#progress").css("display", "none");
     for (let i = 0; i < rcalc.length; i++){
@@ -1077,13 +1096,20 @@ function wayfind() {
     for (let i = 0; i < rcalc.length; i++){
         ctx.fillRect((((rcalc[i][1]-mind)/wid)*canvasW)-10,(((rcalc[i][0]-misl)/wid)*canvasH)-10,20,20);
     }
+    ctx.fillStyle = "rgb(0,255,255)";
+    for(let i = 0; i<commcalc.length; i++){
+        ctx.fillRect((((commcalc[i][1]-mind)/wid)*canvasW)-10,(((commcalc[i][0]-misl)/wid)*canvasH)-10,20,20);
+    }
     if (rcalc20 !== undefined) {
         ctx.fillStyle = "rgb(46,16,2)";
         for (let i = 0; i < rcalc20.length; i++) {
             ctx.fillRect((((rcalc20[i][1]-mind)/wid)*canvasW)-10,(((rcalc20[i][0]-misl)/wid)*canvasH)-10,20,20);
         }
+        ctx.fillStyle = "rgb(0,255,255)";
+        for(let i = 0; i<commcalc20.length; i++){
+            ctx.fillRect((((commcalc20[i][1]-mind)/wid)*canvasW)-10,(((commcalc20[i][0]-misl)/wid)*canvasH)-10,20,20);
+        }
     }
-
     rdis = true;
     const stats = routeStatistics(rcalc);
     const stats20 = rcalc20 === undefined ? undefined : routeStatistics(rcalc20);
@@ -1138,6 +1164,10 @@ function applyRoute() {
     ctx.fillStyle = "rgb(19,19,209)";
     for(let i = 0; i<route.length; i++){
         ctx.fillRect(route[i][1]-10,route[i][0]-10,20,20);
+    }
+    ctx.fillStyle = "rgb(0,255,255)";
+    for(let i = 0; i<comms.length; i++){
+        ctx.fillRect(comms[i][1]-10,comms[i][0]-10,20,20);
     }
     dest = route[route.length-1];
     update_flag();
@@ -1204,7 +1234,6 @@ AFRAME.registerComponent("flag-comp", {
         flagPos.x = target[0];
         flagPos.y = target[1];
         flagPos.z = target[2];
-        flagInterval = setInterval(update_flag,1000);
     }
 });
 function fromLatLong(la, lo){
