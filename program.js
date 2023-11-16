@@ -690,7 +690,7 @@ function handleC(){
 function handleV(){
     const fov = $("#single").val();
     if(fov){
-        $("#camera").attr("camera", `far: 1000000000; fov: ${fov}`);
+        $("#camera").attr("camera", `far: 10000000000; fov: ${fov}`);
     }
     $("#prompt").css("display","none");
     $("#single").val("");
