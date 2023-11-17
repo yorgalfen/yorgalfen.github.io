@@ -1,3 +1,6 @@
+.a-loader-title {
+    font-family: "agency-fb-regular";
+}
 #info {
     background-image: url("gui.png");
     background-size: contain;
