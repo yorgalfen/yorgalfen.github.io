@@ -2,7 +2,7 @@
     background-image: url("gui.png");
     background-size: contain;
     position: absolute;
-    font-family: 'Agency FB', sans-serif;
+    font-family: "agency-fb-regular", sans-serif;
     color: white;
     font-size: 1.07em;
     top: 10px;
@@ -18,7 +18,7 @@ p {
     padding: 20px 25px;
 }
 button {
-    font-family: 'Agency FB', sans-serif;
+    font-family: "agency-fb-regular", sans-serif;
     background-color: rgb(38,171,226);
     color: white;
 }
@@ -26,7 +26,7 @@ button {
     background-image: url("gui-uncut.png");
     background-size: contain;
     position: absolute;
-    font-family: 'Agency FB', sans-serif;
+    font-family: "agency-fb-regular", sans-serif;
     color: white;
     font-size: 1.05em;
     top: 50%;
@@ -44,7 +44,7 @@ button {
     top: 65%;
     left: 20px;
     height: 15%;
-    font-family: 'Agency FB', sans-serif;
+    font-family: "agency-fb-regular", sans-serif;
     width: 60%;
     font-size: 1.35em;
     color: white;
@@ -66,7 +66,7 @@ button {
     background-size: contain;
     background-repeat: no-repeat;
     position: absolute;
-    font-family: 'Agency FB', sans-serif;
+    font-family: "agency-fb-regular", sans-serif;
     color: white;
     font-size: 1.35em;
     top: 1vh;
@@ -87,7 +87,7 @@ td {
     border: none;
 }
 .rinp {
-    font-family: 'Agency FB', sans-serif;
+    font-family: "agency-fb-regular", sans-serif;
     width: 60%;
     font-size: 1.35em;
     color: white;
@@ -162,7 +162,7 @@ td {
 #opt-drop {
     width: 100%;
     height: 100%;
-    font-family: 'Agency FB', sans-serif;
+    font-family: "agency-fb-regular", sans-serif;
     color: white;
     background-color: rgb(0,29,69);
     border: 1px solid rgb(38,171,226);
@@ -174,7 +174,7 @@ td {
     top: 65%;
     left: 20px;
     height: 15%;
-    font-family: 'Agency FB', sans-serif;
+    font-family: "agency-fb-regular", sans-serif;
     width: 60%;
     font-size: 1.35em;
     color: white;
@@ -188,7 +188,7 @@ td {
     display: none;
 }
 .telinp {
-    font-family: 'Agency FB', sans-serif;
+    font-family: "agency-fb-regular", sans-serif;
     width: 100%;
     font-size: 1.35em;
     color: white;
