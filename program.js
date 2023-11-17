@@ -13,6 +13,7 @@ let hes = 15;
 let siz = 200;
 let fdr = true;
 let rdis = false;
+let qu = false;
 const mult = 4.375e-7; // the multiplier for distance to get it to always be less than or equal to 0.01, the step in height
 const zeroCostSlope = 2.5;
 const margin = 50;
@@ -82,7 +83,7 @@ function update_data() {
             2,
         )}&deg;<br>Elevation to Earth: ${ele.toFixed(2)}&deg;<br>Data indices: row ${
             c[0]
-        }, column ${c[1]}.<br>Heading: ${di}\u2003\u2003Earth Visible: ${vis(c[0],c[1])?"No":"Yes"}`,
+        }, column ${c[1]}.<br>Heading: ${di}\u2003\u2003Communication: ${vis(c[0],c[1])&!qu?"No":"Yes"}`,
     );
 }
 $(document).keydown(() => {
@@ -265,6 +266,23 @@ $(document).keydown(() => {
                 $("#prompt").css("display","none");
                 $("#single").val("");
             }
+            break;
+        }
+        case 85: {
+            // U
+            qu = !qu;
+            $("#route-box").css("display","none");
+            $("#prompt").css("display","inline");
+            $(".nonah").css("display","none");
+            $("#prompt-text").css("font-size","1.7em");
+            if (qu) {
+                $("#prompt-text").html("Quantum communication set to ON.");
+            } else {
+                $("#prompt-text").html("Quantum communication set to OFF.");
+            }
+            ahTimeout = setTimeout(function() {
+                $("#prompt").css("display","none");
+            },2500);
             break;
         }
 
