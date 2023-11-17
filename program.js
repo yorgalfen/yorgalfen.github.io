@@ -1170,6 +1170,8 @@ function applyRoute() {
         ctx.fillRect(comms[i][1]-10,comms[i][0]-10,20,20);
     }
     dest = route[route.length-1];
+    $(".turris").attr("visible","true");
+    $(".turris").attr("towers",Math.random());
     update_flag();
     geo.redraw();
 }
@@ -1186,8 +1188,10 @@ function routeReset() {
     const ct = cnv.getContext("2d");
     ct.clearRect(0,0,cnv.width,cnv.height);
     route = [];
+    comms = [];
     geo.redraw();
     rdis = false;
+    $(".turris").attr("visible","false");
     $("#route-data").html("This is where the path length, minimum slope, and other data will appear.");
     $("#route-clear").css("display","none");
 }
@@ -1234,6 +1238,21 @@ AFRAME.registerComponent("flag-comp", {
         flagPos.x = target[0];
         flagPos.y = target[1];
         flagPos.z = target[2];
+    }
+});
+AFRAME.registerComponent("towers", {
+    init: function () {
+        const el = this.el;
+        const pos = el.object3D.position;
+        const num = parseInt(el.id.split("-")[1]);
+        const p = comms[num];
+        const nPos = coord(lat(p[0],p[1]),long(p[0],p[1]),height[p[0]][p[1]]);
+        pos.x = nPos[0];
+        pos.y = nPos[1];
+        pos.z = nPos[2];
+    },
+    update: function () {
+        this.init();
     }
 });
 function fromLatLong(la, lo){
