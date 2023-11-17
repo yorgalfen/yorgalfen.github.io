@@ -75,14 +75,14 @@ function update_data() {
         di = rot;
     }
     $("#data").html(
-        `Press H for help.<br>Position: ${-1 * lat(c[0], c[1])}&deg; S, ${long(
+        `Press H for help.<br>Position: ${-lat(c[0], c[1])}&deg; S, ${long(
             c[0],
             c[1],
         )}&deg; E<br>Height: ${height[c[0]][c[1]]} meters<br>Azimuth to Earth: ${az.toFixed(
             2,
         )}&deg;<br>Elevation to Earth: ${ele.toFixed(2)}&deg;<br>Data indices: row ${
             c[0]
-        }, column ${c[1]}.<br>Heading: ${di}`,
+        }, column ${c[1]}.<br>Heading: ${di}\u2003\u2003Earth Visible: ${vis(c[0],c[1])?"No":"Yes"}`,
     );
 }
 $(document).keydown(() => {
@@ -1241,7 +1241,7 @@ AFRAME.registerComponent("flag-comp", {
     }
 });
 AFRAME.registerComponent("towers", {
-    init: function () {
+    update: function () {
         const el = this.el;
         const pos = el.object3D.position;
         const num = parseInt(el.id.split("-")[1]);
@@ -1250,9 +1250,6 @@ AFRAME.registerComponent("towers", {
         pos.x = nPos[0];
         pos.y = nPos[1];
         pos.z = nPos[2];
-    },
-    update: function () {
-        this.init();
     }
 });
 function fromLatLong(la, lo){
