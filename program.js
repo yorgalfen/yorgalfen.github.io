@@ -64,6 +64,11 @@ function update_data() {
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0,0,3200,3200);
     ctx.save();
+    ctx.fillStyle = "rgb(0,0,0)";
+    ctx.fillRect(c[1]-(siz/2),c[0]-(siz/2),siz,8);
+    ctx.fillRect(c[1]-(siz/2),c[0]-(siz/2),8,siz);
+    ctx.fillRect(c[1]+(siz/2),c[0]-(siz/2),8,siz+8);
+    ctx.fillRect(c[1]-(siz/2),c[0]+(siz/2),siz,8);
     ctx.translate(c[1],c[0]);
     ctx.rotate(Math.PI+compOffset-rot);
     const arr = $("#arrow")[0];
@@ -1116,7 +1121,7 @@ function wayfind() {
     }
     ctx.fillStyle = "rgb(0,255,255)";
     for(let i = 0; i<commcalc.length; i++){
-        ctx.fillRect((((commcalc[i][1]-mind)/wid)*canvasW)-10,(((commcalc[i][0]-misl)/wid)*canvasH)-10,20,20);
+        ctx.fillRect((((commcalc[i]?.[1]-mind)/wid)*canvasW)-10,(((commcalc[i]?.[0]-misl)/wid)*canvasH)-10,20,20);
     }
     if (rcalc20 !== undefined) {
         ctx.fillStyle = "rgb(46,16,2)";
@@ -1125,8 +1130,14 @@ function wayfind() {
         }
         ctx.fillStyle = "rgb(0,255,255)";
         for(let i = 0; i<commcalc20.length; i++){
-            ctx.fillRect((((commcalc20[i][1]-mind)/wid)*canvasW)-10,(((commcalc20[i][0]-misl)/wid)*canvasH)-10,20,20);
+            ctx.fillRect((((commcalc20[i]?.[1]-mind)/wid)*canvasW)-10,(((commcalc20[i]?.[0]-misl)/wid)*canvasH)-10,20,20);
         }
+    }
+    if(mand>3199){
+        ctx.clearRect(canvasW*((3200-mind)/wid),0,canvasW,canvasH);
+    }
+    if(masl>3199){
+        ctx.clearRect(0,canvasH*((3200-misl)/wid),canvasW,canvasH);
     }
     rdis = true;
     const stats = routeStatistics(rcalc);
