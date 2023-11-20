@@ -525,6 +525,19 @@ class TerrainGeometry {
         for(let i = 0; i<visib.length; i++){
             visib[i] = new Uint32Array(visib[i]);
         }
+        const canvas = document.getElementById("minimap-route");
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle = "rgb(0,0,0)";
+        ctx.fillRect(route[route.length-1][1]-20,route[route.length-1][0]-20,40,40);
+        ctx.fillStyle = "rgb(19,19,209)";
+        for(let i = 0; i<route.length; i++){
+            ctx.fillRect(route[i][1]-10,route[i][0]-10,20,20);
+        }
+        ctx.fillStyle = "rgb(0,255,255)";
+        for(let i = 0; i<comms.length; i++){
+            ctx.fillRect(comms[i][1]-10,comms[i][0]-10,20,20);
+        }
         this.redraw();
 
         // Ready to start drawing HUD
