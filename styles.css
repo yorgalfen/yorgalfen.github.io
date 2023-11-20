@@ -2,9 +2,6 @@ body {
     font-family: "agency-fb-regular", sans-serif;
     padding-left: 0.5%;
 }
-:is(table, td, tr) {
-    border: 1px solid;
-}
 p {
     width: 80%;
 }
@@ -13,4 +10,43 @@ td.letter {
 }
 td.exp {
     width: 90%;
+}
+#scheme {
+    display: inline;
+}
+#gris {
+    display: none;
+}
+#mextable {
+    height: 24vw;
+    width: 90%;
+}
+.rextable {
+    height: 40vw;
+    width: 90%;
+}
+#mexcont {
+    width: 19.3%;
+    background-image: url("minimapex.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.rexcont {
+    width: 50%;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+#withroutes {
+    background-image: url("routeex.png");
+}
+#noroute {
+    background-image: url("blankint.png");
+}
+#mexp {
+    padding-left: 20px;
+    width: 50%;
+}
+.rexp {
+    padding-left: 20px;
+    width: 50%;
 }

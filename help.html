@@ -5,6 +5,8 @@
   <link href="styles.css" rel="stylesheet">
   <link href="font-declaration.css" rel="stylesheet"/>
   <link rel="icon" sizes="any" type="image/png" href="favicon.png" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.slim.min.js"></script>
+  <script type="text/javascript" src="helpcode.js"></script>
 </head>
 <body>
   <h1>Help Page</h1>
@@ -25,18 +27,49 @@
 <tr><td class="letter">V</td><td class="exp">Change camera field of view, in degrees. Default is 80.</td></tr>
 <tr><td class="letter">P</td><td class="exp">Input a position for teleportation. See below.</td></tr>
 <tr><td class="letter">X</td><td class="exp">Change rendering size. This number is the width, in data points, of the square rendered at one time. Default is 64.</td></tr>
-<tr><td class="letter">M</td><td class="exp">Change the slope, in degrees, above which squares will be marked in red. Default is 15.</td></tr>
-<tr><td class="letter">N</td><td class="exp">Change the slope, in degrees, below which squares will be marked in green. Default is 5.</td></tr>
+<tr><td class="letter">M</td><td class="exp">Change the slope, in degrees, below which squares will be part of the gradient. Default is 15.</td></tr>
+<tr><td class="letter">N</td><td class="exp">Change the slope, in degrees, above which squares will be part of the gradient. Default is 5.</td></tr>
 <tr><td class="letter">H</td><td class="exp">Display this help page.</td></tr>
+<tr><td class="letter">Esc</td><td class="exp">Exit full screen mode.</td></tr>
+<tr><td class="letter">C</td><td class="exp">Change terrain colorization scheme.</td></tr>
+<tr><td class="letter">R</td><td class="exp">Toggle route planning interface.</td></tr>
+<tr><td class="letter">U</td><td class="exp">Toggle availability of quantum communication.</td></tr>
+<tr><td class="letter">G</td><td class="exp">Change ambient light intensity, from 0 to 100.</td></tr>
   </table>
 <h3>Color Meanings:</h3>
-<p>Red - slopes greater than your selected value (15° by default)</p>
-<p>Green - slopes less than your selected value (5° by default)</p>
-<p>Yellow - route from landing to destination site</p>
-<p>Blue - communication checkpoints along route</p>
+<p>The maps shown in both the minimap and the route planning interface are slope maps of the data, with red representing higher slopes and green representing lower slopes.</p>
+<p><span class="blue">Blue</span> - current route</p>
+<p><span class="cyan">Cyan</span> - communication checkpoints along route</p>
+<p>If <select id="scheme">
+  <option value="slo">Slope</option>
+  <option value="lif">Lifelike</option>
+  <option value="hei">Height</option>
+  <option value="ele">Elevation Angle</option>
+  <option value="azi">Azimuth Angle</option>
+</select> colorization is enabled, then:</p>
+<p class="nolif"><span class="red">Red</span> - <span id="red-exp">Slopes near the high end of the gradient or above the gradient's maximum value.</span></p>
+<p class="nolif"><span class="green">Green</span> - <span id="gre-exp">Slopes near the low end of the gradient or below the gradient's minimum value.</span></p>
+<p id="gris"><span class="gray">Gray</span> - <span id="gray-exp">All squares not part of the route.</span></p>
+<p class="nolif"><span class="yellow">Yellow</span> - <span id="yel-exp">Slopes near the middle of the gradient.</span></p>
+<h3>Minimap Example:</h3>
+<table id="mextable">
+  <tr><td id="mexcont"></td><td id="mexp">1 - The currently applied route. The 1 points to the starting point.<br>2 - One of the communication checkpoints, from which the Earth is visible.<br>3 - The area of the Liebnitz Beta Plateau being currently rendered in 3D.<br>4 - The user's current location, pointing in the direction the user is looking relative to the map.<br>5 - The destination site of the currently applied route.</td></tr>
+</table>
+
 <h3>Teleportation:</h3>
-<p>Input a data file row and column (space-separated) to go to, or input latitude and longitude, space-separated. Note that coordinate-based teleportation may be inaccurate.</p>
+<p>Input a data file row (subList) or column (index) to go to, input latitude and longitude, or click anywhere on the minimap while the teleportation interface is visible.</p>
 <p>-85.7882225 &lt; latitude &lt; -85.0634174</p>
 <p>27.289349 &lt; longitude &lt; 36.3651141</p>
+<h3>Routing:</h3>
+<table class="rextable">
+  <tr><td class="rexcont" id="noroute"></td><td class="rexp">When the route-displaying canvas is blank, as in the image to left, click on the canvas to select your destination site. Your current location will serve as the starting point. Type a question mark (?) into the max slope field to plan two routes, as explained below. Choose an optimization from the dropdown near the top of the interface. <br><h4>Optimizations:</h4><br>
+  Standard - Determine cost by multiplying the distance by a factor linearly scaled from 2.5&deg; to your given max slope.<br>
+Distance - Shortest distance between the points, not exceeding the given max slope.<br>
+Hill Climbing - Determine cost from the increase in height from one point to the next, and by distance if there is no height increase.<br>
+Earth Visibility - Shortest distance between the points, but traveling to a point from which the Earth is not visible is treated as having 10 times the true distance.</td></tr>
+</table>
+<table class="rextable">
+  <tr><td class="rexcont" id="withroutes"></td><td class="rexp">The white square is the starting point, and the black square is the ending point. The <span class="blue">blue</span> route is that with a maximum slope of 15&deg;, and the <span class="brown">brown</span> route has a maximum slope of 20&deg;. The <span class="cyan">cyan</span> points represent the 10 communication link checkpoints of each route. The statistics are given with the value for the <span class="blue">blue</span> route first, then the <span class="brown">brown</span>.</td></tr>
+</table>
 </body>
 </html>
