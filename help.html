@@ -12,10 +12,11 @@
   <h1>Help Page</h1>
   <p>This website is a visualization of the Liebnitz Beta Plateau, near the lunar South Pole, for the 2024 NASA App Development Challenge.
     For questions, email me <a href="mailto:mconstantine@tuscaloosaacademy.org" target="_blank">
-        using this link</a>. View the source files at <a href="https://github.com/yorgalfen/yorgalfen.github.io" target="_blank">https://github.com/yorgalfen/yorgalfen.github.io</a>.</p>
+        using this link</a>. View the source files at <a href="https://github.com/yorgalfen/yorgalfen.github.io" target="_blank">https://github.com/yorgalfen/yorgalfen.github.io</a>.
+      View info about the challenge at <a href="https://www.nasa.gov/learning-resources/app-development-challenge/" target="_blank">https://www.nasa.gov/learning-resources/app-development-challenge</a>.</p>
   <h3>Controls:</h3>
   <p>Click and drag to look around.</p>
-  <table width="50%">
+  <table id="control" width="50%">
 <tr><td class="letter">W</td><td class="exp">Move forward</td></tr>
 <tr><td class="letter">A</td><td class="exp">Move left</td></tr>
 <tr><td class="letter">S</td><td class="exp">Move backward</td></tr>
@@ -26,7 +27,7 @@
 <tr><td class="letter">E</td><td class="exp">Move down, if automatic height adjustment is disabled.</td></tr>
 <tr><td class="letter">V</td><td class="exp">Change camera field of view, in degrees. Default is 80.</td></tr>
 <tr><td class="letter">P</td><td class="exp">Input a position for teleportation. See below.</td></tr>
-<tr><td class="letter">X</td><td class="exp">Change rendering size. This number is the width, in data points, of the square rendered at one time. Default is 64.</td></tr>
+<tr><td class="letter">X</td><td class="exp">Change rendering size. This number is the width, in data points, of the square rendered at one time. Default is 200.</td></tr>
 <tr><td class="letter">M</td><td class="exp">Change the slope, in degrees, below which squares will be part of the gradient. Default is 15.</td></tr>
 <tr><td class="letter">N</td><td class="exp">Change the slope, in degrees, above which squares will be part of the gradient. Default is 5.</td></tr>
 <tr><td class="letter">H</td><td class="exp">Display this help page.</td></tr>
@@ -37,7 +38,7 @@
 <tr><td class="letter">G</td><td class="exp">Change ambient light intensity, from 0 to 100.</td></tr>
   </table>
 <h3>Color Meanings:</h3>
-<p>The maps shown in both the minimap and the route planning interface are slope maps of the data, with red representing higher slopes and green representing lower slopes.</p>
+<p>The maps shown in both the minimap and the route planning interface are slope maps of the data, with <span class="red">red</span> representing higher slopes and <span class="green">green</span> representing lower slopes.</p>
 <p><span class="blue">Blue</span> - current route</p>
 <p><span class="cyan">Cyan</span> - communication checkpoints along route</p>
 <p>If <select id="scheme">
@@ -63,10 +64,10 @@
 <h3>Routing:</h3>
 <table class="rextable">
   <tr><td class="rexcont" id="noroute"></td><td class="rexp">When the route-displaying canvas is blank, as in the image to left, click on the canvas to select your destination site. Your current location will serve as the starting point. Type a question mark (?) into the max slope field to plan two routes, as explained below. Choose an optimization from the dropdown near the top of the interface. <br><h4>Optimizations:</h4><br>
-  Standard - Determine cost by multiplying the distance by a factor linearly scaled from 2.5&deg; to your given max slope.<br>
-Distance - Shortest distance between the points, not exceeding the given max slope.<br>
-Hill Climbing - Determine cost from the increase in height from one point to the next, and by distance if there is no height increase.<br>
-Earth Visibility - Shortest distance between the points, but traveling to a point from which the Earth is not visible is treated as having 10 times the true distance.</td></tr>
+  <strong>Standard</strong> - Determine cost by multiplying the distance by a factor linearly scaled from 2.5&deg; to your given max slope.<br>
+  <strong>Distance</strong> - Shortest distance between the points, not exceeding the given max slope.<br>
+  <strong>Hill Climbing</strong> - Determine cost from the increase in height from one point to the next, and by distance if there is no height increase.<br>
+  <strong>Earth Visibility</strong> - Shortest distance between the points, but traveling to a point from which the Earth is not visible is treated as having 10 times the true distance.</td></tr>
 </table>
 <table class="rextable">
   <tr><td class="rexcont" id="withroutes"></td><td class="rexp">The white square is the starting point, and the black square is the ending point. The <span class="blue">blue</span> route is that with a maximum slope of 15&deg;, and the <span class="brown">brown</span> route has a maximum slope of 20&deg;. The <span class="cyan">cyan</span> points represent the 10 communication link checkpoints of each route. The statistics are given with the value for the <span class="blue">blue</span> route first, then the <span class="brown">brown</span>.</td></tr>

@@ -6,7 +6,6 @@
 }
 @font-face {
     font-family: "agency-fb-bold";
-    src: local("Agency FB"),
-        url("agency-fb-bold.woff2") format("woff2"), 
+    src: url("agency-fb-bold.woff2") format("woff2"), 
         url("agency-fb-bold.woff") format("woff");
 }

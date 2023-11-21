@@ -1,15 +1,36 @@
 body {
     font-family: "agency-fb-regular", sans-serif;
     padding-left: 0.5%;
+    color: white;
+    background-color: #001f4b;
+    font-size: 1.2em;
+}
+a {
+    color: rgb(38,171,226);
+}
+:is(h1,h3,h4) {
+    font-family: "agency-fb-bold";
+}
+h4 {
+    margin-top: 10px;
+    margin-bottom: -5px;
 }
 p {
     width: 80%;
 }
+#control {
+    border: 2px solid rgb(38,171,226);
+}
+table, tr, td {
+    border-collapse: collapse;
+}
 td.letter {
     width: 10%;
+    border: 2px solid rgb(38,171,226);
 }
 td.exp {
     width: 90%;
+    border: 2px solid rgb(38,171,226);
 }
 #scheme {
     display: inline;
@@ -49,4 +70,32 @@ td.exp {
 .rexp {
     padding-left: 20px;
     width: 50%;
+}
+.cyan {
+    color: cyan;
+}
+.brown {
+    color: #807352;
+}
+.red {
+    color: red;
+}
+.green {
+    color: green;
+}
+.gray {
+    color: gray;
+}
+.yellow {
+    color: yellow;
+}
+.blue {
+    color: steelblue;
+}
+select {
+    background-color: #001f4b;
+    color: white;
+    border: 2px solid rgb(38,171,226);
+    font-family: "agency-fb-regular";
+    font-size: 1em;
 }
