@@ -58,7 +58,7 @@ td.exp {
 }
 #teacont {
     width: 19.3%;
-    background-image: url("logo-full.png");
+    background-image: url("favicon.png");
     background-size: contain;
     background-repeat: no-repeat;
 }
@@ -78,7 +78,6 @@ td.exp {
     background-image: url("blankint.png");
 }
 #mexp {
-    padding-left: 20px;
     width: 50%;
 }
 .rexp {

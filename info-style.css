@@ -171,7 +171,7 @@ td {
     border: 1px solid rgb(38,171,226);
     font-size: 1.35em;
 }
-#color-select {
+.gy {
     display: none;
     position: absolute;
     top: 65%;

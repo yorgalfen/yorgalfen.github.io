@@ -1,10 +1,11 @@
 // biome-ignore lint/style/useSingleVarDeclarator:
-let height, latl, latr, longl, longr, slope, route, comms, dest, visib;
+let height, latl, latr, longl, longr, slope, route, comms, dest, visib, texts;
 let rcalc = [];
 let rcalc20 = [];
 let commcalc = [];
 let commcalc20 = [];
 let dataInterval;
+let lang = "en";
 const frame = [1160, 1215];
 let ah = false;
 let ahTimeout;
@@ -39,7 +40,7 @@ const estimators = {
     ear: costestimator,
 }   
 const compOffset = 0.5346887200211221;
-const directions = ["N","NW","W","SW","S","SE","E","NE"];
+let directions = ["N","NW","W","SW","S","SE","E","NE"];
 console.log(`jQuery version: ${$.fn.jquery.split(" ")[0]}`);
 
 function update_data() {
@@ -81,14 +82,14 @@ function update_data() {
         di = rot;
     }
     $("#data").html(
-        `Press H for help.<br>Position: ${-lat(c[0], c[1])}&deg; S, ${long(
+        `${texts[lang].da}${-lat(c[0], c[1])}&deg; S, ${long(
             c[0],
             c[1],
-        )}&deg; E<br>Height: ${height[c[0]][c[1]]} meters<br>Azimuth to Earth: ${az.toFixed(
+        )}${texts[lang].db}${height[c[0]][c[1]]}${texts[lang].dc}${az.toFixed(
             2,
-        )}&deg;<br>Elevation to Earth: ${ele.toFixed(2)}&deg;<br>Data indices: row ${
+        )}${texts[lang].dd}${ele.toFixed(2)}${texts[lang].de}${
             c[0]
-        }, column ${c[1]}.<br>Heading: ${di}\u2003\u2003Communication: ${vis(c[0],c[1])&!qu?"No":"Yes"}`,
+        }${texts[lang].df}${c[1]}${texts[lang].dg}${di}\u2003\u2003${texts[lang].dh}${vis(c[0],c[1])&!qu?texts[lang].no:texts[lang].yes}`,
     );
 }
 $(document).keydown(() => {
@@ -111,6 +112,7 @@ $(document).keydown(() => {
                 $("#prompt").css("display","inline");
                 $("#single").css("display","none");
                 $("#color-select").css("display","none");
+                $("#lang-select").css("display","none");
                 $("#teleport-table").css("display","inline");
                 $("#prompt-text").html("");
                 $("#single-go").css("display","inline");
@@ -129,8 +131,9 @@ $(document).keydown(() => {
                 $("#prompt").css("display","inline");
                 $("#single").css("display","none");
                 $("#color-select").css("display","inline");
+                $("#lang-select").css("display","none");
                 $("#teleport-table").css("display","none");
-                $("#prompt-text").html("Select a new terrain colorization scheme.");
+                $("#prompt-text").html(texts[lang].c);
                 $("#prompt-text").css("font-size","1.55em");
                 $("#single-go").css("display","inline");
                 $("#single-go").attr("onclick",`handleC();`);
@@ -147,8 +150,9 @@ $(document).keydown(() => {
                 $("#prompt").css("display","inline");
                 $("#single").css("display","inline");
                 $("#color-select").css("display","none");
+                $("#lang-select").css("display","none");
                 $("#teleport-table").css("display","none");
-                $("#prompt-text").html("Input a new rendering size. Must be a whole number, divisible by 2.");
+                $("#prompt-text").html(texts[lang].x);
                 $("#prompt-text").css("font-size","1.55em");
                 $("#single-go").css("display","inline");
                 $("#single-go").attr("onclick",`handleX();`);
@@ -166,11 +170,7 @@ $(document).keydown(() => {
             $("#prompt").css("display","inline");
             $(".nonah").css("display","none");
             $("#prompt-text").css("font-size","1.7em");
-            if (ah) {
-                $("#prompt-text").html("Automatic height adjustment set to ON.");
-            } else {
-                $("#prompt-text").html("Automatic height adjustment set to OFF.");
-            }
+            $("#prompt-text").html(texts[lang][`l${ah}`]);
             ahTimeout = setTimeout(function() {
                 $("#prompt").css("display","none");
             },2500);
@@ -185,8 +185,9 @@ $(document).keydown(() => {
                 $("#prompt").css("display","inline");
                 $("#single").css("display","inline");
                 $("#color-select").css("display","none");
+                $("#lang-select").css("display","none");
                 $("#teleport-table").css("display","none");
-                $("#prompt-text").html("Input a new slope, in degrees, below which slopes will be part of the gradient.");
+                $("#prompt-text").html(texts[lang].m);
                 $("#prompt-text").css("font-size","1.4em");
                 $("#single-go").css("display","inline");
                 $("#single-go").attr("onclick",`handleM();`);
@@ -205,8 +206,9 @@ $(document).keydown(() => {
                 $("#prompt").css("display","inline");
                 $("#single").css("display","inline");
                 $("#color-select").css("display","none");
+                $("#lang-select").css("display","none");
                 $("#teleport-table").css("display","none");
-                $("#prompt-text").html("Input a new slope, in degrees, above which slopes will be part of the gradient.");
+                $("#prompt-text").html(texts[lang].n);
                 $("#prompt-text").css("font-size","1.4em");
                 $("#single-go").css("display","inline");
                 $("#single-go").attr("onclick",`handleN();`);
@@ -225,8 +227,9 @@ $(document).keydown(() => {
                 $("#prompt").css("display","inline");
                 $("#single").css("display","inline");
                 $("#color-select").css("display","none");
+                $("#lang-select").css("display","none");
                 $("#teleport-table").css("display","none");
-                $("#prompt-text").html("Input a new field of view, in degrees, for the camera. Default is 80.");
+                $("#prompt-text").html(texts[lang].v);
                 $("#prompt-text").css("font-size","1.55em");
                 $("#single-go").css("display","inline");
                 $("#single-go").attr("onclick",`handleV();`);
@@ -243,6 +246,7 @@ $(document).keydown(() => {
             if ($("#route-box").css("display")==="none"){
                 $("#route-box").css("display","block");
                 $("#prompt").css("display","none");
+                $("#route-data").html(texts[lang].rd);
                 if(fdr){
                     routeReset();
                     fdr = false;
@@ -260,8 +264,9 @@ $(document).keydown(() => {
                 $("#prompt").css("display","inline");
                 $("#single").css("display","inline");
                 $("#color-select").css("display","none");
+                $("#lang-select").css("display","none");
                 $("#teleport-table").css("display","none");
-                $("#prompt-text").html("Input a new intensity for the ambient light.");
+                $("#prompt-text").html(texts[lang].g);
                 $("#prompt-text").css("font-size","1.55em");
                 $("#single-go").css("display","inline");
                 $("#single-go").attr("onclick",`handleG();`);
@@ -280,17 +285,31 @@ $(document).keydown(() => {
             $("#prompt").css("display","inline");
             $(".nonah").css("display","none");
             $("#prompt-text").css("font-size","1.7em");
-            if (qu) {
-                $("#prompt-text").html("Quantum communication set to ON.");
-            } else {
-                $("#prompt-text").html("Quantum communication set to OFF.");
-            }
+            $("#prompt-text").html(texts[lang][`u${qu}`]);
             ahTimeout = setTimeout(function() {
                 $("#prompt").css("display","none");
             },2500);
             break;
         }
-
+        case 89: {
+            // Y
+            clearTimeout(ahTimeout);
+            if($("#prompt").css("display")==="none"){
+                $("#prompt").css("display","inline");
+                $("#single").css("display","none");
+                $("#lang-select").css("display","inline");
+                $("#teleport-table").css("display","none");
+                $("#prompt-text").html(texts[lang].y);
+                $("#prompt-text").css("font-size","1.55em");
+                $("#single-go").css("display","inline");
+                $("#single-go").attr("onclick",`handleY();`);
+                $("#single-go").css("top","65%");
+                $("#invinp").css("display","none");
+            }else{
+                $("#prompt").css("display","none");
+            }
+            break;
+        }
 }});
 function toRad(x) {
     return (x * Math.PI) / 180;
@@ -483,6 +502,7 @@ class TerrainGeometry {
             route: new JSONAssetType(),
             comms: new JSONAssetType(),
             visib: new JSONAssetType(),
+            texts: new JSONAssetType()
         };
         // Same reason for usually unnecessary assignment
         this.init = this.init;
@@ -521,6 +541,7 @@ class TerrainGeometry {
         route = data.route;
         comms = data.comms;
         visib = data.visib;
+        texts = data.texts;
         dest = route[route.length-1];
         for(let i = 0; i<visib.length; i++){
             visib[i] = new Uint32Array(visib[i]);
@@ -795,6 +816,14 @@ function handleG(){
     $("#prompt").css("display","none");
     $("#single").val("");
 }
+function handleY(){
+    lang = $("#lang-select").val();
+    $("#prompt").css("display","none");
+    $(".chy").each(function(){
+        $(this).html(texts[lang][this.id]);
+    });
+    directions = texts[lang].d;
+}
 function getClick(event){
     if(!rdis){
         const dex = Math.round((event.offsetX/$("#draw").width())*3200);
@@ -1032,11 +1061,11 @@ function wayfind() {
     const oms = $("#slinp").val();
     let ms = oms === "?" ? "?" : parseFloat(oms);
     // All non-number values compare as false
-    if (!(0 <= desl && desl < 3200 && 0 <= dein && dein < 3200)) {
+    if ((!(0 <= desl && desl < 3200 && 0 <= dein && dein < 3200))||slope[desl][dein]>=ms) {
         exi = true;
     }
     if (exi) {
-        $("#progress").html("Route failed!");
+        $("#progress").html(texts[lang].fail);
         return false;
     }
 
@@ -1051,7 +1080,7 @@ function wayfind() {
     let masl = -1;
     let mand = -1;
     if (ms === "?") {
-        $("#route-applier").html("Apply Blue");
+        $("#route-applier").html(texts[lang].blue);
         $("#route-20-contain").css("display", "inline");
         $("#route-20-applier").on("click", () => {
             route = rcalc20;
@@ -1061,7 +1090,7 @@ function wayfind() {
         $("#draw").css("transform", "translate(-40%,-2%)");
         const r20 = AStar(indic[0], indic[1], desl, dein, 20, costFunction[opt], estimators[opt]);
         if (!r20) {
-            $("#progress").html("Route failed!");
+            $("#progress").html(texts[lang].fail);
             return false;
         }
         rcalc20 = r20.map(extractPoint);
@@ -1082,7 +1111,7 @@ function wayfind() {
         }
         ms = 15;
     } else {
-        $("#route-applier").html("Apply Route");
+        $("#route-applier").html(texts[lang]["route-applier"]);
     }
     $("#route-applier").on("click", () => {
         route = rcalc;
@@ -1092,7 +1121,7 @@ function wayfind() {
 
     const nrt = AStar(indic[0], indic[1], desl, dein, ms, costFunction[opt], estimators[opt]);
     if (!nrt) {
-        $("#progress").html("Route failed!");
+        $("#progress").html(texts[lang].fail);
         return false;
     }
     rcalc = nrt.map(extractPoint);
@@ -1155,43 +1184,43 @@ function wayfind() {
     rdis = true;
     const stats = routeStatistics(rcalc);
     const stats20 = rcalc20 === undefined ? undefined : routeStatistics(rcalc20);
-    let data = `Route length: ${stats.distance.toFixed(1)}`;
+    let data = `${texts[lang].re}${stats.distance.toFixed(1)}`;
     if (stats20 !== undefined) {
         data += `/${stats20.distance.toFixed(1)}`;
     }
-    data += ` meters<br>Max slope: ${stats.maxSlope}`;
+    data += `${texts[lang].rf}${stats.maxSlope}`;
     if (stats20 !== undefined) {
         data += `/${stats20.maxSlope}`;
     }
     data += "&deg;";
     switch (opt) {
         case "std":
-            data += `<br>Average slope: ${stats.averageSlope.toFixed(1)}`;
+            data += `${texts[lang].rg}${stats.averageSlope.toFixed(1)}`;
             if (stats20 !== undefined) {
                 data += `/${stats20.averageSlope.toFixed(1)}`;
             }
             data += "&deg;";
             break;
         case "dis":
-            data += `<br>Average slope: ${stats.averageSlope.toFixed(1)}`;
+            data += `${texts[lang].rg}${stats.averageSlope.toFixed(1)}`;
             if (stats20 !== undefined) {
                 data += `/${stats20.averageSlope.toFixed(1)}`;
             }
             data += "&deg;";
             break;
         case "hil":
-            data += `<br>Total Hill Climb: ${stats.hillClimb.toFixed(1)}`;
+            data += `${texts[lang].rh}${stats.hillClimb.toFixed(1)}`;
             if (stats20 !== undefined) {
                 data += `/${stats20.hillClimb.toFixed(1)}`;
             }
-            data += " meters";
+            data += texts[lang].rj;
             break;
         case "ear":
-            data += `<br>Earth Visible ${stats.visibility.toFixed(1)}%`;
+            data += `${texts[lang].ri}${stats.visibility.toFixed(1)}%`;
             if (stats20 !== undefined) {
                 data += `/${stats20.visibility.toFixed(1)}%`;
             }
-            data += " of the time";
+            data += texts[lang].rk;
             break;
     }
     $("#route-data").html(data);
@@ -1220,7 +1249,7 @@ function applyRoute() {
 
 function routeReset() {
     $("#route-20-contain").css("display","none");
-    $("#route-applier").html("Apply Route");
+    $("#route-applier").html(texts[lang]["route-applier"]);
     $("#draw").css("transform","translateX(-40%)");
     const canvas = document.getElementById("draw");
     const ctx = canvas.getContext("2d");
@@ -1234,7 +1263,7 @@ function routeReset() {
     geo.redraw();
     rdis = false;
     $(".turris").attr("visible","false");
-    $("#route-data").html("This is where the path length, minimum slope, and other data will appear.");
+    $("#route-data").html(texts[lang].rd);
     $("#route-clear").css("display","none");
 }
 
