@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>NASA ADC Hilfe</title>
+  <meta charset="utf-8"/>
+  <link href="styles.css" rel="stylesheet">
+  <link href="font-declaration.css" rel="stylesheet"/>
+  <link rel="icon" sizes="any" type="image/png" href="favicon.png" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.slim.min.js"></script>
+  <script type="text/javascript" src="helpcode.js"></script>
+</head>
+<body>
+  <h1>Hilfeseite</h1>
+  <p>Diese Website ist eine Visualisierung des Liebnitz-Beta-Plateaus nahe dem Mondsüdpol für die 
+    "NASA App Development Challenge" (2024). Sehen Sie sich die Quelldateien unter <a href="https://www.nasa.gov/learning-resources/app-development-challenge/" target="_blank">https://www.nasa.gov/learning-resources/app-development-challenge</a> an.
+    Informationen zur Herausforderung finden Sie unter <a href="https://www.nasa.gov/learning-resources/app-development-challenge/" target="_blank">https://www.nasa.gov/learning-resources/app-development-challenge</a>.</p>
+    <p>Pour lire cette page en français, cliquez <a href="help-fr.html">ici</a>.</p>
+  <p>Para leer esta página en español, haga clic <a href="help-es.html">aquí</a>.</p>
+  <p>To read this page in English, click <a href="help-en.html">here</a>.</p>
+  <h3>Autoren:</h3>
+  <table id="team-table">
+    <tr><td id="teacont"></td><td id="texp">Wir sind das Team „Berühren Sie den Käse“ (auf Englisch: "Touch the Cheese") und stammen aus <a href="https://www.tuscaloosaacademy.org/" target="_blank">dieser Schule</a>. 
+      Unser Logo befindet sich links. Kontaktieren Sie einen unserer beiden leitenden Programmierer über <a href="mailto:mconstantine@tuscaloosaacademy.org" target="_blank">diesen Link</a> oder <a href="mailto:iposton@tuscaloosaacademy.org" target="_blank">diesen Link</a>.</td></tr>
+  </table>
+  <h3>Kontrollen:</h3>
+  <p>Klicken und ziehen Sie, um sich umzusehen.</p>
+  <table id="control" width="50%">
+<tr><td class="letter">W</td><td class="exp">Gehen Sie vorwärts</td></tr>
+<tr><td class="letter">A</td><td class="exp">Gehen Sie nach links</td></tr>
+<tr><td class="letter">S</td><td class="exp">Gehen Sie rückwärts</td></tr>
+<tr><td class="letter">D</td><td class="exp">Gehen Sie nach rechts</td></tr>
+<tr><td class="letter">F</td><td class="exp">Wechseln Sie in den Vollbildmodus.</td></tr>
+<tr><td class="letter">L</td><td class="exp">Automatische Höhenverstellung umschalten. Beginnt.</td></tr>
+<tr><td class="letter">Q</td><td class="exp">Nach oben verschieben, wenn die automatische Höhenverstellung deaktiviert ist.</td></tr>
+<tr><td class="letter">E</td><td class="exp">Nach unten bewegen, wenn die automatische Höhenverstellung deaktiviert ist.</td></tr>
+<tr><td class="letter">V</td><td class="exp">Ändern Sie das Sichtfeld der Kamera in Grad. Der Standardwert ist 80.</td></tr>
+<tr><td class="letter">P</td><td class="exp">Geben Sie eine Position für die Teleportation ein. Siehe unten.</td></tr>
+<tr><td class="letter">X</td><td class="exp">Rendering-größe ändern. Diese Zahl ist die Breite des jeweils gerenderten Quadrats in Datenpunkten. Der Standardwert ist 200.</td></tr>
+<tr><td class="letter">M</td><td class="exp">Ändern Sie die Neigung in Grad, unterhalb derer Quadrate Teil des Farbverlaufs sein werden. Der Standardwert ist 15.</td></tr>
+<tr><td class="letter">N</td><td class="exp">Ändern Sie die Neigung in Grad, oberhalb derer Quadrate Teil des Farbverlaufs werden. Der Standardwert ist 5.</td></tr>
+<tr><td class="letter">H</td><td class="exp">Zeigen Sie diese Hilfeseite an.</td></tr>
+<tr><td class="letter">Esc</td><td class="exp">Vollbildmodus verlassen.</td></tr>
+<tr><td class="letter">C</td><td class="exp">Ändern Sie das Farbschema des Geländes.</td></tr>
+<tr><td class="letter">R</td><td class="exp">Schalten Sie die Routenplanungsoberfläche um.</td></tr>
+<tr><td class="letter">U</td><td class="exp">Schalten Sie die Verfügbarkeit der Quantenkommunikation um.</td></tr>
+<tr><td class="letter">G</td><td class="exp">Ändern Sie die Intensität des Umgebungslichts von 0 auf 100.</td></tr>
+  </table>
+<h3>Farbbedeutungen:</h3>
+<p>Die Karten, die sowohl in der Minikarte als auch in der Routenplanungsoberfläche angezeigt werden, sind Steigungskarten der Daten, wobei <span class="red">Rot</span> höhere Steigungen und <span class="green">Grün</span> niedrigere Steigungen darstellt.</p>
+<p><span class="blue">Blau</span> - aktuelle Route</p>
+<p><span class="cyan">Cyan</span> - Kommunikationskontrollpunkte entlang der Route</p>
+<p>Wenn die <select id="scheme">
+  <option value="slo">Neigung</option>
+  <option value="lif">Naturgetreu</option>
+  <option value="hei">Höhe</option>
+  <option value="ele">Höhenwinkel</option>
+  <option value="azi">Azimutwinkel</option>
+</select> Kolorierung aktiviert ist, dann:</p>
+<p class="slo z"><span class="red">Rot</span> - <span id="red-exp">Neigungen nahe dem oberen Ende des Gradienten oder über dem Maximalwert des Gradienten.</span></p>
+<p class="slo z"><span class="green">Grün</span> - <span id="gre-exp">Neigungen nahe dem unteren Ende des Gefälles oder unterhalb des Minimalwerts des Gefälles.</span></p>
+<p class="slo z"><span class="yellow">Gelb</span> - <span id="yel-exp">Hänge in der Nähe der Mitte des Gefälles.</span></p>
+<p class="lif z" hidden><span class="gray">Grau</span> - <span id="gray-exp">Alle Felder sind nicht Teil der Route.</span></p>
+<p class="hei z" hidden><span class="red">Rot</span> - <span id="red-exp">Plätze in der Nähe der minimalen Höhe der Region von 2796,34 Metern.</span></p>
+<p class="hei z" hidden><span class="green">Grün</span> - <span id="gre-exp">Plätze in der Nähe der höchsten Höhe der Region von 6463,86 Metern.</span></p>
+<p class="hei z" hidden><span class="yellow">Gelb</span> - <span id="yel-exp">Erhebungen in der Nähe der Mitte des Gefälles.</span></p>
+<p class="ele z" hidden><span class="red">Rot</span> - <span id="red-exp">Quadrate in der Nähe des maximalen Höhenwinkels der Region zur Erde von 10,529&deg;</span></p>
+<p class="ele z" hidden><span class="green">Grün</span> - <span id="gre-exp">Quadrate in der Nähe des minimalen Höhenwinkels der Region zur Erde von 9,998&deg;</span></p>
+<p class="ele z" hidden><span class="yellow">Gelb</span> - <span id="yel-exp">Höhenwinkel zur Erde nahe der Mitte des Gradienten.</span></p>
+<p class="azi z" hidden><span class="red">Rot</span> - <span id="red-exp">Quadrate in der Nähe des maximalen Azimutwinkels der Region zur Erde von 36,764&deg;</span></p>
+<p class="azi z" hidden><span class="green">Grün</span> - <span id="gre-exp">Quadrate in der Nähe des minimalen Azimutwinkels der Region zur Erde von 27,620&deg;</span></p>
+<p class="azi z" hidden><span class="yellow">Gelb</span> - <span id="yel-exp">Azimutwinkel zur Erde nahe der Mitte des Gradienten.</span></p>
+<h3>Beispiel der Minikarte:</h3>
+<table id="mextable">
+  <tr><td id="mexcont"></td><td id="mexp">
+    <ol id="mini-ol">
+      <li>Die aktuell angewendete Route. Die 1 zeigt auf den Startpunkt.</li>
+      <li>Einer der Kommunikationskontrollpunkte, von dem aus die Erde sichtbar ist.</li>
+      <li>Das Gebiet des Liebnitz-Beta-Plateaus wird derzeit in 3D gerendert.</li>
+      <li>Der aktuelle Standort des Benutzers, der in die Richtung zeigt, in die der Benutzer relativ zur Karte schaut.</li>
+      <li>Der Zielstandort der aktuell angewendeten Route.</li>
+    </ol>
+</td></tr></table>
+
+<h3>Teleportation:</h3>
+<p>Geben Sie eine Zeile (Unterliste) oder Spalte (Index) der Datendatei ein, zu der Sie gehen möchten, geben Sie Breiten- und Längengrade ein oder klicken Sie auf eine beliebige Stelle auf der Minikarte, während die Teleportationsschnittstelle sichtbar ist.</p>
+<p>-85.7882225 &lt; Breitengrad &lt; -85.0634174</p>
+<p>27.289349 &lt; Längengrad &lt; 36.3651141</p>
+<h3>Routenplanung:</h3>
+<table class="rextable">
+  <tr><td class="rexcont" id="noroute"></td><td class="rexp">Wenn die Routenanzeige-Leinwand leer ist, wie im Bild links, klicken Sie auf die Leinwand, um Ihren Zielstandort auszuwählen. Ihr aktueller Standort dient als Ausgangspunkt. Geben Sie ein Fragezeichen (?) in das Feld „Maximale Steigung“ ein, um zwei Routen zu planen, wie unten erläutert. Wählen Sie aus der Dropdown-Liste oben auf der Benutzeroberfläche eine Optimierung aus.<br><h4>Optimierungen:</h4><br>
+  <strong>Standard</strong> - Bestimmen Sie die Kosten, indem Sie die Entfernung mit einem Faktor multiplizieren, der linear von 2,5&deg; auf die angegebene maximale Neigung skaliert wird.<br>
+  <strong>Distanz</strong> - Kürzester Abstand zwischen den Punkten, der die angegebene maximale Neigung nicht überschreitet.<br>
+  <strong>Berg steigen</strong> - Bestimmen Sie die Kosten anhand der Höhenzunahme von einem Punkt zum nächsten und anhand der Entfernung, wenn keine Höhenzunahme erfolgt.<br>
+  <strong>Sichtbarkeit der Erde</strong> - Kürzeste Entfernung zwischen den Punkten, aber die Fahrt zu einem Punkt, von dem aus die Erde nicht sichtbar ist, wird als zehnmal so groß behandelt wie die tatsächliche Entfernung.</td></tr>
+</table>
+<table class="rextable">
+  <tr><td class="rexcont" id="withroutes"></td><td class="rexp">Das weiße Quadrat ist der Startpunkt und das 
+    schwarze Quadrat ist der Endpunkt. Die <span class="blue">blaue</span> Route weist eine maximale 
+    Neigung von 15° auf, die <span class="brown">braune</span> Route weist eine maximale Neigung 
+    von 20° auf. Die <span class="cyan">cyan</span>farbenen Punkte stellen die 10 
+    Kommunikationsverbindungskontrollpunkte jeder Route dar. Die Statistiken werden zuerst mit dem 
+    Wert für die <span class="blue">blaue</span> Route und dann für den <span class="brown">braunen</span> angezeigt.</td></tr>
+</table>
+</body>
+</html>

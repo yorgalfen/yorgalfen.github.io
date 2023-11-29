@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>NASA ADC Help</title>
+  <meta charset="utf-8"/>
+  <link href="styles.css" rel="stylesheet">
+  <link href="font-declaration.css" rel="stylesheet"/>
+  <link rel="icon" sizes="any" type="image/png" href="favicon.png" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.slim.min.js"></script>
+  <script type="text/javascript" src="helpcode.js"></script>
+</head>
+<body>
+  <h1>Page d'aide</h1>
+  <p>Ce site Web est une visualisation du plateau Liebnitz Bêta, près du pôle Sud lunaire, pour le «NASA App Development Challenge» 2024. Consultez les fichiers sources sur <a href="https://github.com/yorgalfen/yorgalfen.github.io" target="_blank">https://github.com/yorgalfen/yorgalfen.github.io</a>.
+    Consultez les informations sur le défi sur <a href="https://www.nasa.gov/learning-resources/app-development-challenge/" target="_blank">https://www.nasa.gov/learning-resources/app-development-challenge</a>.</p>
+  <p>To read this page in English, click <a href="help-en.html">here</a>.</p>
+  <p>Para leer esta página en español, haga clic <a href="help-es.html">aquí</a>.</p>
+  <p>Um diese Seite auf Deutsch zu lesen, klicken Sie <a href="help-de.html">hier</a>.</p>
+  <h3>Auteurs :</h3>
+  <table id="team-table">
+    <tr><td id="teacont"></td><td id="texp">Nous sommes l'equipe «Touchez le fromage» (en anglais: "Touch the Cheese"), et nous sommes originaires de <a href="https://www.tuscaloosaacademy.org/" target="_blank">cette école</a>. 
+      Notre logo est à gauche. Contactez l'un de nos deux programmeurs principaux sur <a href="mailto:mconstantine@tuscaloosaacademy.org" target="_blank">ce lien</a> ou <a href="mailto:iposton@tuscaloosaacademy.org" target="_blank">ce lien</a>.</td></tr>
+  </table>
+  <h3>Contrôles :</h3>
+  <p>Cliquez et faites glisser pour regarder autour de vous.</p>
+  <table id="control" width="50%">
+<tr><td class="letter">W</td><td class="exp">Avancer</td></tr>
+<tr><td class="letter">A</td><td class="exp">Se déplacer à gauche</td></tr>
+<tr><td class="letter">S</td><td class="exp">Reculer</td></tr>
+<tr><td class="letter">D</td><td class="exp">Se déplacer à droite</td></tr>
+<tr><td class="letter">F</td><td class="exp">Passer en mode plein écran.</td></tr>
+<tr><td class="letter">L</td><td class="exp">Activer le réglage automatique de la hauteur. Ce commence désactivé.</td></tr>
+<tr><td class="letter">Q</td><td class="exp">Monter, si le réglage automatique de la hauteur est désactivé.</td></tr>
+<tr><td class="letter">E</td><td class="exp">Descender, si le réglage automatique de la hauteur est désactivé.</td></tr>
+<tr><td class="letter">V</td><td class="exp">Changer le champ de vision de la caméra, en degrés. La valeur par défaut est 80.</td></tr>
+<tr><td class="letter">P</td><td class="exp">Saisir une position pour la téléportation. Voir ci-dessous.</td></tr>
+<tr><td class="letter">X</td><td class="exp">Changer la taille du rendu. Ce nombre correspond à la largeur, en points de données, du carré rendu en une seule fois. La valeur par défaut est 200.</td></tr>
+<tr><td class="letter">M</td><td class="exp">Modifier la pente, en degrés, en dessous de laquelle les carreaux feront partie du dégradé. La valeur par défaut est 15.</td></tr>
+<tr><td class="letter">N</td><td class="exp">Modifier la pente, en degrés, au-dessus de laquelle les carreaux feront partie du dégradé. La valeur par défaut est 5.</td></tr>
+<tr><td class="letter">H</td><td class="exp">Afficher cette page d'aide.</td></tr>
+<tr><td class="letter">Esc</td><td class="exp">Quitter le mode plein écran.</td></tr>
+<tr><td class="letter">C</td><td class="exp">Changer le schéma de colorisation du terrain.</td></tr>
+<tr><td class="letter">R</td><td class="exp">Basculer l'interface de planification du chemin.</td></tr>
+<tr><td class="letter">U</td><td class="exp">Basculer la disponibilité de la communication quantique.</td></tr>
+<tr><td class="letter">G</td><td class="exp">Modifier l'intensité de la lumière ambiante, de 0 à 100.</td></tr>
+  </table>
+<h3>Signification des couleurs :</h3>
+<p>Les cartes affichées sur la mini-carte et dans l'interface de planification du chemin sont des cartes de pente des données, le <span class="red">rouge</span> représentant les pentes plus élevées et le <span class="green">vert</span> représentant les pentes moindres.</p>
+<p><span class="blue">Bleu</span> - chemin actuel</p>
+<p><span class="cyan">Cyan</span> - points de contrôle de communication le long du chemin</p>
+<p>Si la colorisation de la <select id="scheme">
+  <option value="slo">Pente</option>
+  <option value="lif">Réaliste</option>
+  <option value="hei">Hauteur</option>
+  <option value="ele">Angle d'élévation</option>
+  <option value="azi">Angle d'azimut</option>
+</select> est activée, alors :</p>
+<p class="slo z"><span class="red">Rouge</span> - <span id="red-exp">Pentes proches de l'extrémité supérieure du dégradé ou supérieures à la valeur maximale du dégradé.</span></p>
+<p class="slo z"><span class="green">Vert</span> - <span id="gre-exp">Pentes proches de l'extrémité inférieure du dégradé ou inférieures à la valeur minimale du dégradé.</span></p>
+<p class="slo z"><span class="yellow">Jaune</span> - <span id="yel-exp">Pentes proches du milieu du dégradé.</span></p>
+<p class="lif z" hidden><span class="gray">Gris</span> - <span id="gray-exp">Tous les carreaux qui ne font pas partie du chemin.</span></p>
+<p class="hei z" hidden><span class="red">Rouge</span> - <span id="red-exp">Carreaux proches de l'altitude minimale de la région de 2796,34 mètres.</span></p>
+<p class="hei z" hidden><span class="green">Vert</span> - <span id="gre-exp">Carreaux proches de l'altitude maximale de la région de 6463,86 mètres.</span></p>
+<p class="hei z" hidden><span class="yellow">Jaune</span> - <span id="yel-exp">Altitudes proches du milieu du dégradé.</span></p>
+<p class="ele z" hidden><span class="red">Rouge</span> - <span id="red-exp">Carreaux proches de l'angle d'élévation maximal de la région par rapport à la Terre de 10,529&deg;</span></p>
+<p class="ele z" hidden><span class="green">Vert</span> - <span id="gre-exp">Carreaux proches de l'angle d'élévation minimum de la région par rapport à la Terre de 9,998&deg;</span></p>
+<p class="ele z" hidden><span class="yellow">Jaune</span> - <span id="yel-exp">Angles d'élévation par rapport à la Terre près du milieu du dégradé.</span></p>
+<p class="azi z" hidden><span class="red">Rouge</span> - <span id="red-exp">Carreaux proches de l'angle d'azimut maximum de la région par rapport à la Terre de 36,764&deg;</span></p>
+<p class="azi z" hidden><span class="green">Vert</span> - <span id="gre-exp">Carrés proches de l'angle d'azimut minimum de la région par rapport à la Terre de 27,620&deg;</span></p>
+<p class="azi z" hidden><span class="yellow">Jaune</span> - <span id="yel-exp">Angles d'azimut par rapport à la Terre près du milieu du dégradé.</span></p>
+<h3>Exemple de mini-carte :</h3>
+<table id="mextable">
+  <tr><td id="mexcont"></td><td id="mexp">
+    <ol id="mini-ol">
+      <li>Le chemin actuellement appliqué. Le 1 pointe vers le point de départ.</li>
+      <li>L'un des points de contrôle de communication depuis lequel la Terre est visible.</li>
+      <li>La zone du plateau Liebnitz Bêta est actuellement rendue en 3D.</li>
+      <li>Emplacement actuel de l'utilisateur, pointant dans la direction dans laquelle l'utilisateur regarde par rapport à la carte.</li>
+      <li>Site de destination du chemin actuellement appliqué.</li>
+    </ol>
+</td></tr></table>
+
+<h3>Téléportation :</h3>
+<p>Saisissez une ligne (sous-liste) ou une colonne (index) du fichier de données à laquelle accéder, saisissez la latitude et la longitude, ou cliquez n'importe où sur la mini-carte pendant que l'interface de téléportation est visible.</p>
+<p>-85.7882225 &lt; latitude &lt; -85.0634174</p>
+<p>27.289349 &lt; longitude &lt; 36.3651141</p>
+<h3>Planification des chemins :</h3>
+<table class="rextable">
+  <tr><td class="rexcont" id="noroute"></td><td class="rexp">Lorsque le canevas affichant le chemin est vide, comme dans l'image de gauche, cliquez sur le canevas pour sélectionner votre site de destination. Votre emplacement actuel servira de point de départ. Tapez un point d'interrogation (?) dans le domaine «Pente max» pour planifier deux chemins, comme c'est expliqué ci-dessous. Choisissez une optimisation dans la liste déroulante située en haut de l'interface.<br><h4>Optimisations :</h4><br>
+  <strong>Standard</strong> - Déterminer le coût en multipliant la distance par un facteur mis à l'échelle linéairement de 2,5&deg; à votre pente maximale donnée.<br>
+  <strong>Distance</strong> - Distance la plus courte entre les points, ne dépassant pas la pente maximale donnée.<br>
+  <strong>Escalade</strong> - Déterminer le coût à partir de l'augmentation de la hauteur d'un point à l'autre, et par la distance s'il n'y a pas d'augmentation de la hauteur.<br>
+  <strong>Visibilité de la Terre</strong> - Distance la plus courte entre les points, mais se rendre à un point à partir duquel la Terre n'est pas visible est considérée comme ayant 10 fois la distance réelle.</td></tr>
+</table>
+<table class="rextable">
+  <tr><td class="rexcont" id="withroutes"></td><td class="rexp">Le carré blanc est le point de départ et le carré noir est le point d'arrivée. Le chemin <span class="blue">bleu</span> est celui avec une pente maximale de 15&deg;, et le chemin <span class="brown">marron</span> a une pente maximale de 20&deg;. Les points <span class="cyan">cyan</span> représentent les 10 points de contrôle des liaisons de communication de chaque chemin. Les statistiques sont données avec la valeur du chemin <span class="blue">bleu</span> en premier, puis celui <span class="brown">marron</span>.</td></tr>
+</table>
+</body>
+</html>

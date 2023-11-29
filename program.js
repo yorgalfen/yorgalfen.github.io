@@ -1,5 +1,5 @@
 // biome-ignore lint/style/useSingleVarDeclarator:
-let height, latl, latr, longl, longr, slope, route, comms, dest, visib, texts;
+let height, latl, latr, longl, longr, slope, route, comms, dest, visib, texts, directions;
 let rcalc = [];
 let rcalc20 = [];
 let commcalc = [];
@@ -40,7 +40,6 @@ const estimators = {
     ear: costestimator,
 }   
 const compOffset = 0.5346887200211221;
-let directions = ["N","NW","W","SW","S","SE","E","NE"];
 console.log(`jQuery version: ${$.fn.jquery.split(" ")[0]}`);
 
 function update_data() {
@@ -176,7 +175,7 @@ $(document).keydown(() => {
             },2500);
             break;
         case 72: // H
-            window.open("help.html", "_blank");
+            window.open(`help-${lang}.html`, "_blank");
             break;
         case 77: {
             // M
@@ -543,6 +542,7 @@ class TerrainGeometry {
         visib = data.visib;
         texts = data.texts;
         dest = route[route.length-1];
+        directions = texts.en.d;
         for(let i = 0; i<visib.length; i++){
             visib[i] = new Uint32Array(visib[i]);
         }
@@ -563,6 +563,7 @@ class TerrainGeometry {
 
         // Ready to start drawing HUD
         dataInterval = setInterval(update_data, Math.round((siz**2)/40));
+        $("#map-contain").css("display","block");
 
         const time = new Date() - start;
         console.log(`Spent ${time}ms in TerrainGeometry.init()`);

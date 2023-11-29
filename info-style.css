@@ -224,6 +224,7 @@ td {
     display: none;
 }
 #map-contain {
+    display: none;
     position: absolute;
     border: 1px solid rgb(38,171,226);
     width: 20vw;

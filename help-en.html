@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <title>NASA ADC Help</title>
+  <meta charset="utf-8"/>
   <link href="styles.css" rel="stylesheet">
   <link href="font-declaration.css" rel="stylesheet"/>
   <link rel="icon" sizes="any" type="image/png" href="favicon.png" />
@@ -12,6 +13,9 @@
   <h1>Help Page</h1>
   <p>This website is a visualization of the Liebnitz Beta Plateau, near the lunar South Pole, for the 2024 NASA App Development Challenge. View the source files at <a href="https://github.com/yorgalfen/yorgalfen.github.io" target="_blank">https://github.com/yorgalfen/yorgalfen.github.io</a>.
       View info about the challenge at <a href="https://www.nasa.gov/learning-resources/app-development-challenge/" target="_blank">https://www.nasa.gov/learning-resources/app-development-challenge</a>.</p>
+  <p>Pour lire cette page en français, cliquez <a href="help-fr.html">ici</a>.</p>
+  <p>Para leer esta página en español, haga clic <a href="help-es.html">aquí</a>.</p>
+  <p>Um diese Seite auf Deutsch zu lesen, klicken Sie <a href="help-de.html">hier</a>.</p>
   <h3>Authors:</h3>
   <table id="team-table">
     <tr><td id="teacont"></td><td id="texp">We are team Touch the Cheese, and we originate from <a href="https://www.tuscaloosaacademy.org/" target="_blank">this school</a>. 
@@ -51,23 +55,30 @@
   <option value="ele">Elevation Angle</option>
   <option value="azi">Azimuth Angle</option>
 </select> colorization is enabled, then:</p>
-<p class="slo"><span class="red">Red</span> - <span id="red-exp">Slopes near the high end of the gradient or above the gradient's maximum value.</span></p>
-<p class="slo"><span class="green">Green</span> - <span id="gre-exp">Slopes near the low end of the gradient or below the gradient's minimum value.</span></p>
-<p class="slo"><span class="yellow">Yellow</span> - <span id="yel-exp">Slopes near the middle of the gradient.</span></p>
-<p class="lif" hidden><span class="gray">Gray</span> - <span id="gray-exp">All squares not part of the route.</span></p>
-<p class="hei" hidden><span class="red">Red</span> - <span id="red-exp">Squares near the region's minimum elevation of 2796.34 meters.</span></p>
-<p class="hei" hidden><span class="green">Green</span> - <span id="gre-exp">Squares near the region's maximum elevation of 6463.86 meters.</span></p>
-<p class="hei" hidden><span class="yellow">Yellow</span> - <span id="yel-exp">Elevations near the middle of the gradient.</span></p>
-<p class="ele" hidden><span class="red">Red</span> - <span id="red-exp">Squares near the region's maximum elevation angle to Earth of 10.529&deg;</span></p>
-<p class="ele" hidden><span class="green">Green</span> - <span id="gre-exp">Squares near the region's minimum elevation angle to Earth of 9.998&deg;</span></p>
-<p class="ele" hidden><span class="yellow">Yellow</span> - <span id="yel-exp">Elevation angles to Earth near the middle of the gradient.</span></p>
-<p class="azi" hidden><span class="red">Red</span> - <span id="red-exp">Squares near the region's maximum azimuth angle to Earth of 36.764&deg;</span></p>
-<p class="azi" hidden><span class="green">Green</span> - <span id="gre-exp">Squares near the region's minimum azimuth angle to Earth of 27.620&deg;</span></p>
-<p class="azi" hidden><span class="yellow">Yellow</span> - <span id="yel-exp">Azimuth angles to Earth near the middle of the gradient.</span></p>
+<p class="slo z"><span class="red">Red</span> - <span id="red-exp">Slopes near the high end of the gradient or above the gradient's maximum value.</span></p>
+<p class="slo z"><span class="green">Green</span> - <span id="gre-exp">Slopes near the low end of the gradient or below the gradient's minimum value.</span></p>
+<p class="slo z"><span class="yellow">Yellow</span> - <span id="yel-exp">Slopes near the middle of the gradient.</span></p>
+<p class="lif z" hidden><span class="gray">Gray</span> - <span id="gray-exp">All squares not part of the route.</span></p>
+<p class="hei z" hidden><span class="red">Red</span> - <span id="red-exp">Squares near the region's minimum elevation of 2796.34 meters.</span></p>
+<p class="hei z" hidden><span class="green">Green</span> - <span id="gre-exp">Squares near the region's maximum elevation of 6463.86 meters.</span></p>
+<p class="hei z" hidden><span class="yellow">Yellow</span> - <span id="yel-exp">Elevations near the middle of the gradient.</span></p>
+<p class="ele z" hidden><span class="red">Red</span> - <span id="red-exp">Squares near the region's maximum elevation angle to Earth of 10.529&deg;</span></p>
+<p class="ele z" hidden><span class="green">Green</span> - <span id="gre-exp">Squares near the region's minimum elevation angle to Earth of 9.998&deg;</span></p>
+<p class="ele z" hidden><span class="yellow">Yellow</span> - <span id="yel-exp">Elevation angles to Earth near the middle of the gradient.</span></p>
+<p class="azi z" hidden><span class="red">Red</span> - <span id="red-exp">Squares near the region's maximum azimuth angle to Earth of 36.764&deg;</span></p>
+<p class="azi z" hidden><span class="green">Green</span> - <span id="gre-exp">Squares near the region's minimum azimuth angle to Earth of 27.620&deg;</span></p>
+<p class="azi z" hidden><span class="yellow">Yellow</span> - <span id="yel-exp">Azimuth angles to Earth near the middle of the gradient.</span></p>
 <h3>Minimap Example:</h3>
 <table id="mextable">
-  <tr><td id="mexcont"></td><td id="mexp">1 - The currently applied route. The 1 points to the starting point.<br>2 - One of the communication checkpoints, from which the Earth is visible.<br>3 - The area of the Liebnitz Beta Plateau being currently rendered in 3D.<br>4 - The user's current location, pointing in the direction the user is looking relative to the map.<br>5 - The destination site of the currently applied route.</td></tr>
-</table>
+  <tr><td id="mexcont"></td><td id="mexp">
+    <ol id="mini-ol">
+      <li>The currently applied route. The 1 points to the starting point.</li>
+      <li>One of the communication checkpoints, from which the Earth is visible.</li>
+      <li>The area of the Liebnitz Beta Plateau being currently rendered in 3D.</li>
+      <li>The user's current location, pointing in the direction the user is looking relative to the map.</li>
+      <li>The destination site of the currently applied route.</li>
+    </ol>
+</td></tr></table>
 
 <h3>Teleportation:</h3>
 <p>Input a data file row (subList) or column (index) to go to, input latitude and longitude, or click anywhere on the minimap while the teleportation interface is visible.</p>
