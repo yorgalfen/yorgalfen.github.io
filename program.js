@@ -12,6 +12,7 @@ let ahTimeout;
 let los = 5;
 let hes = 15;
 let siz = 200;
+let ahoff = 1.6;
 let fdr = true;
 let rdis = false;
 let qu = false;
@@ -95,12 +96,16 @@ $(document).keydown(() => {
     const cameraPos = document.querySelector("#camera").object3D.position;
     switch (event.which) {
         case 81: // Q
-            if (!ah) {
+            if (ah) {
+                ahoff+=0.5;
+            }else{
                 cameraPos.y += 0.5;
             }
             break;
         case 69: // E
-            if (!ah) {
+            if (ah) {
+                ahoff-=0.5;
+            }else{
                 cameraPos.y -= 0.5;
             }
             break;
@@ -776,7 +781,6 @@ function handleP(){
     const pu1 = parseFloat($("#slla").val());
     const pu2 = parseFloat($("#inlo").val());
     ah = false;
-    clearInterval(dataInterval);
     let newPlace = [];
     if (pu1<0) {
         newPlace = fromLatLong(pu1,pu2);
@@ -787,11 +791,12 @@ function handleP(){
         $("#invinp").css("display","inline");
         return false;
     }
+    clearInterval(dataInterval);
     setFrame(...newPlace);
     const newPosition = coord(
         lat(newPlace[0], newPlace[1]),
         long(newPlace[0], newPlace[1]),
-        height[newPlace[0]][newPlace[1]] + 1.6,
+        height[newPlace[0]][newPlace[1]] + ahoff,
     );
     cameraPos.x = newPosition[0];
     cameraPos.y = newPosition[1];
@@ -1297,7 +1302,7 @@ AFRAME.registerComponent("frame-adjust", {
         // Shouldn't matter, but automatic height adjustment occurs after recentering
         if (ah) {
             const d = dataIndexOf(cameraPos.x, cameraPos.z);
-            cameraPos.y = coord(lat(d[0],d[1]),long(d[0],d[1]),height[d[0]][d[1]]+1.6)[1];
+            cameraPos.y = coord(lat(d[0],d[1]),long(d[0],d[1]),height[d[0]][d[1]]+ahoff)[1];
         }
         // const time = new Date() - start;
         // console.log(`Spent ${time}ms in tick()`);
