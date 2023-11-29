@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Ayuda del NASA ADC</title>
+  <meta charset="utf-8" />
+  <link href="styles.css" rel="stylesheet" />
+  <link href="font-declaration.css" rel="stylesheet" />
+  <link rel="icon" sizes="any" type="image/png" href="favicon.png" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.slim.min.js"></script>
+  <script type="text/javascript" src="helpcode.js"></script>
+</head>
+<body>
+  <h1>Página de Ayuda</h1>
+  <p>Esta página es un visualización de la Meseta Liebnitz Beta, cerca del Polo Sur lunar, por el Desafío de desarrollo de aplicaciones de la NASA 2024. Ver los archivos fuentes en <a href="https://github.com/yorgalfen/yorgalfen.github.io" target="_blank">https://github.com/yorgalfen/yorgalfen.github.io</a>.
+    Ver informática sobre el desafío en <a href="https://www.nasa.gov/learning-resources/app-development-challenge/" target="_blank">https://www.nasa.gov/learning-resources/app-development-challenge</a>.</p>
+  <p>To read this page in English, click <a href="help-en.html">here</a>.</p>
+  <p>Pour lire cette page en français, cliquez <a href="help-fr.html">ici</a>.</p>
+  <p>Um diese Seite auf Deutsch zu lesen, klicken Sie <a href="help-de.html">hier</a>.</p>
+  <h3>Autores:</h3>
+  <table id="team-table">
+    <tr><td id="teacont"></td><td id="texp">Somos el equipo "Toca el Queso" (en inglés: "Touch the Cheese"), y somos originarios de <a href="https://www.tuscaloosaacademy.org/" target="_blank">esta escuela</a>.
+      Nuestro logotipo está a la izquierda. Envíe un correo electrónico a uno de nuestros dos programadores principales con <a href="mailto:mconstantine@tuscaloosaacademy.org" target="_blank">este enlace</a> o <a href="mailto:iposton@tuscaloosaacademy.org" target="_blank">este enlace</a>.</td></tr>
+  </table>
+  <h3>Controles:</h3>
+  <p>Haga clic y arrastra para mirar.</p>
+  <table id="control" width="50%">
+    <tr><td class="letter">W</td><td class="exp">Avanzar</td></tr>
+    <tr><td class="letter">A</td><td class="exp">Moverte a la izquierda</td></tr>
+    <tr><td class="letter">S</td><td class="exp">Retroceder</td></tr>
+    <tr><td class="letter">D</td><td class="exp">Moverte a la derecha</td></tr>
+    <tr><td class="letter">F</td><td class="exp">Acceder al modo de pantalla completa.</td></tr>
+    <tr><td class="letter">L</td><td class="exp">Alternar el ajuste automático de la altura. Originalmente, está desactivado.</td>
+    </tr><tr><td class="letter">Q</td><td class="exp">Subir, si el ajuste automático de la altura está desactivado..</td></tr>
+    <tr><td class="letter">E</td><td class="exp">Bajar, si el ajuste automático de la altura está desactivado.</td></tr>
+    <tr><td class="letter">V</td><td class="exp">Cambiar el campo de visión de la cámara, en grados. El valor predeterminado es 80.</td></tr>
+    <tr><td class="letter">P</td><td class="exp">Teletransportar a una nueva posición. Consulte al <a href="#teleportation">sección del teletransporte</a>.</td></tr>
+    <tr><td class="letter">X</td><td class="exp">Cambiar el tamaño de renderizado. Este numero es el ancho del cuadrado renderizado a la vez, en puntos datos. El valor predeterminado es 200.</td></tr>
+    <tr><td class="letter">M</td><td class="exp">Cambiar la pendiente en grados que las pendientes menores que la nueva se incluirán en el gradiente. El valor predeterminado es 15.</td></tr>
+    <tr><td class="letter">N</td><td class="exp">Cambiar la pendiente en grados que las pendientes mayores que la nueva se incluirán en el gradiente. El valor predeterminado es 5.</td></tr>
+    <tr><td class="letter">H</td><td class="exp">Mostrar esta página de ayuda.</td></tr>
+    <tr><td class="letter">Esc</td><td class="exp">Salir del modo de pantalla completa.</td></tr>
+    <tr><td class="letter">C</td><td class="exp">Seleccionar un esquema de color del terreno.</td></tr>
+    <tr><td class="letter">R</td><td class="exp">Alternar la interfaz de planificación de la ruta.</td></tr>
+    <tr><td class="letter">U</td><td class="exp">Alternar la disponibilidad de la comunicación cuántica.</td></tr>
+    <tr><td class="letter">G</td><td class="exp">Cambiar la intensidad de la iluminación ambiental. El rango de valores aceptables varía de 0 a 100.</td> </tr>
+  </table>
+  <h3>Significados de los Colores:</h3>
+  <p>Los mapas que aparecen tanto en el minimapa y la interfaz de planificación de la ruta son mapas de pendientes de los datos, en los que <span class="red">el rojo</span> representa las pendientes más empinadas y <span class="green">el verde</span> las menos empinadas.</p>
+  <p><span class="blue">Azul</span> - la ruta actual</p>
+  <p><span class="cyan">Turquesa</span> - los puntos de comunicación a lo largo de la ruta</p>
+  <p>Seleccione un esquema de color.</p>
+  <p><select id="scheme">
+      <option value="slo">Pendiente</option>
+      <option value="lif">Realista</option>
+      <option value="hei">Altura</option>
+      <option value="ele">Ángulo de Elevación</option>
+      <option value="azi">Ángulo de Acimut</option>
+    </select></p>
+  <p>Si este esquema de color está activado, entonces este color se utiliza para mostrar:</p>
+  <p class="slo"><span class="red">Rojo</span> - <span id="red-exp">Pendientes que son cercanas o superiores al valor máximo del gradiente.</span></p>
+  <p class="slo"><span class="green">Verde</span> - <span id="gre-exp">Pendientes que son cercanas o inferiores al valor máximo del gradiente.</span></p>
+  <p class="slo"><span class="yellow">Amarillo</span> - <span id="yel-exp">Pendientes que son cercanas a la mitad del gradiente.</span></p>
+  <p class="lif" hidden><span class="gray">Gris</span> - <span id="gray-exp">Los cuadrados que no forman parte de la ruta.</span></p>
+  <p class="hei" hidden><span class="red">Rojo</span> - <span id="red-exp">Las elevaciones próximas a la elevación mínima de la zona, 2796,34 metros.</span></p>
+  <p class="hei" hidden><span class="green">Verde</span> - <span id="gre-exp">Las elevaciones próximas a la elevación máxima de la zona, 6463,86 metros.</span></p>
+  <p class="hei" hidden><span class="yellow">Amarillo</span> - <span id="yel-exp">Las elevaciones que son próximas a la mitad del gradiente.</span></p>
+  <p class="ele" hidden><span class="red">Rojo</span> - <span id="red-exp">Los ángulos de elevación con respecto a la Tierra que están próximos al máximo de la zona, 10,529°</span></p>
+  <p class="ele" hidden><span class="green">Verde</span> - <span id="gre-exp">Los ángulos de elevación con respecto a la Tierra que están próximos al mínimo de la zona, 9,998°</span></p>
+  <p class="ele" hidden><span class="yellow">Amarillo</span> - <span id="yel-exp">Los ángulos de elevación que están próximos a la mitad del gradiente.</span></p>
+  <p class="azi" hidden><span class="red">Red</span> - <span id="red-exp">Los ángulos acimutales con respecto a la Tierra que están próximos al máximo de la zona, 36,764&deg;</span></p>
+  <p class="azi" hidden><span class="green">Green</span> - <span id="gre-exp">Los ángulos acimutales con respecto a la Tierra que están próximos al mínimo de la zona, 27,620&deg;</span></p>
+  <p class="azi" hidden><span class="yellow">Amarillo</span> - <span id="yel-exp">Los ángulos acimutales que están próximos a la mitad del gradiente.</span></p>
+  <h3>Ejemplo del Minimapa:</h3>
+  <table id="mextable">
+    <tr>
+      <td id="mexcont"></td>
+      <td id="mexp">
+        <ol id="mini-ol">
+          <li>La ruta aplicada actualmente. El 1 señala el punto inicial.</li>
+          <li>Uno de los puntos comunicaciones, desde el que se ve la Tierra.</li>
+          <li>La zona de la Meseta Leibnitz Beta, actualmente renderizada en los 3D.</li>
+          <li>La ubicación del usuario, apuntando en la dirección en el que mira, en relación con el mapa.</li>
+          <li>El sitio de destino de la ruta aplicada actualmente.</li>
+        </ol>
+      </td>
+    </tr>
+  </table>
+  <h3 id="teleportation">Teletransporte:</h3>
+  <p>Ingrese una fila de los datos (una sublista) o una columna (un índice) a la que ir, o haga clic en cualquiera parte en el minimapa cuando la interfaz de teletransporte está visible.</p>
+  <p>-85.7882225 &lt; latitud &lt; -85.0634174</p>
+  <p>27.289349 &lt; longitud &lt; 36.3651141</p>
+  <h3>La Planificación de la Ruta:</h3>
+  <table class="rextable">
+    <tr>
+      <td class="rexcont" id="noroute"></td>
+      <td class="rexp">Cuando el lienzo que muestra la ruta esté vacío, como en la imagen de la izquierda, haga clic en el lienzo para seleccionar su sitio de destino. Su ubicación actualmente servirá como el punto inicial. Escriba un signo de interrogación ('?') en el campo de pendiente máxima para planificar dos rutas, que se explicarán más adelante. Seleccione una optimización de la lista desplegable situada en la parte superior de la interfaz.<br />
+        <h4>Las Optimizaciones:</h4><br />
+        <strong>Estándar</strong> - El coste se determina por multiplicar la distancia por un factor escalado linealmente desde 2,5&deg; hasta la pendiente máxima. <br />
+        <strong>Distancia</strong> - Busca la distancia más corta entre puntos, que no supere la pendiente máxima.<br />
+        <strong>Ascenso de colinas</strong> - El coste se determina a partir del ascenso de altura de un punto a otro, y por la distancia si no hay incremento de altura.<br />
+        <strong>Visibilidad de la Tierra</strong> - Prefiera la distancia más corta entre puntos, pero cruzar un punto desde que la Tierra no es visible se considera el 10 multiplica por la distancia real.
+      </td>
+    </tr>
+  </table>
+  <table class="rextable">
+    <tr>
+      <td class="rexcont" id="withroutes"></td>
+      <td class="rexp">El cuadrado blanca es el punto inicial, y el cuadrado negro es el punto de destino. La ruta <span class="blue">azul</span> se hizo con una pendiente máxima de 15&deg;, y la ruta <span class="brown">café</span> se hizo con una pendiente máxima de 20&deg;. Los puntos <span class="cyan">turquesa</span> representan los 10 puntos de los conexiones de comunicación de cada ruta. Las estadísticas se dan con los valores de la ruta <span class="blue">azul</span> primero, entonces la ruta <span class="brown">café</span>.</td>
+    </tr>
+  </table>
+</body>
+</html>
