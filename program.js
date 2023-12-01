@@ -913,7 +913,7 @@ function AStar(bsl,bind,esl,eind,lim,cost,est){
                 min = fScore[current];
             }
         }
-        if(it%250000 === 0){
+        if(it%50000 === 0){
             console.log(`Iteration: ${it}, time: ${new Date() - star}ms, current: ${extractPoint(current)}, openSet is ${openSet.length} long.`);
         }
         if (it === 10240000) {
