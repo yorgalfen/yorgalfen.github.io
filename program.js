@@ -966,8 +966,7 @@ function wayfind() {
     const canvasW = canvas.width;
     const canvasH = canvas.height;
     const map = $("#map")[0];
-    $("#progress").html("Finding route...");
-    console.log($("#progress")[0].innerHTML);
+    $("#progress").html(texts[lang].progress);
     let desl = parseFloat($("#sublist").val());
     let dein = parseFloat($("#index").val());
     let exi = false;
