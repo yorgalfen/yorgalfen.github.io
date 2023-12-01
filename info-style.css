@@ -1,3 +1,9 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+body {
+    font-family: "agency-fb-regular", sans-serif;
+}
 .a-loader-title {
     font-family: "agency-fb-regular";
 }
@@ -5,7 +11,6 @@
     background-image: url("gui.png");
     background-size: contain;
     position: absolute;
-    font-family: "agency-fb-regular", sans-serif;
     color: white;
     font-size: 1.07em;
     top: 10px;
@@ -17,201 +22,147 @@
     padding-left: 40px;
     padding-top: 0px;
 }
-p {
-    padding: 20px 25px;
-}
-button {
-    font-family: "agency-fb-regular", sans-serif;
-    background-color: rgb(38,171,226);
-    color: white;
-}
-#prompt {
-    background-image: url("gui-uncut.png");
-    background-size: contain;
-    position: absolute;
-    font-family: "agency-fb-regular", sans-serif;
-    color: white;
-    font-size: 1.05em;
+.modal {
+    container: modal / inline-size;
+    position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%,-50%);
-    height: 190px;
-    width: 352px;
-    display: none;
+    transform: translate(-50%, -50%);
 }
-#prompt-text {
-    font-size: 1.55em;
+.form {
+    display: grid;
+    grid-template-columns: 1fr max-content;
+    grid-template-rows: repeat(auto-fit, 1fr);
 }
-#single {
-    position: absolute;
-    top: 65%;
-    left: 20px;
-    height: 15%;
-    font-family: "agency-fb-regular", sans-serif;
-    width: 60%;
-    font-size: 1.35em;
+.form > * {
+    margin: 1cqh 1cqw;
+}
+#prompt {
+    background: url("gui-uncut.png") no-repeat center center fixed;
+    background-size: 100% 100%;
     color: white;
-    background-color: rgb(0,29,69);
-    border: 1px solid rgb(38,171,226);
+
+    height: min(100%, 20vh);
+    width: min(100%, 42.2vh);
 }
-#single-go {
-    position: absolute;
-    top: 65%;
-    left: 70%;
-    height: 18%;
-    width: 20%;
-    font-size: 1.35em;
+#teleport-coordinates {
+    display: contents;
+}
+#teleport-coordinates > * {
+    margin-block: inherit;
+}
+button {
+    background-color: #26abe2;
+    color: white;
+    font-family: inherit;
+    font-size: 100%;
+    border: 1px solid #26abe2;
+}
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+    -webkit-appearance: button;
+}
+@container modal (min-width: 0px) {
+    .modal > * {
+        margin: 1cqh 10cqw;
+    }
+    .modal p {
+        margin-block: 0;
+    }
+    .modal h2 {
+        font-size: 1.5em;
+    }
+    .modal button {
+        float: right;
+    }
+    .modal input {
+        background-color: #001d45;
+        border: 1px solid #26abe2;
+        color: white;
+        font-family: inherit;
+        font-size: 100%;
+    }
+    .modal button, .modal select, .modal input {
+        height: fit-content;
+    }
+    #prompt * {
+      font-size: min(5cqw, 7.5cqh);
+    }
+    #prompt > *:first-child {
+        margin-top: 3.5cqh;
+    }
+    #prompt > *:last-child {
+        margin-bottom: 5cqh;
+    }
 }
 #route-box {
     background-image: url("gui2.png");
-    display: none;
-    text-align: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    position: absolute;
-    font-family: "agency-fb-regular", sans-serif;
+    background-size: 100% 100%;
     color: white;
-    font-size: 1.35em;
-    top: 1vh;
-    left: 400px;
-    height: 95vh;    
-    width: 46vw;
-    padding-top: 30px;
-    line-height: 0.8em;
+
+    height: min(100%, 75vh);
+    width: min(100%, 80vh);
 }
-#route-inputs {
-    padding-left: 10%;
-    text-align: left;
-    border: none;
-    width: 90%;
+#opt-select > * {
+    display: inline-block;
 }
-td {
-    width: 5%;
-    border: none;
-}
-.rinp {
-    font-family: "agency-fb-regular", sans-serif;
-    width: 60%;
-    font-size: 1.35em;
+select {
     color: white;
-    background-color: rgb(0,29,69);
-    border: 1px solid rgb(38,171,226);
+    background-color: #001d45;
+    border: 1px solid #26abe2;
+    font: inherit;
 }
-#arrow {
-    display: none;
+#canvas-et-data > * {
+    display: inline-block;
 }
-#plan {
-    height: 2em;
-    width: 100%;
-    font-size: 1em;
-    display: inline;
+.grid-2columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-#progress {
-    display: none;
+.centered {
+    place-content: center;
 }
-#route-clear {
-    height: 2em;
-    width: 100%;
-    font-size: 1em;
-    display: none;
+.grid-3columns {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
-#draw {
-    position: relative;
-    transform: translateX(-40%);
-    width: 20vw;
-    height: 20vw;
-    border: 1px solid rgb(38,171,226);
+#data-et-apply button {
+    margin: 0.5rem 1rem;
 }
-.progress-cell {
-    width: 50%;
-    height: 2em;
-}
-#text-et-button {
-    padding-left: 10%;
-    text-align: center;
-    border: none;
-    width: 90%;
-}
-#canvas-et-data {
-    padding-left: 30%;
-    top: -5%;
-    text-align: center;
-    border: none;
-    width: 90%;
-}
-#canv-cell {
-    width: 20vw;
-    height: 20vw;
-}
-#subtable {
-    width: 30vw;
-    text-align: left;
-    transform: translateX(-90%);
-    vertical-align: top;
-}
-#data-et-apply {
-    width: 150%;
-}
-#route-data {
-    line-height: 1em;
-    padding: 0px;
-}
-#opt-select {
-    width: 90%;
-}
-#opt-text {
-    text-align: center;
-}
-#opt-drop {
-    width: 100%;
-    height: 100%;
-    font-family: "agency-fb-regular", sans-serif;
-    color: white;
-    background-color: rgb(0,29,69);
-    border: 1px solid rgb(38,171,226);
-    font-size: 1.35em;
-}
-.gy {
-    display: none;
-    position: absolute;
-    top: 65%;
-    left: 20px;
-    height: 15%;
-    font-family: "agency-fb-regular", sans-serif;
-    width: 60%;
-    font-size: 1.35em;
-    color: white;
-    background-color: rgb(0,29,69);
-    border: 1px solid rgb(38,171,226);
-}
-#teleport-table {
-    position: absolute;
-    top: 13%;
-    left: 3%;
-    display: none;
-}
-.telinp {
-    font-family: "agency-fb-regular", sans-serif;
-    width: 100%;
-    font-size: 1.35em;
-    color: white;
-    background-color: rgb(0,29,69);
-    border: 1px solid rgb(38,171,226);
-}
-.posintro {
-    width: 30%;
-    font-size: 1.35em;
-}
-.posinp {
-    width: 50%;
-    transform: translateX(-20%);
-}
-#invinp {
-    position: absolute;
-    top: 53%;
-    left: 25%;
-    font-size: 1.2em;
-    display: none;
+@container modal (min-width: 0px) {
+    #route-box * {
+        font-size: min(4cqw, 2.5cqh);
+    }
+    #route-box > h2 {
+        font-size: min(6.8cqw, 4.25cqh);
+    }
+    #route-box > *:first-child {
+        margin-top: 5cqh;
+    }
+    #route-box > *:last-child {
+        margin-bottom: 5cqh;
+    }
+    #route-box input, #route-box button {
+        width: 80%;
+    }
+    #canvas-et-data {
+        width: 80%;
+
+        /* Two-column grid layout */
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+    #canvas-et-data > * {
+        margin: auto 1cqw;
+    }
+    .grid-3columns > * {
+        padding: 0.5cqw;
+    }
+    #draw {
+        width: 45cqw;
+    }
 }
 .mmcanvas {
     width: 100%;
@@ -226,19 +177,11 @@ td {
 #map-contain {
     display: none;
     position: absolute;
-    border: 1px solid rgb(38,171,226);
+    border: 1px solid #26abe2;
     width: 20vw;
     height: 20vw;
     left: 79%;
     top: 1%;
     background-image: url("nocardinal.png");
     background-size: contain;
-}
-#route-20-contain {
-    display: none;
-}
-.rapplic {
-    width: 125%;
-    height: 2em;
-    font-size: 1.35em;
 }

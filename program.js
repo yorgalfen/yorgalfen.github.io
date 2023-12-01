@@ -33,13 +33,13 @@ const costFunction = {
     dis: distancecost,
     hil: heightcost,
     ear: visibilitycost,
-}
+};
 const estimators = {
     std: costestimator,
     dis: costestimator,
     hil: heightestimator,
     ear: costestimator,
-}   
+};
 const compOffset = 0.5346887200211221;
 console.log(`jQuery version: ${$.fn.jquery.split(" ")[0]}`);
 
@@ -82,7 +82,7 @@ function update_data() {
         di = rot;
     }
     $("#data").html(
-        `${texts[lang].da}${-lat(c[0], c[1])}&deg; S, ${long(
+        `${texts[lang].da}${-lat(c[0], c[1])}° S, ${long(
             c[0],
             c[1],
         )}${texts[lang].db}${height[c[0]][c[1]]}${texts[lang].dc}${az.toFixed(
@@ -112,72 +112,42 @@ $(document).keydown(() => {
         case 80: {
             clearTimeout(ahTimeout);
             // P
-            if($("#prompt").css("display")=="none"){
-                $("#prompt").css("display","inline");
-                $("#single").css("display","none");
-                $("#color-select").css("display","none");
-                $("#lang-select").css("display","none");
-                $("#teleport-table").css("display","inline");
-                $("#prompt-text").html("");
-                $("#single-go").css("display","inline");
-                $("#single-go").attr("onclick",`handleP();`);
-                $("#single-go").css("top","72%");
-                $("#invinp").css("display","none");
+            if($("#prompt").css("display") === "none"){
+                showPrompt("#teleport-coordinates", "", "handleP");
             }else{
-                $("#prompt").css("display","none");
+                $("#prompt").hide();
                 $(".telinp").val("");
             }
             break;
         }
         case 67: // C
-        clearTimeout(ahTimeout);
-            if($("#prompt").css("display")==="none"){
-                $("#prompt").css("display","inline");
-                $("#single").css("display","none");
-                $("#color-select").css("display","inline");
-                $("#lang-select").css("display","none");
-                $("#teleport-table").css("display","none");
-                $("#prompt-text").html(texts[lang].c);
-                $("#prompt-text").css("font-size","1.55em");
-                $("#single-go").css("display","inline");
-                $("#single-go").attr("onclick",`handleC();`);
-                $("#single-go").css("top","65%");
-                $("#invinp").css("display","none");
+            clearTimeout(ahTimeout);
+            if ($("#prompt").css("display")==="none"){
+                showPrompt("#color-select", texts[lang].c, "handleC");
             }else{
-                $("#prompt").css("display","none");
+                $("#prompt").hide();
             }
             break;
         case 88: {
             // X
             clearTimeout(ahTimeout);
             if($("#prompt").css("display")==="none"){
-                $("#prompt").css("display","inline");
-                $("#single").css("display","inline");
-                $("#color-select").css("display","none");
-                $("#lang-select").css("display","none");
-                $("#teleport-table").css("display","none");
-                $("#prompt-text").html(texts[lang].x);
-                $("#prompt-text").css("font-size","1.55em");
-                $("#single-go").css("display","inline");
-                $("#single-go").attr("onclick",`handleX();`);
-                $("#single-go").css("top","65%");
-                $("#invinp").css("display","none");
+                showPrompt("#single", texts[lang].x, "handleX");
             }else{
-                $("#prompt").css("display","none");
+                $("#prompt").hide();
                 $("#single").val("");
             }
             break;
         }
         case 76: // L
             ah = !ah;
-            $("#route-box").css("display","none");
-            $("#prompt").css("display","inline");
-            $(".nonah").css("display","none");
-            $("#prompt-text").css("font-size","1.7em");
-            $("#prompt-text").html(texts[lang][`l${ah}`]);
-            ahTimeout = setTimeout(function() {
-                $("#prompt").css("display","none");
-            },2500);
+            // FIXME: use toggle prompt
+            $("#route-box").hide();
+            $("#prompt").show();
+            $("#prompt").children().hide();
+            $("#prompt-title").show();
+            $("#prompt-title").html(texts[lang][`l${ah}`]);
+            ahTimeout = setTimeout(() => $("#prompt").hide(), 2500);
             break;
         case 72: // H
             window.open(`help-${lang}.html`, "_blank");
@@ -186,19 +156,9 @@ $(document).keydown(() => {
             // M
             clearTimeout(ahTimeout);
             if($("#prompt").css("display")==="none"){
-                $("#prompt").css("display","inline");
-                $("#single").css("display","inline");
-                $("#color-select").css("display","none");
-                $("#lang-select").css("display","none");
-                $("#teleport-table").css("display","none");
-                $("#prompt-text").html(texts[lang].m);
-                $("#prompt-text").css("font-size","1.4em");
-                $("#single-go").css("display","inline");
-                $("#single-go").attr("onclick",`handleM();`);
-                $("#single-go").css("top","65%");
-                $("#invinp").css("display","none");
+                showPrompt("#single", texts[lang].m, "handleM");
             }else{
-                $("#prompt").css("display","none");
+                $("#prompt").hide();
                 $("#single").val("");
             }
             break;
@@ -207,19 +167,9 @@ $(document).keydown(() => {
             // N
             clearTimeout(ahTimeout);
             if($("#prompt").css("display")==="none"){
-                $("#prompt").css("display","inline");
-                $("#single").css("display","inline");
-                $("#color-select").css("display","none");
-                $("#lang-select").css("display","none");
-                $("#teleport-table").css("display","none");
-                $("#prompt-text").html(texts[lang].n);
-                $("#prompt-text").css("font-size","1.4em");
-                $("#single-go").css("display","inline");
-                $("#single-go").attr("onclick",`handleN();`);
-                $("#single-go").css("top","65%");
-                $("#invinp").css("display","none");
+                showPrompt("#single", texts[lang].n, "handleN");
             }else{
-                $("#prompt").css("display","none");
+                $("#prompt").hide();
                 $("#single").val("");
             }
             break;
@@ -228,19 +178,9 @@ $(document).keydown(() => {
             // V
             clearTimeout(ahTimeout);
             if($("#prompt").css("display")==="none"){
-                $("#prompt").css("display","inline");
-                $("#single").css("display","inline");
-                $("#color-select").css("display","none");
-                $("#lang-select").css("display","none");
-                $("#teleport-table").css("display","none");
-                $("#prompt-text").html(texts[lang].v);
-                $("#prompt-text").css("font-size","1.55em");
-                $("#single-go").css("display","inline");
-                $("#single-go").attr("onclick",`handleV();`);
-                $("#single-go").css("top","65%");
-                $("#invinp").css("display","none");
+                showPrompt("#single", texts[lang].v, "handleV");
             }else{
-                $("#prompt").css("display","none");
+                $("#prompt").hide();
                 $("#single").val("");
             }
             break;
@@ -248,15 +188,15 @@ $(document).keydown(() => {
         case 82: {
             // R
             if ($("#route-box").css("display")==="none"){
-                $("#route-box").css("display","block");
-                $("#prompt").css("display","none");
+                $("#prompt").hide();
+                $("#route-box").show();
                 $("#route-data").html(texts[lang].rd);
                 if(fdr){
                     routeReset();
                     fdr = false;
                 }
             }else{
-                $("#route-box").css("display","none");
+                $("#route-box").hide();
                 $(".rinp").val("");
                 $("#progress").empty();
             }
@@ -265,19 +205,9 @@ $(document).keydown(() => {
         case 71: {
             // G
             if($("#prompt").css("display")==="none"){
-                $("#prompt").css("display","inline");
-                $("#single").css("display","inline");
-                $("#color-select").css("display","none");
-                $("#lang-select").css("display","none");
-                $("#teleport-table").css("display","none");
-                $("#prompt-text").html(texts[lang].g);
-                $("#prompt-text").css("font-size","1.55em");
-                $("#single-go").css("display","inline");
-                $("#single-go").attr("onclick",`handleG();`);
-                $("#single-go").css("top","65%");
-                $("#invinp").css("display","none");
+                showPrompt("#single", texts[lang].g, "handleG");
             }else{
-                $("#prompt").css("display","none");
+                $("#prompt").hide();
                 $("#single").val("");
             }
             break;
@@ -285,32 +215,21 @@ $(document).keydown(() => {
         case 85: {
             // U
             qu = !qu;
-            $("#route-box").css("display","none");
-            $("#prompt").css("display","inline");
-            $(".nonah").css("display","none");
-            $("#prompt-text").css("font-size","1.7em");
-            $("#prompt-text").html(texts[lang][`u${qu}`]);
-            ahTimeout = setTimeout(function() {
-                $("#prompt").css("display","none");
-            },2500);
+            $("#route-box").hide();
+            $("#prompt").show();
+            $("#prompt").children().hide();
+            $("#prompt-title").show();
+            $("#prompt-title").html(texts[lang][`u${qu}`]);
+            ahTimeout = setTimeout(() => $("#prompt").hide(), 2500);
             break;
         }
         case 89: {
             // Y
             clearTimeout(ahTimeout);
             if($("#prompt").css("display")==="none"){
-                $("#prompt").css("display","inline");
-                $("#single").css("display","none");
-                $("#lang-select").css("display","inline");
-                $("#teleport-table").css("display","none");
-                $("#prompt-text").html(texts[lang].y);
-                $("#prompt-text").css("font-size","1.55em");
-                $("#single-go").css("display","inline");
-                $("#single-go").attr("onclick",`handleY();`);
-                $("#single-go").css("top","65%");
-                $("#invinp").css("display","none");
-            }else{
-                $("#prompt").css("display","none");
+                showPrompt("#lang-select", texts[lang].y, "handleY");
+            } else {
+                $("#prompt").hide();
             }
             break;
         }
@@ -724,7 +643,7 @@ function handleX(){
         clearInterval(dataInterval);
         dataInterval = setInterval(update_data, Math.round((siz**2)/40));
     }
-    $("#prompt").css("display","none");
+    $("#prompt").hide();
     $("#single").val("");
 }
 function handleC(){
@@ -747,7 +666,7 @@ function handleC(){
         break;
     }
     geo.redraw();
-    $("#prompt").css("display","none");
+    $("#prompt").hide();
     $("#single").val("");
 }
 function handleV(){
@@ -755,7 +674,7 @@ function handleV(){
     if(fov){
         $("#camera").attr("camera", `far: 1000000000; fov: ${fov}`);
     }
-    $("#prompt").css("display","none");
+    $("#prompt").hide();
     $("#single").val("");
 }
 function handleM(){
@@ -764,7 +683,7 @@ function handleM(){
         hes = parseInt(sl);
         geo.redraw();
     }
-    $("#prompt").css("display","none");
+    $("#prompt").hide();
     $("#single").val("");
 }
 function handleN(){
@@ -773,7 +692,7 @@ function handleN(){
         los = parseInt(sl);
         geo.redraw();
     }
-    $("#prompt").css("display","none");
+    $("#prompt").hide();
     $("#single").val("");
 }
 function handleP(){
@@ -788,7 +707,7 @@ function handleP(){
         newPlace = [Math.floor(pu1),Math.floor(pu2)];
     }
     if((!newPlace)||newPlace[0]>3199||newPlace[1]<0||newPlace[1]>3199||Number.isNaN(newPlace[0])||Number.isNaN(newPlace[1])){
-        $("#invinp").css("display","inline");
+        $("#invinp").css("visibility", "initial");
         return false;
     }
     clearInterval(dataInterval);
@@ -805,7 +724,7 @@ function handleP(){
     update_data();
     // Re-set intervals for redraw and data
     dataInterval = setInterval(update_data, Math.round((siz**2)/40));
-    $("#prompt").css("display","none");
+    $("#prompt").hide();
     $(".telinp").val("");
 }
 function handleG(){
@@ -819,12 +738,12 @@ function handleG(){
             $("#lux").attr("intensity",nint*0.005);
         }
     }
-    $("#prompt").css("display","none");
+    $("#prompt").hide();
     $("#single").val("");
 }
 function handleY(){
     lang = $("#lang-select").val();
-    $("#prompt").css("display","none");
+    $("#prompt").hide();
     $(".chy").each(function(){
         $(this).html(texts[lang][this.id]);
     });
@@ -1039,10 +958,8 @@ function routeStatistics(path) {
 }
 
 function wayfind() {
-    $("#route-clear").css("display","none");
-    $("#progress").css("display","inline");
-    $("#route-20-contain").css("display","none");
-    $("#draw").css("transform","translateX(-40%)");
+    $("#route-clear").hide();
+    $("#route-20-contain").hide();
     const opt = $("#opt-drop").val();
     const canvas = $("#draw")[0];
     const ctx = canvas.getContext("2d");
@@ -1050,6 +967,7 @@ function wayfind() {
     const canvasH = canvas.height;
     const map = $("#map")[0];
     $("#progress").html("Finding route...");
+    console.log($("#progress")[0].innerHTML);
     let desl = parseFloat($("#sublist").val());
     let dein = parseFloat($("#index").val());
     let exi = false;
@@ -1087,13 +1005,12 @@ function wayfind() {
     let mand = -1;
     if (ms === "?") {
         $("#route-applier").html(texts[lang].blue);
-        $("#route-20-contain").css("display", "inline");
+        $("#route-20-contain").show();
         $("#route-20-applier").on("click", () => {
             route = rcalc20;
             comms = commcalc20;
             applyRoute();
         });
-        $("#draw").css("transform", "translate(-40%,-2%)");
         const r20 = AStar(indic[0], indic[1], desl, dein, 20, costFunction[opt], estimators[opt]);
         if (!r20) {
             $("#progress").html(texts[lang].fail);
@@ -1132,8 +1049,8 @@ function wayfind() {
     }
     rcalc = nrt.map(extractPoint);
     commcalc = checkpoints(rcalc);
-    $("#route-clear").css("display", "inline");
-    $("#progress").css("display", "none");
+    $("#route-clear").show();
+    $("#progress").html("");
     for (let i = 0; i < rcalc.length; i++){
         if (rcalc[i][0] < misl) {
             misl = rcalc[i][0];
@@ -1198,21 +1115,21 @@ function wayfind() {
     if (stats20 !== undefined) {
         data += `/${stats20.maxSlope}`;
     }
-    data += "&deg;";
+    data += "°";
     switch (opt) {
         case "std":
             data += `${texts[lang].rg}${stats.averageSlope.toFixed(1)}`;
             if (stats20 !== undefined) {
                 data += `/${stats20.averageSlope.toFixed(1)}`;
             }
-            data += "&deg;";
+            data += "°";
             break;
         case "dis":
             data += `${texts[lang].rg}${stats.averageSlope.toFixed(1)}`;
             if (stats20 !== undefined) {
                 data += `/${stats20.averageSlope.toFixed(1)}`;
             }
-            data += "&deg;";
+            data += "°";
             break;
         case "hil":
             data += `${texts[lang].rh}${stats.hillClimb.toFixed(1)}`;
@@ -1256,7 +1173,6 @@ function applyRoute() {
 function routeReset() {
     $("#route-20-contain").css("display","none");
     $("#route-applier").html(texts[lang]["route-applier"]);
-    $("#draw").css("transform","translateX(-40%)");
     const canvas = document.getElementById("draw");
     const ctx = canvas.getContext("2d");
     const map = document.getElementById("map");
@@ -1353,4 +1269,15 @@ function update_flag(){
     flagPos.x = nPos[0];
     flagPos.y = nPos[1];
     flagPos.z = nPos[2];
+}
+function showPrompt(type, title, handler) {
+    $("#route-box").hide();
+    $("#prompt").show();
+    $("#invinp").css("visibility", "hidden");
+    $(".form").children().hide();
+    $(type).show()
+    $("#prompt-title").show();
+    $("#prompt-title").html(title);
+    $("#single-go").show();
+    $("#single-go").attr("onclick", `${handler}();`);
 }
