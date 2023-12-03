@@ -104,11 +104,11 @@
                     <option value="es">Español</option>
                 </select>
                 <div id="teleport-coordinates">
-                    <label for="slla" id="pos1" class="chy">subList or Latitude</label>
-                    <input class="telinp" id="slla" />
-                    <label for="inlo" id="pos2" class="chy">index or Longitude</label>
-                    <input class="telinp" id="inlo" />
-                    <p id="invinp" class="chy" style="visibility: hidden;">Invalid input!</p>
+                    <label for="slla" id="pos1" class="chy p">subList or Latitude</label>
+                    <input class="telinp p" id="slla" />
+                    <label for="inlo" id="pos2" class="chy p">index or Longitude</label>
+                    <input class="telinp p" id="inlo" />
+                    <p id="invinp" class="chy p" style="visibility: hidden;">Invalid input!</p>
                 </div>
                 <button id="single-go" class="chy">Confirm</button>
             </div>
@@ -140,15 +140,15 @@
             </div>
             <div class="grid-3columns centered" id="text-et-button">
                 <p id="progress"></p>
-                <button class="chy" id="route-clear" onclick="routeReset();">Clear Route</button>
                 <button class="chy" id="plan" onclick="wayfind();">Plan Route</button>
+                <button class="chy" id="route-clear" onclick="routeReset();">Clear Route</button>
             </div>
             <div id="canvas-et-data">
                 <canvas id="draw" width="3200" height="3200" onclick="getClick(event);"></canvas>
                 <div id="data-et-apply">
                     <p id="route-data"></p>
                     <button id="route-applier" class="rapplic chy">Apply Route</button>
-                    <button id="route-20-applier" class="rapplic chy">Apply Brown</button>
+                    <button id="route-20-applier" class="rapplic chy" hidden>Apply Brown</button>
                 </div>
             </div>
         </section>

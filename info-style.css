@@ -41,15 +41,16 @@ body {
     background: url("gui-uncut.png") no-repeat center center fixed;
     background-size: 100% 100%;
     color: white;
-
-    height: min(100%, 20vh);
-    width: min(100%, 42.2vh);
+    height: min(100%, 30vh);
+    width: min(100%, 55.6vh);
 }
 #teleport-coordinates {
     display: contents;
+    font-size: min(6cqw, 7.5cqh);
 }
 #teleport-coordinates > * {
     margin-block: inherit;
+    font-size: min(5.2cqw, 7.5cqh);
 }
 button {
     background-color: #26abe2;
@@ -57,12 +58,6 @@ button {
     font-family: inherit;
     font-size: 100%;
     border: 1px solid #26abe2;
-}
-button,
-[type="button"],
-[type="reset"],
-[type="submit"] {
-    -webkit-appearance: button;
 }
 @container modal (min-width: 0px) {
     .modal > * {
@@ -87,11 +82,11 @@ button,
     .modal button, .modal select, .modal input {
         height: fit-content;
     }
-    #prompt * {
-      font-size: min(5cqw, 7.5cqh);
+    #prompt > :not(.p) {
+        font-size: min(7cqw, 7.5cqh);
     }
     #prompt > *:first-child {
-        margin-top: 3.5cqh;
+        margin-top: 5cqh;
     }
     #prompt > *:last-child {
         margin-bottom: 5cqh;
@@ -102,8 +97,8 @@ button,
     background-size: 100% 100%;
     color: white;
 
-    height: min(100%, 75vh);
-    width: min(100%, 80vh);
+    height: min(100%, 91.9vh);
+    width: min(100%, 98vh);
 }
 #opt-select > * {
     display: inline-block;
@@ -133,10 +128,10 @@ select {
 }
 @container modal (min-width: 0px) {
     #route-box * {
-        font-size: min(4cqw, 2.5cqh);
+        font-size: min(4.8cqw, 3cqh);
     }
     #route-box > h2 {
-        font-size: min(6.8cqw, 4.25cqh);
+        font-size: min(8.16cqw, 5.1cqh);
     }
     #route-box > *:first-child {
         margin-top: 5cqh;
@@ -147,6 +142,10 @@ select {
     #route-box input, #route-box button {
         width: 80%;
     }
+    #route-box .rapplic {
+        height: fit-content;
+        width: 85%;
+    }
     #canvas-et-data {
         width: 80%;
 
@@ -155,13 +154,13 @@ select {
         grid-template-columns: 1fr 1fr;
     }
     #canvas-et-data > * {
-        margin: auto 1cqw;
+        margin: 1cqw;
     }
     .grid-3columns > * {
         padding: 0.5cqw;
     }
     #draw {
-        width: 45cqw;
+        width: 57cqw;
     }
 }
 .mmcanvas {

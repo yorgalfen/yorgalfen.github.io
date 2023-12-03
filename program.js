@@ -144,7 +144,7 @@ $(document).keydown(() => {
             // FIXME: use toggle prompt
             $("#route-box").hide();
             $("#prompt").show();
-            $("#prompt").children().hide();
+            $(".form").children().hide();
             $("#prompt-title").show();
             $("#prompt-title").html(texts[lang][`l${ah}`]);
             ahTimeout = setTimeout(() => $("#prompt").hide(), 2500);
@@ -190,6 +190,7 @@ $(document).keydown(() => {
             if ($("#route-box").css("display")==="none"){
                 $("#prompt").hide();
                 $("#route-box").show();
+                $("#route-20-applier").hide();
                 $("#route-data").html(texts[lang].rd);
                 if(fdr){
                     routeReset();
@@ -217,7 +218,7 @@ $(document).keydown(() => {
             qu = !qu;
             $("#route-box").hide();
             $("#prompt").show();
-            $("#prompt").children().hide();
+            $(".form").children().hide();
             $("#prompt-title").show();
             $("#prompt-title").html(texts[lang][`u${qu}`]);
             ahTimeout = setTimeout(() => $("#prompt").hide(), 2500);
@@ -958,15 +959,13 @@ function routeStatistics(path) {
 }
 
 function wayfind() {
-    $("#route-clear").hide();
-    $("#route-20-contain").hide();
+    $("#route-20-applier").hide();
     const opt = $("#opt-drop").val();
     const canvas = $("#draw")[0];
     const ctx = canvas.getContext("2d");
     const canvasW = canvas.width;
     const canvasH = canvas.height;
     const map = $("#map")[0];
-    $("#progress").html(texts[lang].progress);
     let desl = parseFloat($("#sublist").val());
     let dein = parseFloat($("#index").val());
     let exi = false;
@@ -1004,7 +1003,7 @@ function wayfind() {
     let mand = -1;
     if (ms === "?") {
         $("#route-applier").html(texts[lang].blue);
-        $("#route-20-contain").show();
+        $("#route-20-applier").show();
         $("#route-20-applier").on("click", () => {
             route = rcalc20;
             comms = commcalc20;
@@ -1049,7 +1048,7 @@ function wayfind() {
     rcalc = nrt.map(extractPoint);
     commcalc = checkpoints(rcalc);
     $("#route-clear").show();
-    $("#progress").html("");
+    $("#progress").html(texts[lang].found);
     for (let i = 0; i < rcalc.length; i++){
         if (rcalc[i][0] < misl) {
             misl = rcalc[i][0];
@@ -1172,6 +1171,8 @@ function applyRoute() {
 function routeReset() {
     $("#route-20-contain").css("display","none");
     $("#route-applier").html(texts[lang]["route-applier"]);
+    $("#route-20-applier").hide();
+    $("#progress").empty();
     const canvas = document.getElementById("draw");
     const ctx = canvas.getContext("2d");
     const map = document.getElementById("map");
@@ -1274,7 +1275,7 @@ function showPrompt(type, title, handler) {
     $("#prompt").show();
     $("#invinp").css("visibility", "hidden");
     $(".form").children().hide();
-    $(type).show()
+    $(type).show();
     $("#prompt-title").show();
     $("#prompt-title").html(title);
     $("#single-go").show();
