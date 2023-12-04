@@ -68,6 +68,7 @@ button {
     }
     .modal h2 {
         font-size: 1.5em;
+        font-family: 'agency-fb-bold';
     }
     .modal button {
         float: right;
