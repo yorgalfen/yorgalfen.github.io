@@ -31,11 +31,8 @@ body {
 }
 .form {
     display: grid;
+    gap: 1cqh;
     grid-template-columns: 1fr max-content;
-    grid-template-rows: repeat(auto-fit, 1fr);
-}
-.form > * {
-    margin: 1cqh 1cqw;
 }
 #prompt {
     background: url("gui-uncut.png") no-repeat center center fixed;
@@ -79,6 +76,7 @@ button {
         color: white;
         font-family: inherit;
         font-size: 100%;
+        min-width: 0px;
     }
     .modal button, .modal select, .modal input {
         height: fit-content;
