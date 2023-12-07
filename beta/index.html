@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+    <head>
+        <title>NASA ADC</title>
+        <meta charset="utf-8" />
+        <script type="text/javascript" src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+        <link rel="icon" sizes="any" type="image/png" href="../favicon.png" />
+        <link href="../info-style.css" rel="stylesheet" />
+        <link href="../font-declaration.css" rel="stylesheet" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.slim.min.js"></script>
+        <!-- Start loading Terrain module and its dependencies while program.js is loading -->
+        <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three-mesh-bvh@0.6.8/+esm" />
+        <link rel="modulepreload" href="Terrain.mjs" />
+        <script type="module" src="program.js"></script>
+    </head>
+    <body>
+        <a-scene id="scene" loading-screen="backgroundColor: #001f4b" minimap>
+            <a-assets timeout="30000">
+                <img id="home-big" src="../home-big.png" />
+                <img id="earth" src="../earth.png" />
+                <img id="sky" src="../sky.jpg" />
+                <a-asset-item id="flag" src="../flag.obj"></a-asset-item>
+                <a-asset-item id="tower" src="../tower.obj"></a-asset-item>
+                <a-asset-item id="height" src="../height.json"></a-asset-item>
+                <a-asset-item id="latl" src="../latleft.json"></a-asset-item>
+                <a-asset-item id="latr" src="../latright.json"></a-asset-item>
+                <a-asset-item id="longl" src="../longleft.json"></a-asset-item>
+                <a-asset-item id="longr" src="../longright.json"></a-asset-item>
+                <a-asset-item id="route" src="../routen.json"></a-asset-item>
+                <a-asset-item id="comms" src="../comms.json"></a-asset-item>
+                <a-asset-item id="slope" src="../slope.json"></a-asset-item>
+                <a-asset-item id="visib" src="../visibility.json"></a-asset-item>
+                <a-asset-item id="texts" src="../texts.json"></a-asset-item>
+            </a-assets>
+            <a-sky id="caelum" src="#sky" radius="500000000"></a-sky>
+            <a-entity
+                id="sol"
+                geometry="primitive: sphere; radius: 1661293"
+                position="0 19148150 356723010"
+                material="color: white; shader: flat"
+                light="type: point; intensity: 1.8; distance: 0"
+            ></a-entity>
+            <a-sphere
+                id="terra"
+                position="183750345 65161417 306355624"
+                rotation="165 64 -12"
+                material="src: #earth; shader: flat"
+                radius="6378100"
+            ></a-sphere>
+            <a-entity
+                camera="far: 1000000000"
+                wasd-controls
+                look-controls
+                position="0 6154.2 0"
+                id="camera"
+                frame-adjust
+            >
+                <a-entity
+                    position="0 0 1"
+                    id="flashlight"
+                    light="type: spot; angle: 55; intensity: 0.8; distance: 60; penumbra: 0.35; target: #camera;"
+                ></a-entity>
+            </a-entity>
+            <a-entity
+                id="luna"
+                terrain="latl: #latl; latr: #latr; longl: #longl; longr: #longr;
+                    height: #height; slope: #slope; route: #route; comms: #comms;
+                    visib: #visib; texture: #home-big; texts: #texts; colorizer: lif;
+                    frame: 1160 1215; renderDistance: 200; timesDetail: 8;"
+            ></a-entity>
+            <a-light type="ambient" intensity="0" id="lux"></a-light>
+            <a-obj-model flag-comp id="vexillum" src="#flag" material="color: #26abe2" scale="0.002 0.002 0.002" rotation="180 0 0" position="0 0 0"></a-obj-model>
+            <a-obj-model towers class="turris" id="tow-0" src="#tower" material="color: #333; metalness: 0.6; roughness: 0.5" scale="0.07 0.07 0.07" rotation="-90 -16 0"></a-obj-model>
+            <a-obj-model towers class="turris" id="tow-1" src="#tower" material="color: #333; metalness: 0.6; roughness: 0.5" scale="0.07 0.07 0.07" rotation="-90 -16 0"></a-obj-model>
+            <a-obj-model towers class="turris" id="tow-2" src="#tower" material="color: #333; metalness: 0.6; roughness: 0.5" scale="0.07 0.07 0.07" rotation="-90 -16 0"></a-obj-model>
+            <a-obj-model towers class="turris" id="tow-3" src="#tower" material="color: #333; metalness: 0.6; roughness: 0.5" scale="0.07 0.07 0.07" rotation="-90 -16 0"></a-obj-model>
+            <a-obj-model towers class="turris" id="tow-4" src="#tower" material="color: #333; metalness: 0.6; roughness: 0.5" scale="0.07 0.07 0.07" rotation="-90 -16 0"></a-obj-model>
+            <a-obj-model towers class="turris" id="tow-5" src="#tower" material="color: #333; metalness: 0.6; roughness: 0.5" scale="0.07 0.07 0.07" rotation="-90 -16 0"></a-obj-model>
+            <a-obj-model towers class="turris" id="tow-6" src="#tower" material="color: #333; metalness: 0.6; roughness: 0.5" scale="0.07 0.07 0.07" rotation="-90 -16 0"></a-obj-model>
+            <a-obj-model towers class="turris" id="tow-7" src="#tower" material="color: #333; metalness: 0.6; roughness: 0.5" scale="0.07 0.07 0.07" rotation="-90 -16 0"></a-obj-model>
+            <a-obj-model towers class="turris" id="tow-8" src="#tower" material="color: #333; metalness: 0.6; roughness: 0.5" scale="0.07 0.07 0.07" rotation="-90 -16 0"></a-obj-model>
+            <a-obj-model towers class="turris" id="tow-9" src="#tower" material="color: #333; metalness: 0.6; roughness: 0.5" scale="0.07 0.07 0.07" rotation="-90 -16 0"></a-obj-model>
+        </a-scene>
+        <img id="map" src="../slopemap.png" hidden />
+        <img id="arrow" src="../arrow.png" hidden />
+		<div id="info"><p id="data">Welcome to the Liebnitz Beta Plateau!<br>Press H for help.<br>Loading...</p></div>
+        <section
+            role="dialog"
+            class="modal"
+            id="prompt"
+            aria-labelledby="prompt-title"
+            style="display: none"
+        >
+            <p id="prompt-title"></p>
+            <div class="form">
+                <input type="text" id="single" />
+                <select id="color-select">
+                    <option value="slo" id="slo" class="chy">Slope</option>
+                    <option value="lif" id="lif" class="chy">Lifelike</option>
+                    <option value="hei" id="hei" class="chy">Height</option>
+                    <option value="ele" id="ele" class="chy">Elevation Angle</option>
+                    <option value="azi" id="azi" class="chy">Azimuth Angle</option>
+                </select>
+                <select id="lang-select">
+                    <option value="en">English</option>
+                    <option value="de">Deutsch</option>
+                    <option value="fr">Français</option>
+                    <option value="es">Español</option>
+                </select>
+                <div id="teleport-coordinates">
+                    <label for="slla" id="pos1" class="chy">subList or Latitude</label>
+                    <input class="telinp" id="slla" />
+                    <label for="inlo" id="pos2" class="chy">index or Longitude</label>
+                    <input class="telinp" id="inlo" />
+                    <p id="invinp" class="chy" style="visibility: hidden;">Invalid input!</p>
+                </div>
+                <button id="single-go" class="chy">Confirm</button>
+            </div>
+        </section>
+        <section
+            role="dialog"
+            class="modal"
+            id="route-box"
+            aria-labelledby="rhead"
+            style="display: none"
+        >
+            <h2 class="chy" id="rhead">Route Planning</h2>
+            <span id="opt-select">
+                <p id="opt-text" class="chy">Optimization:</p>
+                <select id="opt-drop">
+                    <option value="std" class="chy" id="std">Standard</option>
+                    <option value="dis" class="chy" id="dis">Distance</option>
+                    <option value="hil" class="chy" id="hil">Hill Climbing</option>
+                    <option value="ear" class="chy" id="ear">Earth Visibility</option>
+                </select>
+            </span>
+            <div class="grid-3columns centered" id="route-inputs">
+                <label for="sublist" class="chy" id="rinp1">sublist/latitude: </label>
+                <label for="index" class="chy" id="rinp2">index/longitude</label>
+                <label for="slinp" class="chy" id="rinp3">Max slope:</label>
+                <input id="sublist" />
+                <input id="index" />
+                <input id="slinp" />
+            </div>
+            <div class="grid-3columns centered" id="text-et-button">
+                <p id="progress"></p>
+                <button class="chy" id="route-clear" onclick="routeReset();">Clear Route</button>
+                <button class="chy" id="plan" onclick="wayfind();">Plan Route</button>
+            </div>
+            <div id="canvas-et-data">
+                <canvas id="draw" width="3200" height="3200" onclick="getClick(event);"></canvas>
+                <div id="data-et-apply">
+                    <p id="route-data"></p>
+                    <button id="route-applier" class="rapplic chy">Apply Route</button>
+                    <button id="route-20-applier" class="rapplic chy">Apply Brown</button>
+                </div>
+            </div>
+        </section>
+        <div id="map-contain">
+            <canvas id="minimap-route" class="mmcanvas" height="3200" width="3200"></canvas>
+            <canvas
+                id="minimap"
+                class="mmcanvas"
+                height="3200"
+                width="3200"
+            ></canvas>
+        </div>
+    </body>
+</html>
