@@ -23,7 +23,6 @@ let dataInterval;
 let lang = "en";
 let ah = false;
 let ahTimeout;
-let siz = 200;
 let ahoff = 1.6;
 let fdr = true;
 let rdis = false;
@@ -64,10 +63,10 @@ function update_data() {
     ctx.save();
     ctx.fillStyle = "rgb(0,0,0)";
     const size = $("#luna")[0].getAttribute("terrain").renderDistance;
-    ctx.fillRect(c[1] - siz / 2, c[0] - siz / 2, siz, 8);
-    ctx.fillRect(c[1] - siz / 2, c[0] - siz / 2, 8, siz);
-    ctx.fillRect(c[1] + siz / 2, c[0] - siz / 2, 8, siz + 8);
-    ctx.fillRect(c[1] - siz / 2, c[0] + siz / 2, siz, 8);
+    ctx.fillRect(c[1] - size / 2, c[0] - size / 2, size, 8);
+    ctx.fillRect(c[1] - size / 2, c[0] - size / 2, 8, size);
+    ctx.fillRect(c[1] + size / 2, c[0] - size / 2, 8, size + 8);
+    ctx.fillRect(c[1] - size / 2, c[0] + size / 2, size, 8);
     ctx.translate(c[1], c[0]);
     ctx.rotate(Math.PI + compOffset - rot);
     const arr = $("#arrow")[0];
@@ -245,40 +244,6 @@ function vis(su, ind) {
     return (visib[su][Math.floor(ind / 32)] >> ind % 32) & 1;
 }
 
-// Returns the [subList, index] within the latitude and longitude
-// corresponding to the A-Frame coordinates camx and camz.
-// camx and camz must be coordinates on the mesh
-// perf: this function is the slowest part of the program,
-// try to avoid calls here when possible
-function dataIndexOf(camx, camz) {
-    const sub_off = frame[0] - siz / 2;
-    const ind_off = frame[1] - siz / 2;
-
-    for (let sub = 0; sub < siz; sub++) {
-        for (let ind = 0; ind < siz; ind++) {
-            const at = sub * siz * 18 + ind * 18;
-
-            // get four corners of rectangle
-            // depends on order in TerrainGeometry's triangle_spec
-            const a = geo.vertices.slice(at + 0, at + 3);
-            const b = geo.vertices.slice(at + 3, at + 6);
-            const c = geo.vertices.slice(at + 6, at + 9);
-            const d = geo.vertices.slice(at + 15, at + 18);
-
-            const minz = Math.min(a[2], b[2], c[2], d[2]);
-            const minx = Math.min(a[0], b[0], c[0], d[0]);
-            const maxz = Math.max(a[2], b[2], c[2], d[2]);
-            const maxx = Math.max(a[0], b[0], c[0], d[0]);
-
-            if (camx >= minx && camx <= maxx && camz >= minz && camz <= maxz) {
-                return [sub + sub_off, ind + ind_off];
-            }
-        }
-    }
-    // Off the mesh, returning a known good value
-    return frame;
-}
-
 function handleX() {
     const ne = $("#single").val();
     if (ne) {
@@ -358,13 +323,14 @@ function handleP() {
     cameraPos.z = newPosition[2];
     update_data();
     // Re-set intervals for redraw and data
-    dataInterval = setInterval(update_data, Math.round(siz ** 2 / 40));
+    const size = $("#luna")[0].getAttribute("terrain").renderDistance;
+    dataInterval = setInterval(update_data, Math.round(size ** 2 / 40));
     $("#prompt").hide();
     $(".telinp").val("");
 }
 function handleG() {
-    let nint = parseFloat($("#single").val());
-    if (!isNaN(nint)) {
+    const nint = parseFloat($("#single").val());
+    if (Number.isInteger(nint)) {
         if (nint >= 100) {
             $("#lux").attr("intensity", "0.5");
         } else if (nint <= 0) {
@@ -532,7 +498,7 @@ function AStar(bsl, bind, esl, eind, lim, cost, est) {
     return false;
 }
 function reconstruct_path(cameFrom, current) {
-    let totalPath = [current];
+    const totalPath = [current];
     while (cameFrom[current] !== -1) {
         current = cameFrom[current];
         totalPath.unshift(current);
@@ -636,7 +602,7 @@ function wayfind() {
     }
 
     const cameraPos = $("#camera")[0].object3D.position;
-    const indic = dataIndexOf(cameraPos.x, cameraPos.z);
+    const indic = terrain.dataIndexOf(cameraPos, true);
 
     rcalc = [];
     rcalc20 = undefined;
@@ -885,7 +851,8 @@ AFRAME.registerComponent("minimap", {
 
         directions = texts.en.d;
         // Ready to start drawing HUD
-        dataInterval = setInterval(update_data, Math.round(siz ** 2 / 40));
+        const size = $("#luna")[0].getAttribute("terrain").renderDistance;
+        dataInterval = setInterval(update_data, Math.round(size ** 2 / 40));
     },
 });
 
