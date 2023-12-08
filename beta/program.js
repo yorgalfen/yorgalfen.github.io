@@ -148,13 +148,13 @@ $(document).on("keydown", (event) => {
             // FIXME: use toggle prompt
             $("#route-box").hide();
             $("#prompt").show();
-            $("#prompt").children().hide();
+            $(".form").children().hide();
             $("#prompt-title").show();
             $("#prompt-title").html(texts[lang][`l${ah}`]);
             ahTimeout = setTimeout(() => $("#prompt").hide(), 2500);
             break;
         case 72: // H
-            window.open(`help-${lang}.html`, "_blank");
+            window.open(`../help-${lang}.html`, "_blank");
             break;
         case 77: {
             // M
@@ -267,6 +267,7 @@ function handleV() {
     const fov = $("#single").val();
     if (fov) {
         $("#camera").attr("camera", `far: 1000000000; fov: ${fov}`);
+        $("#camera")[0].setAttribute("camera", { far: 1000000000, fov: fov });
     }
     $("#prompt").hide();
     $("#single").val("");
