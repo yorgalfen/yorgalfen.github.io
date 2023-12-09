@@ -511,7 +511,12 @@ class TerrainGeometry {
         const cb = new THREE.Vector3();
         const ab = new THREE.Vector3();
 
-        const color = new THREE.Color(0xffffff);
+        const rectColors = [
+            new THREE.Color(0xffffff),
+            new THREE.Color(0xffffff),
+            new THREE.Color(0xffffff),
+            new THREE.Color(0xffffff),
+        ];
         const red = new THREE.Color(0xff0000);
         const green = new THREE.Color(0x00ff00);
 
@@ -525,12 +530,34 @@ class TerrainGeometry {
             for (let x = 0; x < siz; x++) {
                 const at = z * siz * 18 + x * 18;
 
+                // Run colorizer
+                if (this.colorizer != null) {
+                    // Separate colors for each vertex of the triangle
+                    // Must agree with order in rectCoord:
+                    // (0, 0), (-1, 1), (-1, 0), (0, 1),
+                    const atX = x_off + x;
+                    const atZ = z_off + z;
+                    let intensity = this.colorizer(atZ - 0, atX + 0);
+                    rectColors[0].lerpColors(green, red, intensity);
+                    intensity = this.colorizer(atZ - 1, atX + 1);
+                    rectColors[1].lerpColors(green, red, intensity);
+                    intensity = this.colorizer(atZ - 1, atX + 0);
+                    rectColors[2].lerpColors(green, red, intensity);
+                    intensity = this.colorizer(atZ - 0, atX + 1);
+                    rectColors[3].lerpColors(green, red, intensity);
+                }
+
                 const rect = rectCoord(z + z_off, x + x_off);
                 const uvAt = z * siz * 12 + x * 12;
                 for (let i = 0; i < 6; i++) {
+                    const triangle = triangle_spec[i];
                     for (let j = 0; j < 3; j++) {
-                        vertices[at + i * 3 + j] = rect[3 * triangle_spec[i] + j];
+                        const k = 3 * triangle + j;
+                        vertices[at + i * 3 + j] = rect[k];
                     }
+                    colors[at + i * 3 + 0] = rectColors[triangle].r;
+                    colors[at + i * 3 + 1] = rectColors[triangle].g;
+                    colors[at + i * 3 + 2] = rectColors[triangle].b;
                     this.uvs[uvAt + 2 * i + 0] = (uv_spec[i] & 0x1) >> 0;
                     this.uvs[uvAt + 2 * i + 1] = (uv_spec[i] & 0x2) >> 1;
                 }
@@ -570,20 +597,6 @@ class TerrainGeometry {
                 const indexAt = z * siz * 6 + x * 6;
                 for (let i = 0; i < 6; i++) {
                     indices[indexAt + i] = indexStart + i;
-                }
-
-                // Run colorizer
-                if (this.colorizer != null) {
-                    const intensity = this.colorizer(z + z_off, x + x_off);
-                    // Interpolate between green and red,
-                    // where an intensity closer to 1 is more red
-                    color.copy(green);
-                    color.lerp(red, intensity);
-                }
-                for (let i = 0; i < 18; i += 3) {
-                    colors[at + i + 0] = color.r;
-                    colors[at + i + 1] = color.g;
-                    colors[at + i + 2] = color.b;
                 }
             }
         }
