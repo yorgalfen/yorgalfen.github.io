@@ -25,7 +25,6 @@ let ah = false;
 let ahTimeout;
 let ahoff = 1.6;
 let fdr = true;
-let rdis = false;
 let qu = false;
 const mult = 4.375e-7; // the multiplier for distance to get it to always be less than or equal to 0.01, the step in height
 const zeroCostSlope = 2.5;
@@ -112,7 +111,7 @@ $(document).on("keydown", (event) => {
             // P
             if ($("#prompt").css("display") === "none") {
                 showPrompt("#teleport-coordinates", "", handleP);
-                $("#minimap").on(() => {
+                $("#minimap").on("click", (event) => {
                     const dex = Math.round((event.offsetX / $("#minimap").width()) * 3200);
                     const sbl = Math.round((event.offsetY / $("#minimap").height()) * 3200);
                     $("#slla").val(sbl);
@@ -121,6 +120,7 @@ $(document).on("keydown", (event) => {
             } else {
                 $("#prompt").hide();
                 $(".telinp").val("");
+                $("#single-go").off();
             }
             break;
         }
@@ -130,6 +130,7 @@ $(document).on("keydown", (event) => {
                 showPrompt("#color-select", texts[lang].c, handleC);
             } else {
                 $("#prompt").hide();
+                $("#single-go").off();
             }
             break;
         case 88: {
@@ -140,6 +141,7 @@ $(document).on("keydown", (event) => {
             } else {
                 $("#prompt").hide();
                 $("#single").val("");
+                $("#single-go").off();
             }
             break;
         }
@@ -164,6 +166,7 @@ $(document).on("keydown", (event) => {
             } else {
                 $("#prompt").hide();
                 $("#single").val("");
+                $("#single-go").off();
             }
             break;
         }
@@ -175,6 +178,7 @@ $(document).on("keydown", (event) => {
             } else {
                 $("#prompt").hide();
                 $("#single").val("");
+                $("#single-go").off();
             }
             break;
         }
@@ -186,6 +190,7 @@ $(document).on("keydown", (event) => {
             } else {
                 $("#prompt").hide();
                 $("#single").val("");
+                $("#single-go").off();
             }
             break;
         }
@@ -213,6 +218,7 @@ $(document).on("keydown", (event) => {
             } else {
                 $("#prompt").hide();
                 $("#single").val("");
+                $("#single-go").off();
             }
             break;
         }
@@ -234,6 +240,7 @@ $(document).on("keydown", (event) => {
                 showPrompt("#lang-select", texts[lang].y, handleY);
             } else {
                 $("#prompt").hide();
+                $("#single-go").off();
             }
             break;
         }
@@ -266,8 +273,7 @@ function handleC() {
 function handleV() {
     const fov = $("#single").val();
     if (fov) {
-        $("#camera").attr("camera", `far: 1000000000; fov: ${fov}`);
-        $("#camera")[0].setAttribute("camera", { far: 1000000000, fov: fov });
+        $("#camera")[0].setAttribute("camera", { fov: fov });
     }
     $("#prompt").hide();
     $("#single").val("");
@@ -332,12 +338,13 @@ function handleP() {
 function handleG() {
     const nint = parseFloat($("#single").val());
     if (Number.isInteger(nint)) {
+        const lux = $("#lux")[0];
         if (nint >= 100) {
-            $("#lux").attr("intensity", "0.5");
+            lux.setAttribute("intensity", 0.5);
         } else if (nint <= 0) {
-            $("#lux").attr("intensity", "0");
+            lux.setAttribute("intensity", 0);
         } else {
-            $("#lux").attr("intensity", nint * 0.005);
+            lux.setAttribute("intensity", nint * 0.005);
         }
     }
     $("#prompt").hide();
@@ -350,14 +357,6 @@ function handleY() {
         $(this).html(texts[lang][this.id]);
     });
     directions = texts[lang].d;
-}
-function getClick(event) {
-    if (!rdis) {
-        const dex = Math.round((event.offsetX / $("#draw").width()) * 3200);
-        const sbl = Math.round((event.offsetY / $("#draw").height()) * 3200);
-        $("#sublist").val(sbl);
-        $("#index").val(dex);
-    }
 }
 function slopecost(sl1, in1, sl2, in2, lim) {
     const slo = slope[sl1][in1];
@@ -743,7 +742,6 @@ function wayfind() {
     if (masl > 3199) {
         ctx.clearRect(0, canvasH * ((3200 - misl) / wid), canvasW, canvasH);
     }
-    rdis = true;
     const stats = routeStatistics(rcalc);
     const stats20 = rcalc20 === undefined ? undefined : routeStatistics(rcalc20);
     let data = `${texts[lang].re}${stats.distance.toFixed(1)}`;
@@ -822,7 +820,6 @@ function routeReset() {
     route = [];
     comms = [];
     geo.redraw();
-    rdis = false;
     $(".turris").attr("visible", "false");
     $("#route-data").html(texts[lang].rd);
     $("#route-clear").css("display", "none");
@@ -967,5 +964,5 @@ function showPrompt(type, title, handler) {
     $("#prompt-title").show();
     $("#prompt-title").html(title);
     $("#single-go").show();
-    $("#single-go").on("click", handler);
+    $("#single-go").one("click", handler);
 }
