@@ -758,10 +758,10 @@ export class Terrain {
         this.raycaster = new THREE.Raycaster();
         // Allow the raycaster to return a result more quickly.
         this.raycaster.firstHitOnly = true;
-        this.rayDirection = new THREE.Vector3(0, -1, 0);
         // 6500 is a value above and close to the maximum terrain height,
         // which is needed so that the raycaster can always hit a terrain mesh.
-        this.rayOrigin = new THREE.Vector3(0, 6500, 0);
+        this.raycaster.ray.origin.y = 6500;
+        this.raycaster.ray.direction.set(0, -1, 0);
         this.root = new THREE.Group();
         this.tileMeshes = [];
         // Map of THREE.Mesh ids from this.tileMeshes to Tile instances
@@ -820,10 +820,7 @@ export class Terrain {
      * @returns {Array<Number>} Pair of sublist and index on the data files.
      */
     dataIndexOf(cameraPos, fallback = true) {
-        this.rayOrigin.x = cameraPos.x;
-        this.rayOrigin.z = cameraPos.z;
-        this.raycaster.set(this.rayOrigin, this.rayDirection);
-        const intersections = this.raycaster.intersectObjects(this.tileMeshes);
+        const intersections = this.raycast(cameraPos);
         if (intersections.length === 0) {
             if (fallback) {
                 // Off the mesh, return a known good value
@@ -842,6 +839,12 @@ export class Terrain {
         const tileZ = Math.round(at / highDetailLen / timesDetail);
         const tileX = Math.round((at % highDetailLen) / timesDetail);
         return [tile.startZ + tileZ, tile.startX + tileX];
+    }
+
+    raycast(cameraPos) {
+        this.raycaster.ray.origin.x = cameraPos.x;
+        this.raycaster.ray.origin.z = cameraPos.z;
+        return this.raycaster.intersectObjects(this.tileMeshes);
     }
 
     /** Add new tiles as they come into view and expire tiles that leave view. */

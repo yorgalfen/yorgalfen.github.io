@@ -50,7 +50,7 @@ function update_data() {
     const camera = $("#camera")[0];
     const cameraPos = camera.object3D.position;
     let rot = camera.object3D.rotation.y;
-    const c = terrain.dataIndexOf(cameraPos, true);
+    const c = terrain.dataIndexOf(cameraPos);
     const latDeg = lat(c[0], c[1]);
     const longDeg = long(c[0], c[1]);
     const het = height[c[0]][c[1]];
@@ -602,7 +602,7 @@ function wayfind() {
     }
 
     const cameraPos = $("#camera")[0].object3D.position;
-    const indic = terrain.dataIndexOf(cameraPos, true);
+    const indic = terrain.dataIndexOf(cameraPos, false);
 
     rcalc = [];
     rcalc20 = undefined;
@@ -870,11 +870,13 @@ AFRAME.registerComponent("frame-adjust", {
         // Remove tiles too far from camera position and load in new tiles.
         terrain.redraw(cameraPos);
 
-        // // Shouldn't matter, but automatic height adjustment occurs after recentering
-        // if (ah) {
-        //     const d = dataIndexOf(cameraPos.x, cameraPos.z);
-        //     cameraPos.y = coord(lat(d[0], d[1]), long(d[0], d[1]), height[d[0]][d[1]] + ahoff)[1];
-        // }
+        // Shouldn't matter, but automatic height adjustment occurs after recentering
+        if (ah) {
+            const intersections = terrain.raycast(cameraPos);
+            if (intersections.length > 0) {
+                cameraPos.y = intersections[0].point.y + ahoff;
+            }
+        }
         const time = new Date() - start;
         if (time > 17) {
             console.warn(`Spent ${time}ms in tick()`);
