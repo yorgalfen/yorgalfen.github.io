@@ -163,118 +163,153 @@ class JSONAssetType {
     }
 }
 
-/** Random number generator seed */
-let randomSeed = 0;
-
 /**
- * Deterministic random number generator.
+ * Update coefficents in `out` to reflect the points in `p`.
+ * Ported from CachedBicubicInterpolator at {@link https://www.paulinternet.nl/?page=bicubic}.
  *
- * Returns the same values given the same coordinate and randomSeed.
+ * @param {number[][]} p 4x4 Array of previous point, start point, end point and next point for four
+ * y points
+ * @param {number[][]} out Coefficients to be updated
  */
-function nextRandom(i, j) {
-    // Add i and j to random seed, so that an large i or j adds
-    // to the x and z coordinates stored in randomSeed.
-    let hash = randomSeed + ((i << 16) | j);
-
-    // Fast integer hash function
-    hash ^= hash >> 16;
-    // Math.imul multiplies 32-bit numbers with overflow
-    hash = Math.imul(hash, 0x21f0aaad);
-    hash ^= hash >> 15;
-    hash = Math.imul(hash, 0x735a2d97);
-    hash ^= hash >> 15;
-    // Finally, move to range [0..1]
-    return hash / 2147483647.0;
+function updateCoefficients(p, out) {
+    out[0][0] = p[1][1];
+    out[0][1] = -0.5 * p[1][0] + 0.5 * p[1][2];
+    out[0][2] = p[1][0] - 2.5 * p[1][1] + 2 * p[1][2] - 0.5 * p[1][3];
+    out[0][3] = -0.5 * p[1][0] + 1.5 * p[1][1] - 1.5 * p[1][2] + 0.5 * p[1][3];
+    out[1][0] = -0.5 * p[0][1] + 0.5 * p[2][1];
+    out[1][1] = 0.25 * p[0][0] - 0.25 * p[0][2] - 0.25 * p[2][0] + 0.25 * p[2][2];
+    out[1][2] =
+        -0.5 * p[0][0] +
+        1.25 * p[0][1] -
+        p[0][2] +
+        0.25 * p[0][3] +
+        0.5 * p[2][0] -
+        1.25 * p[2][1] +
+        p[2][2] -
+        0.25 * p[2][3];
+    out[1][3] =
+        0.25 * p[0][0] -
+        0.75 * p[0][1] +
+        0.75 * p[0][2] -
+        0.25 * p[0][3] -
+        0.25 * p[2][0] +
+        0.75 * p[2][1] -
+        0.75 * p[2][2] +
+        0.25 * p[2][3];
+    out[2][0] = p[0][1] - 2.5 * p[1][1] + 2 * p[2][1] - 0.5 * p[3][1];
+    out[2][1] =
+        -0.5 * p[0][0] +
+        0.5 * p[0][2] +
+        1.25 * p[1][0] -
+        1.25 * p[1][2] -
+        p[2][0] +
+        p[2][2] +
+        0.25 * p[3][0] -
+        0.25 * p[3][2];
+    out[2][2] =
+        p[0][0] -
+        2.5 * p[0][1] +
+        2 * p[0][2] -
+        0.5 * p[0][3] -
+        2.5 * p[1][0] +
+        6.25 * p[1][1] -
+        5 * p[1][2] +
+        1.25 * p[1][3] +
+        2 * p[2][0] -
+        5 * p[2][1] +
+        4 * p[2][2] -
+        p[2][3] -
+        0.5 * p[3][0] +
+        1.25 * p[3][1] -
+        p[3][2] +
+        0.25 * p[3][3];
+    out[2][3] =
+        -0.5 * p[0][0] +
+        1.5 * p[0][1] -
+        1.5 * p[0][2] +
+        0.5 * p[0][3] +
+        1.25 * p[1][0] -
+        3.75 * p[1][1] +
+        3.75 * p[1][2] -
+        1.25 * p[1][3] -
+        p[2][0] +
+        3 * p[2][1] -
+        3 * p[2][2] +
+        p[2][3] +
+        0.25 * p[3][0] -
+        0.75 * p[3][1] +
+        0.75 * p[3][2] -
+        0.25 * p[3][3];
+    out[3][0] = -0.5 * p[0][1] + 1.5 * p[1][1] - 1.5 * p[2][1] + 0.5 * p[3][1];
+    out[3][1] =
+        0.25 * p[0][0] -
+        0.25 * p[0][2] -
+        0.75 * p[1][0] +
+        0.75 * p[1][2] +
+        0.75 * p[2][0] -
+        0.75 * p[2][2] -
+        0.25 * p[3][0] +
+        0.25 * p[3][2];
+    out[3][2] =
+        -0.5 * p[0][0] +
+        1.25 * p[0][1] -
+        p[0][2] +
+        0.25 * p[0][3] +
+        1.5 * p[1][0] -
+        3.75 * p[1][1] +
+        3 * p[1][2] -
+        0.75 * p[1][3] -
+        1.5 * p[2][0] +
+        3.75 * p[2][1] -
+        3 * p[2][2] +
+        0.75 * p[2][3] +
+        0.5 * p[3][0] -
+        1.25 * p[3][1] +
+        p[3][2] -
+        0.25 * p[3][3];
+    out[3][3] =
+        0.25 * p[0][0] -
+        0.75 * p[0][1] +
+        0.75 * p[0][2] -
+        0.25 * p[0][3] -
+        0.75 * p[1][0] +
+        2.25 * p[1][1] -
+        2.25 * p[1][2] +
+        0.75 * p[1][3] +
+        0.75 * p[2][0] -
+        2.25 * p[2][1] +
+        2.25 * p[2][2] -
+        0.75 * p[2][3] -
+        0.25 * p[3][0] +
+        0.75 * p[3][1] -
+        0.75 * p[3][2] +
+        0.25 * p[3][3];
 }
 
-function getRandom(i, j, min, max) {
-    return nextRandom(i, j) * (max - min) + min;
-}
-
 /**
- * Average grid values at offsets from (i, j),
- * when adding the offset to (i, j) results in a point within the grid.
+ * Bilinear interpolation point for cached coefficients.
+ * Ported from CachedBicubicInterpolator at {@link https://www.paulinternet.nl/?page=bicubic}.
  *
- * If (i, j) is at the edge of grid, this method instead returns a linear
- * interpolation of the corner values.
+ * @param {number[][]} a Coefficients, 4x4 array, calculated by {@function updateCoefficients}
+ * @param {number} x X amount to interpolate by, from 0 to 1, inclusive
+ * @param {number} y Y amount to interpolate by, from 0 to 1, inclusive
+ * @returns {number} Interpolated value
  */
-function fixed(grid, len, i, j, v, offsets) {
-    // Linear interpolation of edges with the corners
-    if (i === 0 || i === len - 1) {
-        const edgeLeft = grid[i * len + 0];
-        const edgeRight = grid[i * len + (len - 1)];
-        return (j / (len - 1)) * (edgeRight - edgeLeft) + edgeLeft;
-    }
-    if (j === 0 || j === len - 1) {
-        const edgeTop = grid[0 * len + j];
-        const edgeBottom = grid[(len - 1) * len + j];
-        return (i / (len - 1)) * (edgeBottom - edgeTop) + edgeTop;
-    }
+function bilinearInterpolate(a, x, y) {
+    const x2 = x * x;
+    const x3 = x2 * x;
+    const y2 = y * y;
+    const y3 = y2 * y;
 
-    let result = 0;
-    let k = 0;
-    for (let n = 0; n < offsets.length; n++) {
-        const p = offsets[n][0];
-        const q = offsets[n][1];
-        const z = i + p * v;
-        const x = j + q * v;
-        if (0 <= z && z < len && 0 <= x && x < len) {
-            result += grid[z * len + x];
-            k++;
-        }
-    }
-    return result / k;
-}
-
-/**
- * Run a single step of the diamond-square algorithm.
- *
- * Unlike the usual diamond-square algorithm, this implementation uses a
- * deterministic pseudo-random number generator, so that the same "random"
- * offsets are generated for the same points on the terrain.
- */
-function singleDiamondSquareStep(grid, len, dist, roughness) {
-    // Distance from a "new" cell to the corner?
-    const v = dist >>> 1;
-
-    // Offsets
-    const diamond = [
-        [-1, -1],
-        [-1, 1],
-        [1, 1],
-        [1, -1],
-    ];
-    const square = [
-        [-1, 0],
-        [0, -1],
-        [1, 0],
-        [0, 1],
-    ];
-
-    // z, x are coordinates of the new cell
-    // Diamond step
-    for (let i = v; i < len; i += dist) {
-        for (let j = v; j < len; j += dist) {
-            grid[i * len + j] =
-                fixed(grid, len, i, j, v, diamond) + getRandom(i, j, -roughness, roughness);
-        }
-    }
-
-    // Square step, rows
-    for (let i = v; i < len; i += dist) {
-        for (let j = 0; j < len; j += dist) {
-            grid[i * len + j] =
-                fixed(grid, len, i, j, v, square) + getRandom(i, j, -roughness, roughness);
-        }
-    }
-
-    // Square step, rows
-    for (let i = 0; i < len; i += dist) {
-        for (let j = v; j < len; j += dist) {
-            grid[i * len + j] =
-                fixed(grid, len, i, j, v, square) + getRandom(i, j, -roughness, roughness);
-        }
-    }
+    return (
+        a[0][0] +
+        a[0][1] * y +
+        a[0][2] * y2 +
+        a[0][3] * y3 +
+        (a[1][0] + a[1][1] * y + a[1][2] * y2 + a[1][3] * y3) * x +
+        (a[2][0] + a[2][1] * y + a[2][2] * y2 + a[2][3] * y3) * x2 +
+        (a[3][0] + a[3][1] * y + a[3][2] * y2 + a[3][3] * y3) * x3
+    );
 }
 
 class Tile {
@@ -284,18 +319,19 @@ class Tile {
         this.startZ = startZ;
 
         // Create an array of coordinates corresponding to data points.
-        // Tiles are 10 by 10, but we need 11 by 11 to get full squares on tile edges.
-        this.data = new Float32Array(3 * 11 * 11);
+        // Tiles are 10 by 10, but we need 13 by 13 to get full squares on tile edges,
+        // since bilinear interpolation requires z-1, z, z+1, and z+2.
+        this.data = new Float32Array(3 * 13 * 13);
         const data = this.data;
 
-        for (let z = 0; z <= 10; z++) {
-            for (let x = 0; x <= 10; x++) {
-                const atZ = startZ + z;
-                const atX = startX + x;
+        for (let z = 0; z < 13; z++) {
+            for (let x = 0; x < 13; x++) {
+                const atZ = startZ + z - 1;
+                const atX = startX + x - 1;
                 const pos = coord(lat(atZ, atX), long(atZ, atX), height[atZ][atX]);
-                data[z * 11 * 3 + x * 3 + 0] = pos[0];
-                data[z * 11 * 3 + x * 3 + 1] = pos[1];
-                data[z * 11 * 3 + x * 3 + 2] = pos[2];
+                data[z * 13 * 3 + x * 3 + 0] = pos[0];
+                data[z * 13 * 3 + x * 3 + 1] = pos[1];
+                data[z * 13 * 3 + x * 3 + 2] = pos[2];
             }
         }
 
@@ -314,6 +350,7 @@ class Tile {
         }
 
         // Calculate data points' colors in RGBA
+        // 11 by 11 so that the colors of tile edges match neighboring tiles
         this.colors = new Float32Array(3 * 11 * 11);
         if (colorizer == null) {
             this.useColor = false;
@@ -364,7 +401,7 @@ class Tile {
      * @returns {THREE.Vector3}
      */
     center() {
-        const at = 5 * 11 * 3 + 5 * 3;
+        const at = 6 * 13 * 3 + 6 * 3;
         return new THREE.Vector3(this.data[at + 0], this.data[at + 1], this.data[at + 2]);
     }
 
@@ -411,7 +448,7 @@ class Tile {
 
         // Diamond-square requires a grid where the side lengths
         // can be expressed as 1+2**k, for integer k
-        const grid = new Float32Array((width + 1) ** 2);
+        // const grid = new Float32Array((width + 1) ** 2);
 
         const colorA = new THREE.Color();
         const colorB = new THREE.Color();
@@ -421,45 +458,45 @@ class Tile {
         const mixRight = new THREE.Color();
         const mixed = new THREE.Color();
 
+        // Rather than having a constant number of squares,
+        // use non-linear x and z interpolation
+        // so that squares with a large height difference use more triangles
+        //
+        // The ideal height interpolation curve would be like a convex cubic function.
+        // Bicubic interpolation on a grid?
+
         // Run diamond-square every len / 10 points on the grid,
         // then transfer the grid's heights to vertices.
-        const roughnessDelta = 0.5;
+        // const roughnessDelta = 0.5;
         const dataCoords = Array(8);
         const scaleFactors = new Float32Array(4 * (width + 1));
-        const firstX = data[3 * (0 * 11 + 0) + 0];
-        const firstZ = data[3 * (0 * 11 + 0) + 2];
-        const lastX = data[3 * (10 * 11 + 10) + 0];
-        const lastZ = data[3 * (10 * 11 + 10) + 2];
+        const coefficients = Array.from(Array(4), () => new Array(4));
+        const dataHeights = Array.from(Array(4), () => new Array(4));
         for (let z = 0; z < 10; z++) {
             const atZ = z * width;
             for (let x = 0; x < 10; x++) {
-                // Diamond-square requires known grid corners,
-                // which we set to data heights
-                grid[0 * (width + 1) + 0] = data[3 * (z * 11 + x) + 1];
-                grid[0 * (width + 1) + width] = data[3 * (z * 11 + x + 1) + 1];
-                grid[width * (width + 1) + 0] = data[3 * ((z + 1) * 11 + x) + 1];
-                grid[width * (width + 1) + width] = data[3 * ((z + 1) * 11 + x + 1) + 1];
-
-                randomSeed = (((this.startZ + z) * width) << 16) | ((this.startX + x) * width);
-
-                // Run diamond-square on grid
-                let roughness = 0.3;
-                for (let dist = width; dist > 1; dist >>>= 1) {
-                    singleDiamondSquareStep(grid, width + 1, dist, roughness);
-                    roughness *= roughnessDelta;
+                // Set coordinates to create the bilinear interpolator
+                // by x-1, x, x+1, and x+2
+                // for each of z-1, z, z+1, and z+2
+                for (let i = 0; i < 4; i++) {
+                    for (let j = 0; j < 4; j++) {
+                        const dataZ = z + i;
+                        const dataX = x + j;
+                        dataHeights[i][j] = data[3 * (dataZ * 13 + dataX) + 1];
+                    }
                 }
 
-                // Transfer grid's heights to vertices,
-                // interpolating x and z coords between data's x and z.
+                // Set bilinear interpolation coefficients.
+                updateCoefficients(dataHeights, coefficients);
 
                 // Bithack: i is 0b00 through 0b11.
                 // Taking the top bit and the bottom bit,
                 // gives z and x coordinates (0, 0), (0, 1), (1, 0), (1, 1).
                 for (let i = 0; i < 4; i++) {
-                    const dataZ = z + (i >>> 1);
-                    const dataX = x + (i & 1);
-                    dataCoords[2 * i + 0] = data[3 * (dataZ * 11 + dataX) + 2];
-                    dataCoords[2 * i + 1] = data[3 * (dataZ * 11 + dataX) + 0];
+                    const dataZ = z + 1 + (i >>> 1);
+                    const dataX = x + 1 + (i & 1);
+                    dataCoords[2 * i + 0] = data[3 * (dataZ * 13 + dataX) + 2];
+                    dataCoords[2 * i + 1] = data[3 * (dataZ * 13 + dataX) + 0];
                 }
 
                 // Create scaling factors for x and z scaling from 0 to 1
@@ -506,7 +543,11 @@ class Tile {
                             const xFrac = (offX / width) * xScale;
 
                             vertices[at + 3 * i + 0] = xFrac + startX;
-                            vertices[at + 3 * i + 1] = grid[offZ * (width + 1) + offX];
+                            vertices[at + 3 * i + 1] = bilinearInterpolate(
+                                coefficients,
+                                offZ / width,
+                                offX / width,
+                            );
                             vertices[at + 3 * i + 2] = zFrac + startZ;
                             indices[indexAt + i] = indexAt + i;
 
@@ -551,7 +592,9 @@ class Tile {
                 for (let i = 0; i < 6; i++) {
                     const pZ = z + (triangleSpec[i] >>> 1);
                     const pX = x + (triangleSpec[i] & 1);
-                    const dataAt = skip * (pZ * 11 + pX);
+                    // Add (1, 1), which is 13 + 1 = 14 in data indices
+                    // so that z and x are relative to start, not start-1
+                    const dataAt = skip * (pZ * 13 + pX) + 14;
                     vertices[at + 3 * i + 0] = data[3 * dataAt + 0];
                     vertices[at + 3 * i + 1] = data[3 * dataAt + 1];
                     vertices[at + 3 * i + 2] = data[3 * dataAt + 2];
