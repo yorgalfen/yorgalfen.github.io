@@ -94,6 +94,9 @@ function update_data() {
 }
 $(document).keydown(() => {
     const cameraPos = document.querySelector("#camera").object3D.position;
+    if (event.ctrlKey || event.metaKey) {
+        return;
+    }
     switch (event.which) {
         case 81: // Q
             if (ah) {
