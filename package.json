@@ -1,0 +1,15 @@
+{
+  "name": "yorgalfen.github.io",
+  "version": "1.0.0",
+  "description": "Artemis Lunar Explorer",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Michael Constantine, Isaiah Poston",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^28.1.1"
+  }
+}
