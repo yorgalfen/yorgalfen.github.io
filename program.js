@@ -589,8 +589,6 @@ function routeStatistics(path) {
 
 function wayfind() {
     $("#route-clear").hide();
-    $("#route-20-contain").hide();
-    $("#route-20-applier").hide();
     const opt = $("#opt-drop").val();
     const canvas = $("#draw")[0];
     const ctx = canvas.getContext("2d");
@@ -635,7 +633,6 @@ function wayfind() {
     let mand = -1;
     if (ms === "?") {
         $("#route-applier").html(texts[lang].blue);
-        $("#route-20-contain").show();
         $("#route-20-applier").show();
         $("#route-20-applier").on("click", () => {
             route.length = 0;
@@ -847,7 +844,7 @@ function applyRoute() {
 }
 
 function routeReset() {
-    $("#route-20-contain").css("display", "none");
+    $("#route-20-applier").hide();
     $("#route-applier").html(texts[lang]["route-applier"]);
     const canvas = document.getElementById("draw");
     const ctx = canvas.getContext("2d");
