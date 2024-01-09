@@ -1,7 +1,7 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
     <head>
-        <title>NASA ADC</title>
+        <title>Artemis Lunar Explorer</title>
         <meta charset="utf-8" />
         <script type="text/javascript" src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
         <link rel="icon" sizes="any" type="image/png" href="favicon.png" />
@@ -140,15 +140,15 @@
                 <label for="slinp" class="chy" id="rinp3">Max slope:</label>
                 <input id="sublist" />
                 <input id="index" />
-                <input id="slinp" />
+                <input id="slinp" value="15" />
             </div>
             <div class="grid-3columns centered" id="text-et-button">
                 <p id="progress"></p>
-                <button class="chy" id="route-clear" onclick="routeReset();">Clear Route</button>
-                <button class="chy" id="plan" onclick="wayfind();">Plan Route</button>
+                <button class="chy" id="route-clear">Clear Route</button>
+                <button class="chy" id="plan">Plan Route</button>
             </div>
             <div id="canvas-et-data">
-                <canvas id="draw" width="3200" height="3200" onclick="getClick(event);"></canvas>
+                <canvas id="draw" width="3200" height="3200"></canvas>
                 <div id="data-et-apply">
                     <p id="route-data"></p>
                     <button id="route-applier" class="rapplic chy">Apply Route</button>

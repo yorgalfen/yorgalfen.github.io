@@ -123,6 +123,7 @@ $(document).on("keydown", (event) => {
             } else {
                 $("#prompt").hide();
                 $(".telinp").val("");
+                $("#minimap").off("click");
                 $("#single-go").off();
             }
             break;
@@ -202,6 +203,14 @@ $(document).on("keydown", (event) => {
             if ($("#route-box").css("display") === "none") {
                 $("#prompt").hide();
                 $("#route-box").show();
+                $("#plan").on("click", wayfind);
+                $("#draw").on("click", (event) => {
+                    const dex = Math.round((event.offsetX/$("#draw").width())*3200);
+                    const sbl = Math.round((event.offsetY/$("#draw").height())*3200);
+                    $("#sublist").val(sbl);
+                    $("#index").val(dex);
+                });
+                $("#route-clear").on("click", routeReset);
                 $("#route-data").html(texts[lang].rd);
                 if (fdr) {
                     routeReset();
@@ -285,7 +294,11 @@ function handleM() {
     const sl = $("#single").val();
     if (sl) {
         hes = parseInt(sl);
-        geo.redraw();
+        // Force a terrain redraw by writing to a property,
+        // causing A-Frame to call the terrain's .update() method.
+        const luna = $("#luna")[0];
+        const size = luna.getAttribute("terrain").renderDistance;
+        luna.setAttribute("terrain", { renderDistance: size });
     }
     $("#prompt").hide();
     $("#single").val("");
@@ -294,7 +307,11 @@ function handleN() {
     const sl = $("#single").val();
     if (sl) {
         los = parseInt(sl);
-        geo.redraw();
+        // Force a terrain redraw by writing to a property,
+        // causing A-Frame to call the terrain's .update() method.
+        const luna = $("#luna")[0];
+        const size = luna.getAttribute("terrain").renderDistance;
+        luna.setAttribute("terrain", { renderDistance: size });
     }
     $("#prompt").hide();
     $("#single").val("");
@@ -409,10 +426,10 @@ function visibilitycost(sl1, in1, sl2, in2, lim) {
     return estim * (9 * vis(sl2, in2) + 1);
 }
 function AStar(bsl, bind, esl, eind, lim, cost, est) {
-    let star = new Date();
+    const star = new Date();
     let it = 0;
     const spoi = makePoint(bsl, bind);
-    let openSet = [spoi];
+    const openSet = [spoi];
     const cameFrom = new Int32Array(makePoint(3200, 3200));
     cameFrom.fill(-1);
     const gScore = new Float32Array(makePoint(3200, 3200));
@@ -500,7 +517,8 @@ function AStar(bsl, bind, esl, eind, lim, cost, est) {
     console.log("About to end due to openSet being empty.");
     return false;
 }
-function reconstruct_path(cameFrom, current) {
+function reconstruct_path(cameFrom, start) {
+    let current = start;
     const totalPath = [current];
     while (cameFrom[current] !== -1) {
         current = cameFrom[current];
@@ -572,6 +590,7 @@ function routeStatistics(path) {
 function wayfind() {
     $("#route-clear").hide();
     $("#route-20-contain").hide();
+    $("#route-20-applier").hide();
     const opt = $("#opt-drop").val();
     const canvas = $("#draw")[0];
     const ctx = canvas.getContext("2d");
@@ -617,9 +636,16 @@ function wayfind() {
     if (ms === "?") {
         $("#route-applier").html(texts[lang].blue);
         $("#route-20-contain").show();
+        $("#route-20-applier").show();
         $("#route-20-applier").on("click", () => {
-            route = rcalc20;
-            comms = commcalc20;
+            route.length = 0;
+            for (let i = 0, len = rcalc20.length; i < len; i++) {
+                route[i] = rcalc20[i];
+            }
+            comms.length = 0;
+            for (let i = 0, len = commcalc20.length; i < len; i++) {
+                comms[i] = commcalc20[i];
+            }
             applyRoute();
         });
         const r20 = AStar(indic[0], indic[1], desl, dein, 20, costFunction[opt], estimators[opt]);
@@ -648,8 +674,14 @@ function wayfind() {
         $("#route-applier").html(texts[lang]["route-applier"]);
     }
     $("#route-applier").on("click", () => {
-        route = rcalc;
-        comms = commcalc;
+        route.length = 0;
+        for (let i = 0, len = rcalc.length; i < len; i++) {
+            route[i] = rcalc[i];
+        }
+        comms.length = 0;
+        for (let i = 0, len = commcalc.length; i < len; i++) {
+            comms[i] = commcalc[i];
+        }
         applyRoute();
     });
 
@@ -807,7 +839,11 @@ function applyRoute() {
     $(".turris").attr("visible", "true");
     $(".turris").attr("towers", Math.random());
     update_flag();
-    geo.redraw();
+    // Force a terrain redraw by writing to a property,
+    // causing A-Frame to call the terrain's .update() method.
+    const luna = $("#luna")[0];
+    const size = luna.getAttribute("terrain").renderDistance;
+    luna.setAttribute("terrain", { renderDistance: size });
 }
 
 function routeReset() {
@@ -820,9 +856,13 @@ function routeReset() {
     const cnv = document.getElementById("minimap-route");
     const ct = cnv.getContext("2d");
     ct.clearRect(0, 0, cnv.width, cnv.height);
-    route = [];
-    comms = [];
-    geo.redraw();
+    route.length = 0;
+    comms.length = 0;
+    // Force a terrain redraw by writing to a property,
+    // causing A-Frame to call the terrain's .update() method.
+    const luna = $("#luna")[0];
+    const size = luna.getAttribute("terrain").renderDistance;
+    luna.setAttribute("terrain", { renderDistance: size });
     $(".turris").attr("visible", "false");
     $("#route-data").html(texts[lang].rd);
     $("#route-clear").css("display", "none");
