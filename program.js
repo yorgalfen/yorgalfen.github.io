@@ -634,17 +634,7 @@ function wayfind() {
     if (ms === "?") {
         $("#route-applier").html(texts[lang].blue);
         $("#route-20-applier").show();
-        $("#route-20-applier").on("click", () => {
-            route.length = 0;
-            for (let i = 0, len = rcalc20.length; i < len; i++) {
-                route[i] = rcalc20[i];
-            }
-            comms.length = 0;
-            for (let i = 0, len = commcalc20.length; i < len; i++) {
-                comms[i] = commcalc20[i];
-            }
-            applyRoute();
-        });
+        $("#route-20-applier").on("click", () => applyRoute(rcalc20, commcalc20));
         const r20 = AStar(indic[0], indic[1], desl, dein, 20, costFunction[opt], estimators[opt]);
         if (!r20) {
             $("#progress").html(texts[lang].fail);
@@ -670,17 +660,7 @@ function wayfind() {
     } else {
         $("#route-applier").html(texts[lang]["route-applier"]);
     }
-    $("#route-applier").on("click", () => {
-        route.length = 0;
-        for (let i = 0, len = rcalc.length; i < len; i++) {
-            route[i] = rcalc[i];
-        }
-        comms.length = 0;
-        for (let i = 0, len = commcalc.length; i < len; i++) {
-            comms[i] = commcalc[i];
-        }
-        applyRoute();
-    });
+    $("#route-applier").on("click", () => applyRoute(rcalc, commcalc));
 
     const nrt = AStar(indic[0], indic[1], desl, dein, ms, costFunction[opt], estimators[opt]);
     if (!nrt) {
@@ -818,7 +798,16 @@ function wayfind() {
     $("#route-data").html(data);
 }
 
-function applyRoute() {
+function applyRoute(newRoute, newComms) {
+    route.length = 0;
+    for (let i = 0, len = newRoute.length; i < len; i++) {
+        route[i] = newRoute[i];
+    }
+    comms.length = 0;
+    for (let i = 0, len = newComms.length; i < len; i++) {
+        comms[i] = newComms[i];
+    }
+
     const canvas = document.getElementById("minimap-route");
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -836,11 +825,11 @@ function applyRoute() {
     $(".turris").attr("visible", "true");
     $(".turris").attr("towers", Math.random());
     update_flag();
-    // Force a terrain redraw by writing to a property,
+    // Force a terrain redraw by writing a new value to a property,
     // causing A-Frame to call the terrain's .update() method.
     const luna = $("#luna")[0];
-    const size = luna.getAttribute("terrain").renderDistance;
-    luna.setAttribute("terrain", { renderDistance: size });
+    const routeNum = luna.getAttribute("terrain").updateRoute;
+    luna.setAttribute("terrain", { updateRoute: routeNum + 1 });
 }
 
 function routeReset() {

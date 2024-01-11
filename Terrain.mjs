@@ -739,6 +739,7 @@ export class Terrain {
             frame: { type: "vec2" },
             renderDistance: { type: "int" },
             timesDetail: { type: "int" },
+            updateRoute: { type: "int", default: 0 },
             latl: new JSONAssetType(),
             latr: new JSONAssetType(),
             longl: new JSONAssetType(),
