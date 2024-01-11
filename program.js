@@ -376,7 +376,8 @@ function handleY() {
     $(".chy").each(function () {
         $(this).html(texts[lang][this.id]);
     });
-    directions = texts[lang].d;
+    directions.length = 0;
+    directions.push(...texts[lang].d);
 }
 function slopecost(sl1, in1, sl2, in2, lim) {
     const slo = slope[sl1][in1];
@@ -844,11 +845,11 @@ function routeReset() {
     ct.clearRect(0, 0, cnv.width, cnv.height);
     route.length = 0;
     comms.length = 0;
-    // Force a terrain redraw by writing to a property,
+    // Force a terrain redraw by writing a new value to a property,
     // causing A-Frame to call the terrain's .update() method.
     const luna = $("#luna")[0];
-    const size = luna.getAttribute("terrain").renderDistance;
-    luna.setAttribute("terrain", { renderDistance: size });
+    const routeNum = luna.getAttribute("terrain").updateRoute;
+    luna.setAttribute("terrain", { updateRoute: routeNum + 1 });
     $(".turris").attr("visible", "false");
     $("#route-data").html(texts[lang].rd);
     $("#route-clear").css("display", "none");
