@@ -1,6 +1,9 @@
 *, *::before, *::after {
   box-sizing: border-box;
 }
+*:focus {
+    outline-color: #26abe2;
+}
 body {
     font-family: "agency-fb-regular", sans-serif;
 }

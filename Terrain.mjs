@@ -11,6 +11,7 @@ export let route;
 export let comms;
 export let texts;
 export let visib;
+export let directions;
 let latl;
 let latr;
 let longl;
@@ -782,13 +783,14 @@ export class Terrain {
         longr = data.longr;
         height = data.height;
         slope = data.slope;
-        route = data.route;
-        comms = data.comms;
+        route = [];
+        comms = [];
         visib = data.visib;
         for (let i = 0; i < visib.length; i++) {
             visib[i] = new Uint32Array(visib[i]);
         }
         texts = data.texts;
+        directions = texts.en.d;
 
         this.attrs.colorizer = Colorizer[data.colorizer];
         this.attrs.renderDistance = data.renderDistance;

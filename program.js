@@ -11,10 +11,10 @@ import {
     slope,
     texts,
     visib,
+    directions,
 } from "./Terrain.mjs";
 
 let dest;
-let directions;
 let rcalc = [];
 let rcalc20 = [];
 let commcalc = [];
@@ -203,17 +203,17 @@ $(document).on("keydown", (event) => {
             if ($("#route-box").css("display") === "none") {
                 $("#prompt").hide();
                 $("#route-box").show();
-                $("#plan").on("click", wayfind);
-                $("#draw").on("click", (event) => {
+                $("#route-clear").on("click", routeReset);
+                $("#route-data").html(texts[lang].rd);
+                if (fdr) {
+                    routeReset();
+                    $("#plan").on("click", wayfind);
+                    $("#draw").on("click", (event) => {
                     const dex = Math.round((event.offsetX/$("#draw").width())*3200);
                     const sbl = Math.round((event.offsetY/$("#draw").height())*3200);
                     $("#sublist").val(sbl);
                     $("#index").val(dex);
                 });
-                $("#route-clear").on("click", routeReset);
-                $("#route-data").html(texts[lang].rd);
-                if (fdr) {
-                    routeReset();
                     fdr = false;
                 }
             } else {
@@ -860,23 +860,24 @@ AFRAME.registerComponent("terrain", terrain);
 // Handle minimap and HUD
 AFRAME.registerComponent("minimap", {
     init: () => {
-        dest = route[route.length - 1];
-        const canvas = document.getElementById("minimap-route");
-        const ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "rgb(0,0,0)";
-        ctx.fillRect(route[route.length - 1][1] - 20, route[route.length - 1][0] - 20, 40, 40);
-        ctx.fillStyle = "rgb(19,19,209)";
-        for (let i = 0; i < route.length; i++) {
-            ctx.fillRect(route[i][1] - 10, route[i][0] - 10, 20, 20);
-        }
-        ctx.fillStyle = "rgb(0,255,255)";
-        for (let i = 0; i < comms.length; i++) {
-            ctx.fillRect(comms[i][1] - 10, comms[i][0] - 10, 20, 20);
+        if(comms.length!==0){
+            dest = route[route.length - 1];
+            const canvas = document.getElementById("minimap-route");
+            const ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "rgb(0,0,0)";
+            ctx.fillRect(route[route.length - 1][1] - 20, route[route.length - 1][0] - 20, 40, 40);
+            ctx.fillStyle = "rgb(19,19,209)";
+            for (let i = 0; i < route.length; i++) {
+                ctx.fillRect(route[i][1] - 10, route[i][0] - 10, 20, 20);
+            }
+            ctx.fillStyle = "rgb(0,255,255)";
+            for (let i = 0; i < comms.length; i++) {
+                ctx.fillRect(comms[i][1] - 10, comms[i][0] - 10, 20, 20);
+            }
         }
         $("#map-contain").show();
 
-        directions = texts.en.d;
         // Ready to start drawing HUD
         const size = $("#luna")[0].getAttribute("terrain").renderDistance;
         dataInterval = setInterval(update_data, Math.round(size ** 2 / 40));
@@ -914,6 +915,9 @@ AFRAME.registerComponent("frame-adjust", {
 });
 AFRAME.registerComponent("flag-comp", {
     init: function () {
+        if(comms.length===0){
+            return;
+        }
         const flagPos = this.el.object3D.position;
         const target = coord(
             lat(route[route.length - 1][0], route[route.length - 1][1]),
@@ -930,6 +934,9 @@ AFRAME.registerComponent("towers", {
         const el = this.el;
         const pos = el.object3D.position;
         const num = parseInt(el.id.split("-")[1]);
+        if(comms.length===0){
+            return;
+        }
         const p = comms[num];
         const nPos = coord(lat(p[0], p[1]), long(p[0], p[1]), height[p[0]][p[1]]);
         pos.x = nPos[0];
