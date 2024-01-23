@@ -83,7 +83,11 @@
         </a-scene>
         <img id="map" src="../slopemap.png" hidden />
         <img id="arrow" src="../arrow.png" hidden />
-		<div id="info"><p id="data">Welcome to the Liebnitz Beta Plateau!<br>Press H for help.<br>Loading...</p></div>
+        <div id="info">
+            <p id="data">
+                Welcome to the Liebnitz Beta Plateau!<br />Press H for help.<br />Loading...
+            </p>
+        </div>
         <section
             role="dialog"
             class="modal"
@@ -112,7 +116,7 @@
                     <input class="telinp" id="slla" />
                     <label for="inlo" id="pos2" class="chy">index or Longitude</label>
                     <input class="telinp" id="inlo" />
-                    <p id="invinp" class="chy" style="visibility: hidden;">Invalid input!</p>
+                    <p id="invinp" class="chy" style="visibility: hidden">Invalid input!</p>
                 </div>
                 <button id="single-go" class="chy">Confirm</button>
             </div>
@@ -144,26 +148,21 @@
             </div>
             <div class="grid-3columns centered" id="text-et-button">
                 <p id="progress"></p>
-                <button class="chy" id="route-clear" onclick="routeReset();">Clear Route</button>
-                <button class="chy" id="plan" onclick="wayfind();">Plan Route</button>
+                <button class="chy" id="plan">Plan Route</button>
+                <button class="chy" id="route-clear">Clear Route</button>
             </div>
             <div id="canvas-et-data">
-                <canvas id="draw" width="3200" height="3200" onclick="getClick(event);"></canvas>
+                <canvas id="draw" width="3200" height="3200"></canvas>
                 <div id="data-et-apply">
                     <p id="route-data"></p>
                     <button id="route-applier" class="rapplic chy">Apply Route</button>
-                    <button id="route-20-applier" class="rapplic chy">Apply Brown</button>
+                    <button id="route-20-applier" class="rapplic chy" hidden>Apply Brown</button>
                 </div>
             </div>
         </section>
         <div id="map-contain">
             <canvas id="minimap-route" class="mmcanvas" height="3200" width="3200"></canvas>
-            <canvas
-                id="minimap"
-                class="mmcanvas"
-                height="3200"
-                width="3200"
-            ></canvas>
+            <canvas id="minimap" class="mmcanvas" height="3200" width="3200"></canvas>
         </div>
     </body>
 </html>

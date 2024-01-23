@@ -11,6 +11,7 @@ export let route;
 export let comms;
 export let texts;
 export let visib;
+export let directions;
 let latl;
 let latr;
 let longl;
@@ -739,6 +740,7 @@ export class Terrain {
             frame: { type: "vec2" },
             renderDistance: { type: "int" },
             timesDetail: { type: "int" },
+            updateRoute: { type: "int", default: 0 },
             latl: new JSONAssetType(),
             latr: new JSONAssetType(),
             longl: new JSONAssetType(),
@@ -788,6 +790,7 @@ export class Terrain {
             visib[i] = new Uint32Array(visib[i]);
         }
         texts = data.texts;
+        directions = texts.en.d;
 
         this.attrs.colorizer = Colorizer[data.colorizer];
         this.attrs.renderDistance = data.renderDistance;

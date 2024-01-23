@@ -13,9 +13,8 @@ export class GenerateMeshBVHWorker {
                 throw new Error(
                     `GenerateMeshBVHWorker: Could not create Web Worker with error "${e.message}"`,
                 );
-            } else {
-                throw new Error("GenerateMeshBVHWorker: Could not create Web Worker.");
             }
+            throw new Error("GenerateMeshBVHWorker: Could not create Web Worker.");
         };
     }
 
