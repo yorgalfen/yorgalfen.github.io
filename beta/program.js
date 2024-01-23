@@ -206,7 +206,6 @@ $(document).on("keydown", (event) => {
                 $("#route-clear").on("click", routeReset);
                 $("#route-data").html(texts[lang].rd);
                 if (fdr) {
-                    routeReset();
                     $("#plan").on("click", wayfind);
                     $("#draw").on("click", (event) => {
                         const dex = Math.round((event.offsetX / $("#draw").width()) * 3200);
@@ -214,6 +213,10 @@ $(document).on("keydown", (event) => {
                         $("#sublist").val(sbl);
                         $("#index").val(dex);
                     });
+                    const canvas = document.getElementById("draw");
+                    const ctx = canvas.getContext("2d");
+                    const map = document.getElementById("map");
+                    ctx.drawImage(map, 0, 0, 3200, 3200);
                     fdr = false;
                 }
             } else {
