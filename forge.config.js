@@ -1,6 +1,7 @@
 module.exports = {
   packagerConfig: {
     asar: true,
+    extraResource: ["./flag.obj", "./tower.obj"]
   },
   rebuildConfig: {},
   makers: [
@@ -12,10 +13,10 @@ module.exports = {
     //   name: '@electron-forge/maker-dmg',
     //   platforms: ['darwin'],
     // },
-    {
-      name: '@electron-forge/maker-deb',
-      config: {},
-    }
+    // {
+    //   name: '@electron-forge/maker-deb',
+    //   config: {},
+    // }
   ],
   plugins: [
     {
