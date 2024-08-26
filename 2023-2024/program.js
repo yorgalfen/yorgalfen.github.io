@@ -153,7 +153,7 @@ $(document).keydown(() => {
             ahTimeout = setTimeout(() => $("#prompt").hide(), 2500);
             break;
         case 72: // H
-            window.open(`help-${lang}.html`, "_blank");
+            window.open(`../help-${lang}.html`, "_blank");
             break;
         case 77: {
             // M
