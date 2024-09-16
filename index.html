@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+    <head>
+        <title>NASA ADC</title>
+        <meta charset="utf-8" />
+        <script type="text/javascript" src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+        <link rel="icon" sizes="any" type="image/png" href="favicon.png" />
+        <link href="styles.css" rel="stylesheet" />
+        <link href="font-declaration.css" rel="stylesheet"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script type="text/javascript" src="program.js"></script>
+    </head>
+    <body>
+        <a-scene id="scene" renderer="physicallyCorrectLights: true" debug>
+            <a-assets>
+                <img id="earth-texture" src="Blue Marble.png">
+                <img id="moon-texture" src="Moon.png">
+                <img id="sky" src="skynew.jpg">
+            </a-assets>
+            <a-sphere class="cull" id="caelum" position="0 0 0" radius="155000000" material="side: back; shader: flat; src: #sky"></a-sphere>
+            <a-sphere class="cull" id="luna"  position="0 0 0" radius="1737.4" material="src: #moon-texture; roughness: 1"></a-sphere>
+            <a-entity id="lux" position="0 0 1" light="type: directional; intensity: 2"></a-entity>
+            <a-sphere class="cull" id="terra" position="0 0 0" radius="6378.137" material="src: #earth-texture; roughness: 1"></a-sphere>
+            <a-camera id="camera" position="30000 0 0" near="10000" far="310000000"></a-camera>
+            <a-sphere class="cull" id="sol" position="0 0 0" radius="695700" color="yellow" material="shader: flat"></a-sphere>
+            <a-light type="ambient" intensity=".02"></a-light>
+        </a-scene>
+    </body>
+</html>
